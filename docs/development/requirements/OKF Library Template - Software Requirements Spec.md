@@ -6,6 +6,7 @@ type: reference
 created: 2026-10-17T09:06
 modified: 2026-10-25
 draft: false
+status: accepted
 confidential: false
 tags:
 aliases:
