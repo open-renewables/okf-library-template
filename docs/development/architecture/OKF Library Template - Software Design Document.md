@@ -837,6 +837,8 @@ Baseline controls (NFR6):
 
 ## 11. Deployment and repository configuration
 
+The template repository is `open-renewables/okf-library-template`, a public repository in the free GitHub organisation `open-renewables`.
+
 | Setting | Template repository | Library while private (before v1.0.0 or permanently) | Library once public (W-11) |
 | --- | --- | --- | --- |
 | Visibility | Public; marked as a template | Private | Public |
