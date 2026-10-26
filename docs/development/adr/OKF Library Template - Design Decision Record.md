@@ -4,7 +4,7 @@ description: Record of the design decisions for the OKF library template - Q&A d
 author: Richard Gledhill
 type: record
 created: 2026-10-18T07:33
-modified: 2026-10-25
+modified: 2026-10-26
 draft: false
 confidential: false
 tags:
@@ -211,6 +211,7 @@ Tooling references TQ1–TQ15 (QA-52 to QA-65) are to the owner Q&A of 25 Octobe
 | 2026-10-25 | DDR; SRS; SDD; stack options report | QA-52 to QA-76; Current position; follow-ups; SRS constraints, FR6.3, new FR2.11, FR6.5 and FR6.6, NFR2, NFR6, trade-offs; SDD §1 to §3, AD-01, AD-03, AD-04, AD-10 to AD-12, AD-15, AD-18, new AD-19 to AD-21, §5, §6, C-03 to C-07, I-02, I-08, I-12, new I-16 and I-17, W-01, W-03 to W-08, W-10, new W-12, §10 to §17, new V-12 and V-13 | Repository tooling and local-only operation; development documentation moved to `docs/development/`; QA and DR series frozen in favour of ADR files | QA-52 to QA-76 |
 | 2026-10-25 | SDD; `docs/development/` scaffolding | §6 (`rfcs/`), §10, Sources; `constraints.md`, `conventions.md`, `rfcs/README.md`, `testing/README.md`; root `AGENTS.md` stub and `CLAUDE.md` | Owner Q&A on the outstanding scaffolding items (O1–O9): permissive licence allowlist, MPL-2.0 by exception only; Google-style docstrings on the public API; `<kind>/<short-slug>` branches; commit and writing defaults confirmed; RFCs as files until v1.0.0, then GitHub issues with the files kept as history; testing documents written in P1; tool pins recorded at the start of P2; the four design documents copied into the scaffolding; gitleaks licence-key point verified. Recorded here rather than as new IDs, because the series are frozen and these settle conventions, not architecture | QA-68, QA-74 to QA-76 |
 | 2026-10-25 | DDR | Change log | Owner confirmed that `docs/development/constraints.md` and `conventions.md` stay template-only and do not reach libraries (QA-66 unchanged). Libraries inherit the enforced bar through `pyproject.toml`, the poe tasks and the pre-commit hooks; a library that wants written conventions records them in its own `DECISIONS.md` or `GOVERNANCE.md` | QA-66 |
+| 2026-10-26 | SDD; `docs/development/operations/` | §2.2; §6; §14 (new Set-up row; P0, P1, P2 rows); §15 V-10; new `runbook-create-template-repository.md` | Template repository created from the scaffold; the repository copies in `docs/development/` become authoritative and the Claude Project copies are mirrors; `.gitignore` added to the layout; P0 spikes kept out of the template repository; `.python-version` in P1; CODEOWNERS and the required `validate` check in P2; first V-10 check named | AD-21; QA-67 |
 
 ## 4. Related documents
 

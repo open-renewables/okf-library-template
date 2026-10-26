@@ -4,7 +4,7 @@ description: Software design of the reusable OKF library template on the referen
 author: Richard Gledhill
 type: spec
 created: 2026-10-20
-modified: 2026-10-25
+modified: 2026-10-26
 draft: true
 confidential: false
 tags:
@@ -51,7 +51,8 @@ In scope: the template repository, the tooling and workflows it ships, the proce
 | `OKF Library Template - Design Decision Record.md` (DDR) | Why: owner (QA) and design (DR) decisions, with change log |
 | `OKF library technology stack options.md` (stack report) | Evidence for the stack choice, with test results and sources |
 
-Requirements are stated only in the SRS and design only here. The two were aligned on 25 October 2026 (DDR QA-35). A conflict found later is recorded in the DDR and resolved by editing the document at fault. The documents are copied into the template's `docs/development/` folder under these exact file names: the SRS in `requirements/`, this document and the stack report in `architecture/`, and the DDR in `adr/` (section 6; AD-21; V-10). The measured quality bar is in `docs/development/constraints.md` and the style guide in `docs/development/conventions.md`; this document does not restate them.
+Requirements are stated only in the SRS and design only here. The two were aligned on 25 October 2026 (DDR QA-35). A 
+conflict found later is recorded in the DDR and resolved by editing the document at fault. The documents are copied into the template's `docs/development/` folder under these exact file names: the SRS in `requirements/`, this document and the stack report in `architecture/`, and the DDR in `adr/` (section 6; AD-21; V-10). From the creation of the template repository on 26 October 2026, the copies in docs/development/ are authoritative: they are changed by pull request, and the Claude Project copies are refreshed from them and not edited directly. The measured quality bar is in `docs/development/constraints.md` and the style guide in `docs/development/conventions.md`; this document does not restate them.
 
 ### 2.3 Downstream example
 
@@ -153,6 +154,7 @@ okf-library-template/
 ├── CITATION.cff
 ├── LICENSE                      # template: Apache 2.0 for the whole repository
 ├── NOTICE                       # attribution for the template's files; retained by every library
+├── .gitignore                   # .venv, tool caches, coverage files, site/, dist/
 ├── pyproject.toml               # metadata; groups validate, site-mkdocs, site-zensical, dev; [tool.poe.tasks] (I-16); ruff, mypy, pytest, coverage settings
 ├── .python-version              # 3.12 for daily use (AD-03)
 ├── .pre-commit-config.yaml      # repo: local hooks only (I-17)
@@ -680,7 +682,7 @@ Supported ways to start a library:
 
 | Route | Supported | Notes |
 | --- | --- | --- |
-| "Use this template" or `gh repo create <org>/<name> --template <org>/okf-library-template` | Yes, primary | Independent repository with one fresh commit; can be private |
+| "Use this template" or `gh repo create <org>/<name> --template open-renewables/okf-library-template` | Yes, primary | Independent repository with one fresh commit; can be private |
 | Clone the template and push to a new empty repository, or keep it local | Yes | For `git-local` and other hosting platforms; keeps the template's history, so later template tags can be merged (DDR QA-52) |
 | Download a template release archive | Yes | Files only; then initialise git and continue from step 2 |
 | Fork | No, for instantiation | A fork stays linked to the template and, being a fork of a public repository, cannot be made private **[Inf; to confirm in V-05]**; it would also offer pull requests back to the template by default. Fork pull requests to a library remain a supported contribution route (W-03) |
@@ -889,9 +891,10 @@ The template is built and released to a stable version before any downstream lib
 
 | Phase | Content | Effort | Exit |
 | --- | --- | --- | --- |
-| P0 Verification | Spikes V-01 to V-13 in a scratch repository and scratch organisation; site generator decision (V-03, V-04); re-estimate | 2–3 | Each V-item answered; generator decided; design and estimate updated |
-| P1 Core tooling | `pyproject.toml` with tasks, ruff, mypy, pytest and coverage settings; `.pre-commit-config.yaml`; `docs/development/` scaffold; `okfprofile`; checks 1–6, change rules and publishing pre-check; vendored okf-skills; `new_concept`, `renumber`, `build_indexes`; fixtures and tests | 10–15 | All finding codes tested; v0.1.0 (alpha) |
-| P2 CI and governance | `validate.yml` with base-branch tooling, `revision.yml` and `write_revision` with catch-up, `stale-report.yml`; issue forms; pull request template; `init_library`, `setup_repo` including `--promote`; instantiation self-test (W-10) for both platforms; `git_local` adapter, `release.py`, reproducible archives and a W-12 rehearsal; gitleaks and pip-audit jobs; Python matrix; GitHub App | 8–12 | Each approval and tier case recorded correctly in a scratch library, including a dropped run |
+| Set-up | Create the free GitHub organisation and the public template repository from the `docs/development/` scaffold, adding `LICENSE`, `NOTICE`, `README.md` and `.gitignore`; squash-only merges, read-only workflow token, secret scanning, push protection and Dependabot alerts; `main` ruleset without the `validate` check (runbook `docs/development/operations/runbook-create-template-repository.md`) | 0.5 | Repository public and marked as a template; a test pull request squash-merged; a direct push to `main` refused |
+| P0 Verification | Spikes V-01 to V-13 in a scratch repository and scratch organisation, separate from the template repository because V-05 and V-07 change rulesets and release settings; site generator decision (V-03, V-04); re-estimate | 2–3 | Each V-item answered; generator decided; design and estimate updated |
+| P1 Core tooling | `pyproject.toml` with tasks, ruff, mypy, pytest and coverage settings; `.python-version`; `.pre-commit-config.yaml`; `docs/development/` scaffold; `okfprofile`; checks 1–6, change rules and publishing pre-check; vendored okf-skills; `new_concept`, `renumber`, `build_indexes`; fixtures and tests | 10–15 | All finding codes tested; v0.1.0 (alpha) |
+| P2 CI and governance | `.github/CODEOWNERS`; `validate.yml` with base-branch tooling, then `validate` added as a required check on the `main` ruleset; `revision.yml` and `write_revision` with catch-up, `stale-report.yml`; issue forms; pull request template; `init_library`, `setup_repo` including `--promote`; instantiation self-test (W-10) for both platforms; `git_local` adapter, `release.py`, reproducible archives and a W-12 rehearsal; gitleaks and pip-audit jobs; Python matrix; GitHub App | 8–12 | Each approval and tier case recorded correctly in a scratch library, including a dropped run |
 | P3 Site, release, skills | `mkdocs.yml` or the chosen generator's configuration; `site.yml`; `release.yml` with the revision gate and `build_bundle`; both skills; `AGENTS.md`, `GOVERNANCE.md`, `README.md`, `NOTICE` | 4–6 | v0.5.0 (beta) |
 | P4 Pilot and hardening | Instantiate a pilot library; author about 20 concepts of its primary type with scope notes, vocabulary values and glossary entries; second person times W-01; agent run | 5–8 | Stable gate met; v1.0.0 |
 
@@ -919,7 +922,7 @@ Template v1.0.0 (stable) gate:
 | V-07 | Immutable releases on GitHub Free; Cloudflare Pages access policy limits on the free plan | Confirm C-10 and alpha or beta options |
 | V-08 | okf-skills mapping of its findings to `OKF1xx`, its behaviour on generated `index.md` files, and running the vendored validator outside the Action | Confirm AD-08 integration |
 | V-09 | Claude Code discovers skills through per-skill symlinks in `.claude/skills/`; symlinks survive "Use this template", the release archive and Windows checkouts (where git may write symlinks as plain files) | Confirm AD-16; otherwise `init_library.py` copies the skills |
-| V-10 | `CLAUDE.md` imports and Markdown links resolve to files whose names contain spaces (`%20` or angle-bracket link targets), including from `docs/development/` subfolders | Confirm the file naming in `docs/development/` (section 6) |
+| V-10 | `CLAUDE.md` imports and Markdown links resolve to files whose names contain spaces (`%20` or angle-bracket link targets), including from `docs/development/` subfolders | Confirm the file naming in `docs/development/` (section 6). First check: open Claude Code in the template repository and ask for a summary of the SRS |
 | V-12 | Reproducible archive: the same tag rebuilt on Linux, macOS and Windows, on Python 3.11 and 3.14, gives the same SHA-256 (tarfile and gzip settings in I-12) | Confirm I-12 and W-12 step 5 |
 | V-13 | poethepoet tasks run unchanged on Windows, macOS and Linux; `uv run poe install` works on a fresh clone; `repo: local` pre-commit hooks run through `uv run` on all three | Confirm I-16, I-17 |
 | V-11 | How OKF derives a trust tier from `verified`: from the latest entry or any entry, and which non-human actor prefix denotes machine confirmation | Confirm the I-08 `verified` mapping |
