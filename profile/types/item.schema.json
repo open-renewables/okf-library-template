@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "item.schema.json",
+  "title": "Item frontmatter",
+  "$ref": "okf-base.schema.json",
+  "required": ["type", "uid", "title", "description", "tags", "status"],
+  "properties": {
+    "type": { "const": "Item" },
+    "uid": { "pattern": "^ITM-[0-9]{4}$" },
+    "tags": { "minItems": 1 }
+  }
+}

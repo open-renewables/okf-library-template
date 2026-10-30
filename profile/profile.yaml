@@ -1,0 +1,124 @@
+# Profile of the OKF library template (SDD I-02). The tooling in scripts/ holds no domain rule:
+# a library changes behaviour by editing this file, the schemas in types/ and the formats in formats/.
+profile: okf-library-template-example
+profile_version: 0.1.0
+okf_version: "0.2"
+okf_spec_commit: ad30107
+template_version: 0.1.0
+library:
+  name: okf-library-template
+  title: OKF library template
+  repository: https://github.com/open-renewables/okf-library-template
+  site_url: ""
+platform: github
+maintainers: {}
+bundle_root: knowledge
+
+types:
+  - name: Item
+    uid_prefix: ITM
+    schema: types/item.schema.json
+    paths: ["*/*/*.md"]
+    body:
+      title_heading: h1_equals_title
+      order: strict
+      empty_placeholder: "_To be completed._"
+      sections:
+        - heading: Description
+          required: true
+        - heading: Checks
+          required: false
+          format: check
+        - heading: Revision history
+          required: true
+          managed_by: ci
+  - name: Vocabulary
+    uid_prefix: VOC
+    schema: types/vocabulary.schema.json
+    paths: ["vocab/*.md"]
+    body:
+      title_heading: h1_equals_title
+      order: any
+      empty_placeholder: "_To be completed._"
+      sections:
+        - heading: Revision history
+          required: true
+          managed_by: ci
+  - name: Glossary
+    uid_prefix: GLS
+    schema: types/glossary.schema.json
+    paths: ["glossary.md"]
+    body:
+      title_heading: h1_equals_title
+      order: any
+      empty_placeholder: "_To be completed._"
+      sections:
+        - heading: Revision history
+          required: true
+          managed_by: ci
+
+vocabularies:
+  path: vocab/
+  namespaces:
+    - name: group
+      kinds: false
+      values_unique_across_kinds: false
+    - name: category
+      kinds: false
+      values_unique_across_kinds: false
+
+tags:
+  pattern: '^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9-]*$'
+
+path_rules:
+  - kind: tag_equals_segment
+    namespace: group
+    segment: 0
+    types: [Item]
+  - kind: tag_equals_segment
+    namespace: category
+    segment: 1
+    types: [Item]
+
+status:
+  values: [draft, stable, deprecated]
+  extensions: []
+
+rules:
+  provenance: revision-history
+  revision_write: post-merge
+  revision_token: github-app
+  write_okf_verified: false
+  agent_label: agent-drafted
+  full_review_label: full-review
+  migration_label: profile-migration
+  stable_requires_human_approval: true
+  stable_approvals: 1
+  allow_recorded_self_approval: true
+  require_non_author_approver: false
+  stable_requires_citation: true
+  reject_unknown_fields: true
+  stale_after_default: P2Y
+
+warnings:
+  - id: agent-label-missing
+    kind: agent_label_missing
+    level: medium
+    enabled: true
+  - id: stable-description-placeholder
+    kind: stable_section_nonempty
+    sections: [Description]
+    level: medium
+    enabled: true
+  - id: directory-size
+    kind: directory_size
+    max: 100
+    level: low
+    enabled: true
+
+reports: []
+
+index:
+  show_status: true
+  show_tier: true
+  max_concepts_per_directory: 100

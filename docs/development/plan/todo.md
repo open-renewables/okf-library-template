@@ -16,10 +16,10 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 2: core (`tooling/p1-core`)
 
-- [ ] 2. `config`, `document`, `report`; finding catalogue started
-- [ ] 2. Check: reader unit tests (YAML 1.2 strings, CRLF, nesting, footnotes, anchors); JSON and annotation output agree
-- [ ] 3. Profile, meta-schemas, base and type schemas, formats
-- [ ] 3. Check: profile validates; one rejecting fixture per schema rule; no domain value in `scripts/`
+- [x] 2. `config`, `document`, `report`; finding catalogue started
+- [x] 2. Check: reader unit tests (YAML 1.2 strings, CRLF, nesting, footnotes, anchors); JSON and annotation output agree
+- [x] 3. Profile, meta-schemas, base and type schemas, formats
+- [x] 3. Check: profile validates; one rejecting fixture per schema rule; no domain value in `scripts/`
 
 ## PR 3: checks 1 to 3 (`tooling/p1-checks-1-3`)
 
@@ -71,8 +71,8 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | Step | Outcome | Label | Entry |
 | --- | --- | --- | --- |
 | 1 | Skeleton built, uncommitted on `tooling/p1-skeleton`. `poe check` and `poe test` pass on 3.11.15, 3.12.10, 3.14.0; fresh clone with autocrlf true and false has 0 CRLF files and passes. Matrix needs `UV_PYTHON` and `UV_PROJECT_ENVIRONMENT` set (a bare `uv run --python` fails on Windows). Lock has 36 packages. Licences: `pathspec` 1.1.1 (MPL-2.0, via mypy) is in `dev`; `nodeenv` ("BSD") and `colorama` ("BSD License") have non-SPDX metadata. Windows-only `colorama`/`nodeenv` come from pre-commit, pytest and poethepoet | [Test] | PP-3 raised; non-SPDX pair to resolve with it |
-| 2 |  |  |  |
-| 3 |  |  |  |
+| 2 | `codes`, `report`, `document`, `config` built in `scripts/okfprofile/`. 94 tests pass on 3.11, 3.12, 3.14; coverage 99.75 %; ruff and mypy strict clean. YAML 1.2 needed the timestamp constructor overridden (ruamel resolves dates even in 1.2 mode). `jsonschema` needs `types-jsonschema` in `dev` (Apache-2.0) | [Test] | PP-7 |
+| 3 | `profile/profile.yaml` (Item ITM, Vocabulary VOC, Glossary GLS; OD-1), meta-schemas for profile, format and registry, OKF base schema from the pinned spec, three type schemas, `check` format. Loader reports all problems with file and line; 25 mutation tests. The scripts hold no type name, prefix, namespace or format name (tested) | [Test] | PP-7 |
 | 4 |  |  |  |
 | 5 |  |  |  |
 | 6 |  |  |  |

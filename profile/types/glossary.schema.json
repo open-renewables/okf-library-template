@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "glossary.schema.json",
+  "title": "Glossary frontmatter (SRS FR2.10)",
+  "$ref": "okf-base.schema.json",
+  "required": ["type", "uid", "title", "description", "status"],
+  "properties": {
+    "type": { "const": "Glossary" },
+    "uid": { "pattern": "^GLS-[0-9]{4}$" }
+  }
+}
