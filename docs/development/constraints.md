@@ -61,6 +61,16 @@ Allowed SPDX identifiers (owner decision, 25 October 2026):
 | --- | --- | --- | --- | --- |
 | ADR-006 | `pathspec` | MPL-2.0 | Site dependency of MkDocs and Zensical; unmodified; not part of the `validate` group | 2027-04-30 |
 | ADR-006 | `certifi` | MPL-2.0 | Site dependency of the MkDocs stack; unmodified; not part of the `validate` group | 2027-04-30 |
+| ADR-007 | `pathspec` (`dev` group) | MPL-2.0 | Dependency of `mypy` in the `dev` group, as well as of the site stacks; unmodified; not in the `validate` group; not in the release archive | 2027-04-30 |
+
+### Metadata resolutions
+
+Packages whose metadata is not an allowlisted SPDX identifier, resolved by reading the licence text (ADR-007). A resolution applies to the version shown; a new version is a finding until re-read.
+
+| ADR | Package | Version | Metadata | Resolved as | Basis |
+| --- | --- | --- | --- | --- | --- |
+| ADR-007 | `colorama` | 0.4.6 | classifier "BSD License" | `BSD-3-Clause` | Licence text is the standard BSD-3-Clause |
+| ADR-007 | `nodeenv` | 1.11.1 | `License: BSD` | `BSD-3-Clause` | Three BSD conditions; endorsement clause worded differently from the SPDX text; accepted by the owner |
 
 ### pip-audit exceptions
 
