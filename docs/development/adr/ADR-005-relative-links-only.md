@@ -1,6 +1,6 @@
 # ADR-005: Relative links only
 
-**Status:** Accepted (owner, 2026-10-30), **conditional on the SRS wording change below**, which is the owner's to make. **Supersedes:** none; amends SDD I-01 and W-04 check 4. **RFC:** none.
+**Status:** Accepted (owner, 2026-10-30). **Supersedes:** none; amends SDD I-01 and W-04 check 4, and the wording of SRS FR8.2 check 2. **RFC:** none.
 
 ## Context
 
@@ -13,7 +13,7 @@ Internal links are relative only. The validator rejects root-relative links; `ne
 ## Consequences
 
 - Removes the Zensical check-2 blocker and is a precondition of the switch in ADR-001.
-- **Requirement-level change, owner to make:** FR2.10 ("a link … resolves on the hosting platform and on the site") and FR8.2 check 2 ("links starting with `/` resolve to site routes") are written around root-relative links. Under this ADR check 2 reads "relative links resolve to site routes" and root-relative links are not permitted. Until the SRS is edited, the SRS and this ADR disagree; this record is not applied to the SRS.
+- **Requirement-level change, made by the owner on 2026-10-30:** SRS FR8.2 check 2 read "links starting with `/` resolve to site routes" and now reads "relative links between concepts resolve to site routes". FR2.10 does not name a link form and is unchanged.
 - P1 link check: the root-relative handling is dropped (slightly less code).
 
 ## Alternatives

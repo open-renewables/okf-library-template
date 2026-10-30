@@ -607,7 +607,7 @@ strict: true
 use_directory_urls: true
 validation:
   links:
-    absolute_links: relative_to_docs
+    absolute_links: warn            # root-relative links are not allowed (ADR-005); strict mode fails on them
     anchors: warn
 theme:
   name: material

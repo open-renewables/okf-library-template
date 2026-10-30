@@ -55,7 +55,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] Proposed entries drafted in `p0-spikes/exit/` (P-1 in the recommendation; P-2, P-5, P-8 to P-11, P-14 to P-18 in `proposed-entries.md`)
 - [x] SDD §1, §14 and §15 edits drafted as a diff, not applied (`p0-spikes/exit/sdd-s1-s14-s15.diff`; `git apply --check` passes)
 - [x] Present to the owner; owner approved all entries on 2026-10-30 (P-11 and P-15 as recommended). Applied in the working tree, uncommitted: SDD diff plus line edits (P-5, P-8, P-10, P-11, P-15, P-18), ADR-001 to ADR-006, `CLAUDE.md` imports, `constraints.md`, DDR change-log row
-- [ ] **NEEDS YOU:** edit SRS FR2.10 and FR8.2 check 2 for relative-only links (ADR-005 is conditional on it)
+- [x] **NEEDS YOU:** SRS FR8.2 check 2 reworded for relative-only links (owner, 2026-10-30); ADR-005 no longer conditional; FR2.10 unchanged
 - [ ] Commit, push and open the docs-only pull request (on the owner's instruction; nothing committed yet)
 - [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-10-p0-verification/`
 
