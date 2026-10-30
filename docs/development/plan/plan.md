@@ -130,13 +130,13 @@ Check: SPEC "Done when" items 1 to 8 are each ticked in `todo.md` with evidence;
 
 ## Proposed entries
 
-Nothing below is written until the owner approves its text. IDs for ADRs are assigned on approval (next is ADR-007).
+Nothing below is written until the owner approves its text. IDs for ADRs are assigned on approval (ADR-007 is drafted; next is ADR-008).
 
 | # | Trigger | Would change | Form |
 | --- | --- | --- | --- |
-| PP-1 | Always: `scripts/vendor/okf-skills/` is a verbatim third-party file and cannot meet the ruff, mypy and coverage limits | `../constraints.md` Code and Tests rows (an exemption for `scripts/vendor/` only) | ADR-007 |
+| PP-1 | Always: `scripts/vendor/okf-skills/` is a verbatim third-party file and cannot meet the ruff, mypy and coverage limits | `../constraints.md` Code and Tests rows (an exemption for `scripts/vendor/` only) | ADR-008 (ADR-007 was taken by PP-3) |
 | PP-2 | Always: SDD I-07's example uses root-relative links, which ADR-005 rejects and P1 does not emit | SDD I-07 example text (wording; no decision changes) | SDD edit with a DDR change-log row |
-| PP-3 | Only if step 1 finds an MPL-2.0 package (for example `pathspec`, a mypy dependency) in the `dev` group | ADR-006 reason text and the `constraints.md` exception table | ADR amending ADR-006 |
+| PP-3 | Only if step 1 finds an MPL-2.0 package (for example `pathspec`, a mypy dependency) in the `dev` group | ADR-006 reason text and the `constraints.md` exception table | ADR-007, drafted 2026-10-31 (also resolves the `nodeenv` and `colorama` metadata) |
 | PP-4 | Always: I-09 gives code ranges only, and every code needs a stable number | New file `../architecture/finding-codes.md` assigning codes within the I-09 ranges; V-08's slots are a starting point | New document; no SDD edit |
 | PP-5 | Only if the owner rejects the OD-2 or OD-3 defaults | SDD §14 and C-04 placement of `scan.py`, `requirements/` export and the revision pure part | SDD edit with a change-log row |
 | PP-6 | Always: FR3.4's "a hand edit fails check 3" cannot be proven from content alone; P1 uses the line grammar plus a base-branch diff | Wording of how the check works, in the finding catalogue and `known-gaps.md`; a stronger rule (for example signed lines) would change I-08 | Note in the catalogue; ADR only if the owner wants a stronger rule |

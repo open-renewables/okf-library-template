@@ -1,0 +1,72 @@
+[project]
+name = "okf-library-template"
+version = "0.1.0a0"
+description = "Profile tooling for OKF knowledge libraries"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+dependencies = []
+
+[dependency-groups]
+validate = [
+    "jsonschema>=4.26,<5",
+    "markdown-it-py>=4.2,<5",
+    "mdit-py-plugins>=0.6,<1",
+    "pyyaml>=6,<7",
+    "ruamel.yaml>=0.18,<1",
+]
+dev = [
+    "mypy>=1.13",
+    "poethepoet>=0.49,<1",
+    "pre-commit>=4,<5",
+    "pytest>=8",
+    "pytest-cov>=6",
+    "ruff>=0.8",
+]
+
+[tool.uv]
+package = false
+default-groups = ["validate", "dev"]
+
+[tool.poe.tasks]
+install = [{ cmd = "uv sync --all-groups" }, { cmd = "pre-commit install" }]
+test = "pytest"
+
+[tool.poe.tasks.check]
+sequence = [
+    "uv lock --locked",
+    "ruff check scripts tests",
+    "ruff format --check scripts tests",
+    "mypy --strict scripts/okfprofile",
+    "mypy tests",
+]
+default_item_type = "cmd"
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["YTT", "S", "B", "A", "C4", "T10", "SIM", "I", "C90", "E", "W", "F", "PGH", "UP", "RUF", "TRY"]
+ignore = ["E501", "E731"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.mypy]
+mypy_path = "scripts"
+explicit_package_bases = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["scripts"]
+addopts = "--cov=okfprofile --cov-branch --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["scripts/okfprofile"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true

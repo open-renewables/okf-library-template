@@ -11,8 +11,8 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 1: skeleton (`tooling/p1-skeleton`)
 
-- [ ] 1. `pyproject.toml`, groups, poe tasks, ruff, mypy, pytest, coverage, `uv.lock`, `.python-version`, `.gitattributes`, smoke test
-- [ ] 1. Check: fresh-clone `uv sync`; `poe check` and `poe test` pass on 3.11 and 3.14; no `w/crlf` after clone with autocrlf true and false; lock licences on the allowlist (PP-3 if `pathspec` is in `dev`)
+- [x] 1. `pyproject.toml`, groups, poe tasks, ruff, mypy, pytest, coverage, `uv.lock`, `.python-version`, `.gitattributes`, smoke test
+- [x] 1. Check: fresh-clone `uv sync`; `poe check` and `poe test` pass on 3.11 and 3.14; no `w/crlf` after clone with autocrlf true and false; lock licences on the allowlist (PP-3 if `pathspec` is in `dev`)
 
 ## PR 2: core (`tooling/p1-core`)
 
@@ -70,7 +70,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 
 | Step | Outcome | Label | Entry |
 | --- | --- | --- | --- |
-| 1 |  |  |  |
+| 1 | Skeleton built, uncommitted on `tooling/p1-skeleton`. `poe check` and `poe test` pass on 3.11.15, 3.12.10, 3.14.0; fresh clone with autocrlf true and false has 0 CRLF files and passes. Matrix needs `UV_PYTHON` and `UV_PROJECT_ENVIRONMENT` set (a bare `uv run --python` fails on Windows). Lock has 36 packages. Licences: `pathspec` 1.1.1 (MPL-2.0, via mypy) is in `dev`; `nodeenv` ("BSD") and `colorama` ("BSD License") have non-SPDX metadata. Windows-only `colorama`/`nodeenv` come from pre-commit, pytest and poethepoet | [Test] | PP-3 raised; non-SPDX pair to resolve with it |
 | 2 |  |  |  |
 | 3 |  |  |  |
 | 4 |  |  |  |
