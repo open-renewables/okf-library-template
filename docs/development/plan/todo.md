@@ -1,82 +1,87 @@
-# Todo: build phase P0
+# Todo: build phase P1
 
-Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its `RESULT.md` exists in `open-renewables-sandbox/p0-spikes` and the table row below holds a one-line outcome. **NEEDS YOU** marks a person, account, machine or setting from the owner.
+Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its check in `plan.md` has passed and the evidence (command and result) is noted in the Outcomes table. **NEEDS YOU** marks a decision, person, account, machine or setting from the owner. Nothing is committed, pushed or merged without the owner's instruction.
 
-## Before any spike
+## Before any step
 
 - [x] Owner reviews `SPEC.md`, `plan.md` and `todo.md`
-- [x] Owner answers D-1 to D-7 (`plan.md`, "Decisions needed from the owner")
-- [x] Owner accepts or changes the generator criteria (`SPEC.md`, "Site generator decision")
+- [x] **NEEDS YOU (decision):** owner answers OD-1 to OD-10 or accepts the defaults (defaults accepted 2026-10-31) (`plan.md`, "Open decisions")
+- [x] **NEEDS YOU (decision):** owner approves or rejects PP-1 to PP-6 (approved as drafted 2026-10-31; ADR text reviewed when written) (`plan.md`, "Proposed entries")
+- [x] Merge order with PR [#8](https://github.com/open-renewables/okf-library-template/pull/8) settled (OD-6)
 
-## Wave 0: set up (0.25 day)
+## PR 1: skeleton (`tooling/p1-skeleton`)
 
-- [x] Confirm the target: `gh repo view open-renewables-sandbox/p0-spikes --json owner` returns `open-renewables-sandbox`
-- [x] Create `tools/gh-sandbox.sh` and test that it refuses another organisation
-- [x] Create the `p0-spikes` layout, `.gitignore` (`.work/`), index `README.md`
-- [x] Build the shared synthetic fixture bundle
+- [ ] 1. `pyproject.toml`, groups, poe tasks, ruff, mypy, pytest, coverage, `uv.lock`, `.python-version`, `.gitattributes`, smoke test
+- [ ] 1. Check: fresh-clone `uv sync`; `poe check` and `poe test` pass on 3.11 and 3.14; no `w/crlf` after clone with autocrlf true and false; lock licences on the allowlist (PP-3 if `pathspec` is in `dev`)
 
-## Wave 1: local and read-only
+## PR 2: core (`tooling/p1-core`)
 
-- [x] V-03 Zensical: feature × builder matrix; six FR8.2 checks; Zensical-only key in MkDocs; licences
-- [x] V-04 Docusaurus `detect` mode: six FR8.2 checks; footprint
-- [x] V-08 okf-skills at `a8b96420…`: finding mapping; index files; vendoring check
-- [x] V-11 `verified` tier derivation: rule or silence, with file and line
-- [x] V-02 nested lists: Python-Markdown part
+- [ ] 2. `config`, `document`, `report`; finding catalogue started
+- [ ] 2. Check: reader unit tests (YAML 1.2 strings, CRLF, nesting, footnotes, anchors); JSON and annotation output agree
+- [ ] 3. Profile, meta-schemas, base and type schemas, formats
+- [ ] 3. Check: profile validates; one rejecting fixture per schema rule; no domain value in `scripts/`
 
-## Wave 2: GitHub sandbox and fresh sessions
+## PR 3: checks 1 to 3 (`tooling/p1-checks-1-3`)
 
-- [x] V-01 anchors rendered on github.com
-- [x] V-02 nested lists: GitHub part, compared with Wave 1
-- [x] V-09 skill symlinks: discovery in a fresh session; Windows default; release archive. Real-symlink and "Use this template" parts dropped: owner decision 2026-10-30, provider-neutral core (P-8)
-- [x] V-10b link and import forms in p0-spikes; form named (round 2 passed)
-- [x] V-12 reproducible archive: six matrix digests plus local runs (**NEEDS YOU: machine**, D-4)
-- [x] V-13 poethepoet and `repo: local` hooks on the same matrix (**NEEDS YOU: machine**, D-4)
+- [ ] 4. Vendored okf-skills (verbatim, licences, hash record); message-to-`OKF1xx` mapper; frontmatter-first and datetime-offset; schema check (PP-1 decided)
+- [ ] 4. Check: failing fixture per code; every pinned message maps; vendored hash equals upstream; PyYAML and ruamel disagreement test
+- [ ] 5. Check 3: sections, order, placeholders, formats, CI-managed section, two-space nesting, angle-bracket prose
+- [ ] 5. Check: failing fixture per code; hand-edited, deleted and out-of-grammar revision lines fail
 
-## Wave 3: needs the owner
+## PR 4: checks 4 to 6 (`tooling/p1-checks-4-6`)
 
-- [ ] V-05 5a bypass modes (**NEEDS YOU: account**, create App, add secret)
-- [x] V-05 5b required-check naming across `pull_request` and `pull_request_review`
-- [ ] V-05 5c API shape of bypass merge, review `commit_id`, stale approval (**NEEDS YOU: account**, reviewer, D-2)
-- [x] V-05 5d concurrency-group cancellation
-- [x] V-05 5e fork privacy (documentation only, D-3 default)
-- [x] V-07 immutable releases on Free: edit, delete, retag after publish
-- [ ] V-07 Cloudflare Pages free-plan limits: documentation read, free-plan statement and seat limit not found (**NEEDS YOU: account** for a test)
+- [ ] 6. `vocab`; relative-only links; case-insensitive anchors with lower-case ids; glossary anchor stability; tags; path rules
+- [ ] 6. Check: failing fixture per code; `%20` and angle-bracket links resolve; upper-case id and changed glossary anchor fail
+- [ ] 7. `registry`, check 6, `new_concept.py`, `renumber.py`, `--fix-registry`
+- [ ] 7. Check: failing fixture per code; duplicate `uid` from two local branches cleared by `renumber.py`; `new_concept.py` output passes all checks
 
-## Wave 4: needs a person
+## PR 5: indexes, change rules, entry points (`tooling/p1-indexes-changes`)
 
-- [ ] V-06 run sheet written (**NEEDS YOU: person**) and second person's times recorded for W-01 steps 1, 2, 4 and 5
-- [x] V-10a fresh session in this repository: SRS summary and import check, read-only (**NEEDS YOU: person**)
+- [ ] 8. `indexes` with relative links (PP-2 decided); revision line parser and tier derivation; `build_indexes.py --check`
+- [ ] 8. Check: golden indexes; golden tiers for every I-08 case; second run is a no-op; stale index fails check 5
+- [ ] 9. `changes`, `--tooling-from`, `codeowners`, publishing pre-check, four warning kinds, base-diff rules
+- [ ] 9. Check: FR2.5 and FR2.6 fixtures; two-folder change records two owner statuses; pre-check branch fixtures; warnings do not fail
+- [ ] 10. Thin scripts, `ci-validate` task
+- [ ] 10. Check: `--help`, `--json`, exit codes tested; local and `ci-validate` JSON identical
+
+## PR 6: example bundle, content only (`concept/p1-example-bundle`)
+
+- [ ] 11. One example per declared type (OD-1), vocabularies, glossary entries, generated indexes, registry, passing fixtures
+- [ ] 11. Check: no error on `knowledge/`; `build_indexes.py --check` clean; passing fixture per type
+
+## PR 7: exit (`tooling/p1-exit`)
+
+- [ ] 12. `.pre-commit-config.yaml` (local hooks); 600-concept timing
+- [ ] 12. Check: hooks refuse a bad commit in Git Bash and PowerShell; time recorded
+- [ ] 13. `testing/strategy.md`, `fixtures.md`, `known-gaps.md`; finding catalogue finished
+- [ ] 13. Check: every code has a catalogue row and fixture path (test fails otherwise); links resolve
+- [ ] 14. Full gate on 3.11 and 3.14; coverage figure; P2 to P4 estimate revised (proposal)
 
 ## Exit
 
-- [x] ~~Rerun the six FR8.2 checks on the then-latest Zensical release~~ Dropped by the owner, 2026-10-28; known issues listed instead
-- [x] Generator recommendation written against the SPEC criteria (`p0-spikes/exit/generator-recommendation.md`; ADR-001 draft inside, Proposed)
-- [x] Re-estimate of P1 to P4 written (`p0-spikes/exit/re-estimate.md`: 30.5–45.5 remaining, 33–49 programme)
-- [x] Proposed entries drafted in `p0-spikes/exit/` (P-1 in the recommendation; P-2, P-5, P-8 to P-11, P-14 to P-18 in `proposed-entries.md`)
-- [x] SDD §1, §14 and §15 edits drafted as a diff, not applied (`p0-spikes/exit/sdd-s1-s14-s15.diff`; `git apply --check` passes)
-- [x] Present to the owner; owner approved all entries on 2026-10-30 (P-11 and P-15 as recommended). Applied in the working tree, uncommitted: SDD diff plus line edits (P-5, P-8, P-10, P-11, P-15, P-18), ADR-001 to ADR-006, `CLAUDE.md` imports, `constraints.md`, DDR change-log row
-- [x] **NEEDS YOU:** SRS FR8.2 check 2 reworded for relative-only links (owner, 2026-10-30); ADR-005 no longer conditional; FR2.10 unchanged
-- [ ] Commit, push and open the docs-only pull request (on the owner's instruction; nothing committed yet)
-- [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-10-p0-verification/`
+- [ ] SPEC "Done when" items 1 to 8 ticked with evidence
+- [ ] **NEEDS YOU (person):** owner pushes annotated tag `v0.1.0` (alpha) on `main` (OD-10)
+- [ ] Proposed entries PP-1 to PP-6 decided and, where approved, applied as their own ADR or documented edit
+- [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-11-p1-core-tooling/`; the SRS status is not changed
 
 ## Outcomes
 
-One line per item when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**), proposed entry if any.
+One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**), proposed entry if any.
 
-| ID | Outcome | Label | Entry |
+| Step | Outcome | Label | Entry |
 | --- | --- | --- | --- |
-| V-01 | AD-14 holds on GitHub (explicit ids kept, duplicates accepted, ids lower-cased); scroll to 3 of 9 targets unconfirmed | [Test] | none |
-| V-02 | Four-space nesting identical on GitHub, MkDocs, Zensical, Docusaurus; two-space differs | [Test] | none |
-| V-03 | Zensical 0.0.73 fails check 2 (`/`-rooted links emitted verbatim; no config fix); other tested features equal to MkDocs; MPL-2.0 packages in both stacks | [Test] | P-1 |
-| V-04 | Docusaurus 3.10.2 passes 5 of 6; fails check 5 (`slug`/`id` change URLs); Node toolchain, 1,274 packages, licences off the allowlist | [Test] | P-1 |
-| V-05 | Partial: 5a admin half, 5b, 5d, 5e done; App half and 5c approval cases need the owner; commit-to-PR lookup lagged about 20 s | [Test]/[Doc] | P-5 (small) |
-| V-06 |  |  |  |
-| V-07 | Immutable releases work on Free (public repo): assets, tag and reuse locked; notes editable, release deletable; Cloudflare limits unconfirmed | [Test]/[Doc] | none |
-| V-08 | Vendorable single script, same as the Action; no finding codes; tolerates offset-less datetimes | [Test] | none |
-| V-09 | Symlinks survive git, archives, Linux/macOS/hosted Windows; symlink-less Windows checkout breaks Claude Code skill discovery. Owner decided 2026-10-30: provider-neutral core, Claude Code discovery as an optional adapter (P-8, ADR pending) | [Test] | P-8 |
-| V-10 | Template CLAUDE.md imports do not load; only the escaped-space form worked, confirmed in round 2 with hyphens and nesting; GitHub resolves rooted links from repo root | [Test] | P-9, P-15 |
-| V-11 | Tier from any human: entry; ci: accepted, process: is the convention | [Test/Doc] | P-10 (wording only) |
-| V-12 | Tar identical on 8 runs; tar.gz differs under zlib-ng (Python 3.14, Windows) | [Test] | P-11 |
-| V-13 | Passed on 3 systems x 3.11/3.14; bare poe exits 1; .gitattributes and .python-version needed | [Test] | none |
-| Generator | Option A confirmed by the owner (2026-10-28): MkDocs blocking, Zensical parallel and non-blocking, release site expected to be Zensical later; Zensical fails check 2 at 0.0.73, so the switch waits on the link rule (P-15) | [Test] | P-1 (ADR-001 draft) |
-| Re-estimate | P1 to P4 remaining 30.5–45.5 person-days (P1 11–16, P2 9.5–14.5, P3 5–7, P4 5–8); programme 33–49, overlapping the review's 35–55 | [Inf] | P-2 |
+| 1 |  |  |  |
+| 2 |  |  |  |
+| 3 |  |  |  |
+| 4 |  |  |  |
+| 5 |  |  |  |
+| 6 |  |  |  |
+| 7 |  |  |  |
+| 8 |  |  |  |
+| 9 |  |  |  |
+| 10 |  |  |  |
+| 11 |  |  |  |
+| 12 |  |  |  |
+| 13 |  |  |  |
+| 14 |  |  |  |
+| Actual effort | P1 person-days against 11–16 |  | P2–P4 re-estimate |

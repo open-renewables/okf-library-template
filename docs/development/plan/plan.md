@@ -1,211 +1,174 @@
-# Plan: build phase P0
+# Plan: build phase P1
 
-Status: **Draft for owner approval.** No spike has started. What is built and why: `SPEC.md` (abbreviations are defined there). Checklist: `todo.md`. Effort figures are indicative, in person-days **[Inf]**; SDD §14 allows 2–3 for P0.
+Status: **Approved by the owner on 2026-10-31:** the plan, the defaults for OD-1 to OD-10, and proposed entries PP-1 to PP-6 as drafted (ADR text is shown for review when each is written). Nothing is built. What is built and why: `SPEC.md` (abbreviations are defined there). Checklist: `todo.md`. Effort is in person-days **[Inf]**; SDD §14 allows 11–16 for P1. The steps below total **10.25–15**, and up to 1 day of contingency takes the top to the 16 allowed. The low end sits under the SDD's 11 because the steps assume no rework; the estimate is not narrowed to fit.
 
-**NEEDS YOU** marks a step that needs a person, account, machine or setting that only the owner can supply. Types: *person*, *account*, *machine*, *setting*.
+**NEEDS YOU** marks a step that needs a decision, person, account, machine or setting that only the owner can supply. Types: *decision*, *person*, *account*, *machine*, *setting*.
 
-## Guards
+## Rules for every step
 
-Rules for every spike. The GitHub CLI token on this machine has `admin:org` and `repo` scope, and this repository's remote is `open-renewables`, so a `gh` command run from here could reach the wrong organisation.
+1. **Fixed inputs.** The SRS, SDD, DDR and ADR-001 to ADR-006 do not change. A step that finds a conflict stops and adds a proposed entry (below); it does not edit the document.
+2. **Where work happens.** This repository, one branch per pull request, named `tooling/<slug>` (conventions, Git). No spike is planned. If one is needed, it runs only in `open-renewables-sandbox/p0-spikes` under the P0 guards (explicit repository on every `gh` call, synthetic content, nothing in `open-renewables`).
+3. **No commit, push, pull request or merge** without the owner's instruction. The owner merges (squash).
+4. **Check before moving on.** A step is done when its check passes with `poe check` and `poe test` green on the files it touched.
+5. **Provider-neutral.** Tasks run through `uv run poe <task>`. No step creates `.claude/` or any product-specific file (ADR-002).
+6. **Line endings.** Files are LF in the repository (`.gitattributes`, step 1). Edit existing CRLF working-tree files with line-ending-preserving scripts, not whole-file rewrites.
+7. **Tests.** No network. Fixtures follow `../conventions.md` (`tests/library/fixtures/pass/<type>/…`, `fail/<code>/…`; tooling tests in `tests/template/`).
 
-1. **Sandbox only.** Run `gh` and `git push` only against `open-renewables-sandbox/p0-spikes` (or a further sandbox repository the owner approves, D-1). Always pass the repository explicitly (`-R open-renewables-sandbox/…` or an `api repos/open-renewables-sandbox/…` path). Never rely on the current directory's default repository.
-2. **Wrapper.** Before the first write, create `tools/gh-sandbox.sh` in p0-spikes. It refuses any call whose repository or organisation is not `open-renewables-sandbox` and prints the target before running. All `gh` writes go through it. Reads (`gh repo view`, `gh api` GET) may run directly but still name the repository.
-3. **Check, then write.** Each write batch starts with `gh repo view open-renewables-sandbox/p0-spikes --json owner --jq .owner.login` and proceeds only on `open-renewables-sandbox`.
-4. **Template repository.** No `gh` command and no spike runs there. The one exception is V-10a, read-only, in a fresh session.
-5. **No secrets in the repository.** The V-05 App private key and any Cloudflare token stay outside p0-spikes; the owner adds any repository secret. Nothing is pasted into chat.
-6. **Public repository.** Spike content is synthetic. No RE-library or other proprietary concept is committed.
-7. **Downloads.** The okf-skills clone, the Zensical and Docusaurus installs and the Docusaurus npm tree go in their own new directories under p0-spikes (git-ignored), pinned by version or commit, with scripts kept elsewhere. Python that reads them runs with `-I`.
-8. **Workflows.** Spike workflows follow `../constraints.md` (Workflows row): actions pinned by full SHA, read-only default token, each job declares its own permissions, no `pull_request_target`.
-9. **Evidence.** Every result file in p0-spikes records: date, tool and version, exact command, raw output or a link to it, and a label **[Test]**, **[Doc]** or **[Inf]** as in SDD §2.4.
+## Order of work and pull requests
 
-## Order of work
-
-V-03 and V-04 go first because Material for MkDocs ends on 2026-11-05. The shared fixture bundle comes before everything that renders or validates Markdown.
-
-| Wave | Work | Days | Depends on |
+| PR | Steps | Branch (suggested) | Days |
 | --- | --- | --- | --- |
-| 0 | Set up p0-spikes (layout, wrapper, ignore rules); build the shared fixture bundle | 0.25 | Owner approval of D-1 |
-| 1 | V-03, V-04 (generator); V-08, V-11 (read-only research); V-02 local part | 1.0 | Wave 0 |
-| 2 | V-01, V-02 GitHub part (push, view); V-09; V-12 + V-13 cross-system workflow; V-10b | 1.0 | Wave 0; V-09 and V-10 need fresh sessions |
-| 3 | V-05, V-07 (settings and API; App and reviewer from the owner) | 0.5 | D-2, D-3 answered |
-| 4 | V-06 (second person), V-10a (fresh session) | 0.25 owner time | Wave 2 notes |
-| Exit | Generator recommendation; re-estimate; proposed entries; SDD edits as a diff | 0.5 | All waves |
+| 0 | This plan | `docs/p1-plan` | — |
+| 1 | 1 Skeleton and quality bar | `tooling/p1-skeleton` | 0.75–1 |
+| 2 | 2 Core reader and report; 3 Profile and schemas | `tooling/p1-core` | 1.5–2.25 |
+| 3 | 4 Checks 1–2; 5 Check 3 | `tooling/p1-checks-1-3` | 2–3 |
+| 4 | 6 Check 4; 7 Registry, check 6, `new_concept`, `renumber` | `tooling/p1-checks-4-6` | 2–3 |
+| 5 | 8 Indexes and tiers; 9 Change rules, ownership, pre-check, warnings; 10 Entry points | `tooling/p1-indexes-changes` | 2.75–3.75 |
+| 6 | 11 Example bundle (content only) | `concept/p1-example-bundle` | 0.25–0.5 |
+| 7 | 12 Pre-commit and parity; 13 Test docs and catalogue; 14 Exit | `tooling/p1-exit` | 1–1.5 |
 
-Waves 1 and 2 have no dependency on each other except for the fixture. Wave 3 waits on the owner.
+Steps run in order: each uses the previous step's module. Step 3 may be drafted in parallel with step 2. Step 11 waits for steps 8 and 10 and for PR 5 to be merged, so content is validated by merged tooling.
 
-## Workspace layout in p0-spikes
+## Steps
 
-```
-p0-spikes/
-├── README.md                    # index of results; one row per V-item
-├── tools/gh-sandbox.sh          # guard wrapper (Guards 2)
-├── fixtures/bundle/knowledge/   # shared synthetic OKF bundle (Wave 0)
-├── spikes/V-NN-slug/RESULT.md   # question, method, evidence, outcome, label, feeds
-├── spikes/V-NN-slug/…           # scripts and configs for that item
-├── .github/workflows/           # cross-os.yml (V-12, V-13) and per-spike workflows
-├── exit/                        # recommendation, re-estimate, proposed entries (drafts)
-└── .work/                       # git-ignored: downloads, builds, clones
-```
+Each step: work, then **Check**.
 
-**Shared fixture bundle (Wave 0).** About 8 concepts in two folder levels, two types, `index.md` per folder and a root `index.md` with `okf_version`. It follows I-01 and deliberately includes: colon-namespaced tags (`group:…`); a `Revision history` section; footnotes; `<a id>` anchors before and inside headings, duplicate explicit and automatic ids, a non-ASCII term and a parenthesised term; `/`-rooted and relative links; angle brackets and braces in prose; unknown frontmatter keys; the reserved keys named in FR8.2 check 5; nested lists at two and four spaces; a file name and a folder with spaces. It is original synthetic text.
+### 1. Skeleton and quality bar (0.75–1)
 
-## Steps by item
+Work: `pyproject.toml` with groups `validate` (ruamel.yaml, markdown-it-py, mdit-py-plugins, jsonschema, PyYAML for the vendored script) and `dev` (ruff, mypy, pytest, pytest-cov, poethepoet, pre-commit); `[tool.poe.tasks]` `install`, `check`, `test`, `ci-validate` as in I-16 (tasks for scripts not yet written are added with the step that writes them); ruff rules and line length from `constraints.md`; mypy strict on `scripts/okfprofile`; pytest `pythonpath`; coverage with `fail_under = 85` and branch coverage; `.python-version` (3.12); `.gitattributes` (`* text=auto eol=lf`); `uv.lock`; `scripts/okfprofile/__init__.py` and one smoke test. Record the licence of every locked package against the allowlist.
 
-### V-03 Zensical (Wave 1) — about 0.5 day
+Check: `uv sync --all-groups` on a fresh clone; `uv run poe check` and `uv run poe test` pass; `uv lock --locked` passes; the suite passes with `uv run --python 3.11` and `--python 3.14`; `git ls-files --eol` shows no `w/crlf` after a fresh clone with `core.autocrlf` both true and false; bare `poe` is not used anywhere; the licence listing has no package off the allowlist (if mypy's `pathspec` appears in `dev`, raise PP-3 before merging).
 
-1. In `.work/`, create two environments from `uv`: MkDocs 1.6.1 with Material 9.7.x, and the latest Zensical (0.0.72 or later; record the version and PyPI date). Python 3.12, then repeat the six-check run on 3.11 and 3.14.
-2. Use the I-13 baseline `mkdocs.yml` with `docs_dir` set to the fixture bundle. Build with each builder from a separate copy (`--site-dir` is not available in Zensical).
-3. For each feature listed in V-03, record the builder's exit code **and** the generated HTML. Judge on output, since Zensical skips unsupported settings without warning. Features: `/`-rooted links (retest the 18 October failure); `validation.links.absolute_links`, `anchors`; `strict`; `extra.status`; `extra.social`; `content.action.edit`; footnotes; `attr_list`; `toc` with permalinks; `tags` with colon tags and the generated page URLs.
-4. Run the six FR8.2 checks on the Zensical output: the five rendering checks by inspecting HTML, and check 2 by `/`-rooted links. Offline link check by lychee if installed; otherwise a small Python checker over the HTML (not run from inside the downloaded directory).
-5. Add one Zensical-only theme key (for example `theme.variant: classic`) to the shared `mkdocs.yml` and build with MkDocs; record whether it is tolerated.
-6. For each failure, try a configuration-only fix from Zensical's documentation; record the fix or the blocker. Record licences of the builder and its locked dependencies against the allowlist.
+### 2. Core reader and report (1–1.5)
 
-Evidence: feature × builder matrix; six-check table; versions and dates. **[Test]**.
+Work: `config` (load `profile.yaml`, validate against its meta-schema, resolve types, formats, vocabularies); `document` (first line must be `---`, YAML 1.2 by ruamel.yaml with scalar values kept as strings, body by markdown-it-py with mdit-py-plugins; expose headings, sections, list items with source line and nesting level, links, anchors, footnotes); `report` (finding model with code, level, file, line, message; JSON, GitHub-style annotations, Markdown summary); `architecture/finding-codes.md` started (PP-4). Docstrings per conventions.
 
-### V-04 Docusaurus (Wave 1) — about 0.25 day
+Check: unit tests for each reader behaviour, including `status: no` and an unquoted date staying strings, CRLF input, nested items at two and four spaces, footnotes, `<a id>` anchors; findings render identically as JSON and as annotations; coverage and mypy strict hold.
 
-1. Node 24 is installed. In `.work/`, create a Docusaurus 3.10.x site with `markdown.format: 'detect'`, `docs` pointed at the fixture's `knowledge/`.
-2. Build three concepts and the index files. Check: raw `<a id>` kept; unknown frontmatter keys tolerated; `<!-- Maintained by CI -->` comment survives; `/`-rooted links; `index.md` as category landing page; colon-tag permalinks; generation of `tags.yml` from vocabulary; angle brackets, braces and footnotes unchanged; then the six FR8.2 checks.
-3. Record build time, the size of the dependency tree, and the licences of direct dependencies. Note that this adds a Node toolchain (SPEC, criterion 3).
+### 3. Profile and schemas (0.5–0.75)
 
-Evidence: six-check table; footprint. **[Test]**. Concepts are synthetic unless the owner supplies others (D-5).
+Work: `profile/profile.yaml` for the template's example types (default types in OD-1), `profile/schemas/` meta-schemas for `profile.yaml` and `uid-registry.yaml`, `types/okf-base.schema.json` (all keys of OKF at `ad30107`, plus `uid`) and one schema per type referencing it with `unevaluatedProperties` as I-03 specifies, `formats/` for any section format that carries items. No domain value appears in `scripts/`.
 
-### V-02 Nested lists (Wave 1 local, Wave 2 GitHub)
+Check: the profile validates against its meta-schema; each schema validates a hand-written passing frontmatter and rejects one fixture per rule (unknown field, wrong `type` const, bad `uid` pattern, offset-less datetime, bad tag pattern); `grep` of `scripts/` finds no type name, prefix or vocabulary value (FR2.1 review).
 
-1. Fixture lists: unordered, ordered, mixed, at two and four spaces, with continuation paragraphs and code spans.
-2. Render with Python-Markdown at the versions MkDocs and Zensical use; record nesting depth from the HTML. Wave 2: push the fixture and read the rendered view on github.com; corroborate with GitHub's `POST /markdown` endpoint (stateless).
-3. Compare. Confirm the four-space rule in I-01, or state the rule that gives equal depth everywhere (for example a sane-lists extension, stack report open item 2).
+### 4. Checks 1 and 2 (1–1.5)
 
-### V-01 Anchors on GitHub (Wave 2)
+Work: vendor okf-skills' `okf_validate.py` verbatim at `a8b96420…` under `scripts/vendor/okf-skills/` with the MIT licence, the Apache-2.0 notice for the specification text, and a record of commit and file hash (PP-1 for the lint exemption); check 1 imports `validate()`, maps each message to an `OKF1xx` code by section marker and text prefix (V-08 table), applies profile levels, drops the two suppressed warnings, never passes `--strict`; `okfprofile` also enforces frontmatter-first and datetime-offset (`stale_after`, `verified[].at`, declared datetime fields); check 2 validates frontmatter against the type schema with `jsonschema` and reports unknown fields when `reject_unknown_fields` is true while accepting OKF's optional keys (FR2.7).
 
-1. Push the anchor fixtures. In the browser, open the rendered file and test each case: anchor before a heading, inside it, explicit id equal to GitHub's automatic slug (duplicate ids), non-ASCII term, parenthesised term.
-2. For each, record the rendered `id` (GitHub prefixes `user-content-`; note it), whether a `#fragment` link scrolls to the right place, and whether the automatic heading id is still produced.
-3. Confirm AD-14's placement and duplicate-id rule or state the rule that holds. Check the same fixture's output in MkDocs, Zensical and Docusaurus (from V-03 and V-04) so FR8.2 check 4 has all four views.
+Check: one failing fixture per code, each raising exactly that code; a test feeds every pinned message (taken from the V-08 run) through the mapper and fails on any unmapped message, so a re-pin that changes wording is caught; a concept with OKF `verified` passes with unknown fields rejected; the vendored file's hash equals upstream's at the pin; PyYAML (1.1) and ruamel (1.2) disagreeing on `status: no` does not produce contradictory findings.
 
-### V-08 okf-skills (Wave 1) — about 0.25 day
+### 5. Check 3: body structure (1–1.5)
 
-1. Clone `okf-skills` at `a8b96420de90d102c43cda1693d01ec4f925f2ab` (the SDD's `okf--v0.10.3` pin) into its own directory under `.work/`; confirm the commit hash and the MIT licence file.
-2. Run its validator script outside the Action, locally, against the fixture bundle plus one deliberately broken file per rule it checks. Record each finding's text and exit behaviour.
-3. Draft the finding-to-`OKF1xx` mapping for I-09. Record its behaviour on the generated `index.md` files (root index with `okf_version`; folder indexes without frontmatter).
-4. Check vendoring: single script or package, its only dependency (PyYAML, per C-03), licence texts to carry, and any network or Action-only assumption.
+Work: sections, order (`strict` or `any`), required flag, empty placeholder, title heading, formats (item pattern, enums, vocabulary groups, required children in order, I-04); CI-managed *Revision history* section: lines must match the I-08 grammar and may only be appended against the base (the base-diff part is wired in step 9; PP-6); two-space nesting in a section whose format has children is an error; angle-bracket text in prose outside code spans is flagged (I-01).
 
-### V-11 `verified` and tiers (Wave 1) — about 0.1 day
+Check: one failing fixture per code; a hand-edited revision line, a deleted line and an out-of-grammar line each fail; footnote definitions after the section are left alone (FR3.4); a four-space list nests and a two-space one is flagged; coverage holds.
 
-1. Read OKF v0.2 at specification commit `ad30107` and the okf-skills source from V-08. Find where a tier is derived from `verified`, whether from the latest entry or any entry, and the actor prefix for a non-human confirmation.
-2. Compare with I-08's `human:<login>` and `ci:<bot>` mapping. Quote at most a short phrase with file and line; summarise the rest.
-3. If the specification is silent, say so and describe what okf-skills does instead.
+### 6. Check 4: links, anchors, vocabularies, paths (1–1.5)
 
-### V-09 Skill symlinks (Wave 2) — about 0.25 day
+Work: `vocab` (load vocabulary concepts, values, kinds, definitions; values unique across kinds); internal links relative only, root-relative rejected (ADR-005), spaces as `%20` or angle brackets, target must exist in `knowledge/`; anchors resolve to an automatic slug or an explicit id, fragments compared case-insensitively, explicit ids must be lower case, a duplicate explicit and automatic id is accepted if consistent, `{#id}` rejected (AD-14); glossary anchors never change (compared with the base when one is given, FR2.10); tag membership against vocabularies; the four path-rule kinds and the `tag_*` rules from I-02.
 
-1. In p0-spikes, add `.agents/skills/demo/SKILL.md` (six specification fields only) and `.claude/skills/demo` as a symlink to `../../.agents/skills/demo`. Commit with the symlink mode (`120000`; check `git ls-files -s`).
-2. **Discovery.** Open a fresh Claude Code session with p0-spikes as the working directory and ask for the skill by name. Record whether it is listed and used. Repeat with the symlink replaced by a plain copy, as the control.
-3. **Windows.** On this machine `core.symlinks` is `false` (Git for Windows default). Clone p0-spikes freshly and record what the symlink becomes (a text file holding the target) and whether Claude Code still finds the skill. **NEEDS YOU (setting)** for the second case: enabling Windows Developer Mode, or an elevated shell, so `core.symlinks=true` works. It is a system setting, so the owner changes it.
-4. **"Use this template".** Mark a sandbox repository as a template and create a repository from it; check `git ls-files -s` in the result. **NEEDS YOU (account)** for the extra repository if D-1 is not already approved.
-5. **Release archive.** Build the I-12 style archive and GitHub's own source tarball and zip from a tag; record whether the symlink entry survives in each. (I-12 lists only `.agents/skills/use-bundle/`, so the question is what a template release archive does with `.claude/skills/`.)
-6. Linux behaviour comes from the V-12 workflow's checkout. If symlinks fail on any route, specify the AD-16 fallback (`init_library.py` copies the skills) as a proposed entry.
+Check: one failing fixture per code; `%20` and angle-bracket links resolve (the okf-skills false warning does not surface); an upper-case `<a id>` fails; a changed glossary anchor fails; a tag missing from its vocabulary fails.
 
-### V-10 Spaces in file names (Wave 2 and 4)
+### 7. Registry, check 6, `new_concept`, `renumber` (1–1.5)
 
-- **10a, read-only, in this repository. NEEDS YOU (person):** open a fresh Claude Code session with `okf-library-template` as the working directory and ask it to summarise the SRS, then to list which of the four `@…` design-document imports in `CLAUDE.md` it loaded (the existing comment in that file anticipates this check). No file is changed. The owner opens the session, or approves one being started once the plan is accepted. This session cannot serve as the check because it did not start there.
-- **10b, in p0-spikes:** create a folder tree mirroring `docs/development/` with space-named files. From a nested folder, test: `@path with spaces`, an escaped-space form, a quoted form and an alias file with a hyphenated name, as `CLAUDE.md` imports in a fresh session; and `%20`, angle-bracket and relative link forms in Markdown, viewed on github.com and in the MkDocs and Zensical builds from V-03. Name the form to use. If no import form works, the proposed entry covers the file naming in §6 (QA-36, QA-67).
+Work: `registry` (read, diff, update, next number per prefix, never reuse); check 6 (missing, malformed, duplicate, changed or absent `uid`; path differing from the registry unless the move is flagged approved and the old path recorded; deleted concept file fails, FR1.7); `new_concept.py <type> <path>` (next `uid`, required tags from the path, declared sections with placeholders, relative links); `renumber.py`; `validate_profile.py --fix-registry` for approved moves only. The approved-move signal is a flag or input file here; where it comes from on a platform is P2.
 
-### V-05 Rulesets and approvals (Wave 3) — about 0.5 day
+Check: one failing fixture per code; two branches taking the same number produce a duplicate on merge and `renumber.py` clears it (FR1.6 acceptance, run on local branches); `new_concept.py` output passes all checks; a hand edit that desynchronises the registry fails.
 
-The sandbox is a free organisation; p0-spikes is public, so rulesets are available. Settings changes are sandbox writes under Guards 1–3.
+### 8. Indexes and revision tiers (1–1.5)
 
-| Sub-item | Method | Needs |
-| --- | --- | --- |
-| 5a Bypass modes | Ruleset on `main`: require pull request, 1 approval with code-owner review, squash only. Bypass: repository admin "for pull requests only"; a GitHub App "always". Test: admin merges a pull request without approval; admin direct push is refused; the App pushes to `main` directly | **NEEDS YOU (account):** create the App in the sandbox organisation (browser, about 10 minutes, one repository, `contents: write` and `pull_requests: read` as C-06), keep the private key outside the repository, add it as a repository secret |
-| 5b Check naming | Workflow `validate.yml` with job `validate` triggered by `pull_request` and `pull_request_review`; make `validate` required. Record the check-run names for both triggers and whether the required check is satisfied by either | — |
-| 5c API shape | For a pull request merged by admin bypass: record `merged_by`, `/reviews` (state, `commit_id`), PR `head.sha`, `merge_commit_sha`, and `commits/{sha}/pulls`. Repeat with an approval given, then a new commit pushed (stale approval) | **NEEDS YOU (account):** a non-author reviewer. Option 1, a second GitHub account of the owner. Option 2, the Actions `GITHUB_TOKEN` approving (needs the sandbox's "allow Actions to create and approve pull requests" setting, currently off). Option 2 shows the API shape but the reviewer is a bot, so option 1 is the faithful test |
-| 5d Concurrency | A workflow with a `concurrency` group and `cancel-in-progress: false`; push three commits quickly; record which runs run, queue and cancel. Confirms the "one running, one pending" inference | — |
-| 5e Fork privacy | Documentation first **[Doc]**. Empirical only if a fork can be made outside the sandbox organisation | **NEEDS YOU (account):** a second user or organisation to hold a fork, or accept a documentation-only answer (D-3) |
+Work: `indexes` (one `index.md` per folder, folders then concepts sorted by title, **relative links**, status and tier on each concept line, `max_concepts_per_directory` warning, root index with `okf_version`; whole bundle or given concepts; `build_indexes.py [--check]`; check 5); pure part of `revision`: parse I-08 lines, per-revision tier, concept tier over the window since the latest owner-approved `full-review`, `human-reviewed (self)` qualifier, `Unverified` when no revision.
 
-Result confirms or corrects §11, AD-11/AD-12 and W-05 steps 1–6 as worded.
+Check: golden index files; golden tier cases for every row of the I-08 tables, including stale approval, non-owner approval, merged without approval, `require_non_author_approver` true, and the one-line owner-approved fix to an agent-drafted concept staying Machine-confirmed; a stale or hand-edited index fails check 5; generating twice is a no-op; CRLF checkout input gives the same output.
 
-### V-07 Releases and Cloudflare (Wave 3) — about 0.25 day plus waiting
+### 9. Change rules, ownership, publishing pre-check, warnings (1.25–1.75)
 
-1. **Immutable releases.** In p0-spikes, enable immutable releases (setting write, sandbox only; record the exact setting and whether it is available on Free). Publish a release with assets, then try to edit an asset, delete an asset, move the tag and delete the release; record each result and the error text.
-2. **Cloudflare Pages access policy.** Read Cloudflare's documentation for the free plan (Pages previews, Access policy, seat limits) and record the limits and the accessed date **[Doc]**. **NEEDS YOU (account):** a deployment test needs the owner's Cloudflare account and a token kept outside the repository. Without it, the item closes as documentation-only.
+Work: `changes` (classify changed paths as tooling or content using the SDD §6 list; mixed change fails `OKF0xx` unless the migration input is present; migration needs a maintainer approval input and a changed `DECISIONS.md`); `--tooling-from <ref>` (materialise that ref's `scripts/`, `profile/` and lock files in a temporary folder and run them on the working tree's content); `codeowners` (GitHub last-match-wins, owners per path, per-concept ownership, FR5.4); the publishing pre-check (OKF7xx: the three W-04 rules and the citation rule) as pure functions over supplied review data; the four warning kinds from I-02 (`tag_not_equal_segment`, `agent_label_missing`, `stable_section_nonempty`, `directory_size`), the second taking supplied markers; the base-diff for the revision section (step 5) and for removed concepts (step 7).
 
-### V-12 Reproducible archive and V-13 tasks (Wave 2) — about 0.5 day together
+Check: a profile that relaxes a rule plus a non-conforming concept fails under `--tooling-from` and passes without it (FR2.5 acceptance); mixed change fails and passes with the migration input and approval (FR2.6); a pull-request fixture touching two folders records two owner statuses (FR5.4); each pre-check branch has a fixture; the warning fixtures raise warnings, not errors.
 
-One workflow, `cross-os.yml`, a matrix of ubuntu, macos and windows hosted runners × Python 3.11 and 3.14 (six jobs), plus local runs on this machine (Windows, Python 3.11, 3.12 and 3.14 are installed). **NEEDS YOU (machine):** choose hosted runners only, or add real macOS and Linux machines as a cross-check (D-4). No Docker is installed locally.
+### 10. Entry points and tasks (0.5)
 
-- **V-12.** Write a throwaway `build_archive.py` to the I-12 rules: entries sorted by path, modes normalised, owner and group 0 with empty names, modification times set to the tagged commit's timestamp, gzip with no file name and a zero timestamp. Build from the tagged tree objects (`git archive` or `git ls-tree`), not the working tree, so line-ending conversion cannot enter. Tag once; upload each job's SHA-256 as an artifact; a final job compares all six and the local runs. Variables to test deliberately, since each could break equality: line endings (`core.autocrlf` on Windows); file modes without an executable bit on Windows; `tarfile` default format across 3.11 and 3.14; compressor differences between the zlib builds shipped with each Python. If the digests differ, find the smallest settings change that makes them equal, or show that the compressed bytes cannot be equal and state what can be (for example the checksum of the uncompressed tar).
-- **V-13.** Throwaway `pyproject.toml` with `[tool.poe.tasks]` mirroring I-16 (`install`, `check`, `test` as stubs that run real tools: `uv lock --locked`, `ruff`, `pytest`) and `.pre-commit-config.yaml` with `repo: local` hooks calling `uv run`. Each job: fresh clone, `uv sync --all-groups`, `uv run poe install`, `uv run poe check`, then a commit that triggers the hooks. Record, per system and version, the first failing command. Watch for shell differences in task definitions (`cmd` versus `shell`), path separators, quoting, and hooks run through Git for Windows' shell. Locally test in PowerShell and in Git Bash.
+Work: `validate_profile.py` (`--changed`, `--base <ref>`, `--tooling-from <ref>`, `--fix-registry`, `--json`), `new_concept.py`, `renumber.py`, `build_indexes.py` as thin wrappers; non-zero exit on error, human output on stderr; poe tasks `ci-validate` and any task added by earlier steps; coverage excludes the thin scripts.
 
-### V-06 Second person (Wave 4) — owner time
+Check: each script's `--help`, `--json` and exit code have a test; `uv run poe check` runs checks 1–6 and the index check on `knowledge/` and `tests/library/fixtures/pass/`; a local run and a run through the `ci-validate` task on the same commit produce identical JSON (FR2.8, FR2.11).
 
-**NEEDS YOU (person).** Write `spikes/V-06-w01/runsheet.md` from SDD W-01 steps 1, 2, 4 (manual equivalent) and 5, with stopwatch fields. The second person follows it on a fresh sandbox repository (D-1) and in the organisation's App settings. Steps 3 and 6 depend on `init_library.py` and CI that do not exist yet, and are marked "not measurable in P0" (SPEC, interpretation 1). Compare the measured steps with W-01's indicative times.
+### 11. Example bundle (0.25–0.5)
+
+Work, content only, after PR 5 is merged: one example concept per declared type, vocabularies and glossary entries needed by the examples, generated indexes, registry entries; matching passing fixtures under `tests/library/fixtures/pass/`.
+
+Check: pinned checker and profile validator report no error on `knowledge/` (FR1.1 acceptance); `build_indexes.py --check` is clean; each type has a passing fixture.
+
+### 12. Pre-commit and parity (0.25–0.5)
+
+Work: `.pre-commit-config.yaml` with `repo: local` hooks run through `uv run`: ruff with fixes, `validate_profile.py --changed`, `build_indexes.py --check` (the `scan.py` hook is added in P2, OD-2); a generated 600-concept bundle timed once as information, not a gate (constraint timed in P2).
+
+Check: hooks run in Git Bash and PowerShell on this machine; a commit that breaks a rule is refused; a clean commit passes; the 600-concept time is recorded in `testing/` (target under 10 s, SDD §12).
+
+### 13. Test documents and finding catalogue (0.5–0.75)
+
+Work: `testing/strategy.md` (levels: unit, fixture bundle, golden file; what P2 adds), `testing/fixtures.md` (what each fixture proves), `testing/known-gaps.md` (cross-system run, Python-Markdown divergences other than nesting, unconfirmed GitHub scroll targets from V-01, hand-edit detection limits, and whatever steps found); finish `architecture/finding-codes.md` (code, level, check, message, fixture).
+
+Check: every code in `scripts/` appears in the catalogue with a fixture path, and a test fails if one does not (constraints: every code has a failing fixture); links in the new documents resolve.
+
+### 14. Exit (0.25)
+
+Work: full gate on Python 3.11 and 3.14; coverage figure; revise the P2 to P4 estimate from P1 actuals (proposal, not applied); prepare the `v0.1.0` tag message.
+
+Check: SPEC "Done when" items 1 to 8 are each ticked in `todo.md` with evidence; the owner tags `v0.1.0` (alpha) after the last pull request is merged.
 
 ## Needs from you: summary
 
 | Item | Need | Type | Blocks |
 | --- | --- | --- | --- |
-| All | Approve this plan; D-1 (commits, pushes, settings and extra repositories in the sandbox) | decision | Every spike |
-| V-05 | Create the GitHub App; add its secret; non-author reviewer | account | 5a, 5c |
-| V-05 | Second user or organisation for the fork | account | 5e |
-| V-06 | A second person and about 30 minutes | person | V-06 |
-| V-07 | Cloudflare account and token (optional) | account | Cloudflare test |
-| V-09 | Enable Windows symlinks (Developer Mode), optional | setting | Windows second case |
-| V-09, V-10 | Open or approve fresh Claude Code sessions | person | V-09 step 2, V-10a, V-10b |
-| V-12, V-13 | macOS and Linux: hosted runners, or your own machines | machine | Cross-system results |
+| All | Approve this plan; answer OD-1 to OD-10 or accept the defaults | decision | Step 1 (OD-8); steps 3 and 8 (OD-1) |
+| Proposed entries | Approve or reject PP-1 to PP-6 | decision | PP-1 before step 4 merges; PP-2 before step 8; PP-3 only if it arises in step 1 |
+| Each pull request | Instruct commit, push, PR; review; squash-merge (single maintainer: recorded self-approval) | person | Every PR |
+| Exit | Push the annotated tag `v0.1.0` | person | P1 exit |
+| Optional | A macOS and a Linux machine, or a sandbox smoke run (OD-9) | machine | Cross-system evidence before P2 |
+| Accounts, settings | None. No GitHub App, Cloudflare, symlink or Developer Mode setting is needed in P1 | — | — |
 
-## Proposed decision entries
+## Proposed entries
 
-Nothing below is written until the owner approves its text. Each is a **proposal** that exists only if the stated outcome occurs; the first two always do. Drafts are held in `p0-spikes/exit/` and presented at the exit. IDs are assigned on approval (next ADR number is ADR-001; the QA- and DR- series is frozen, QA-68).
+Nothing below is written until the owner approves its text. IDs for ADRs are assigned on approval (next is ADR-007).
 
 | # | Trigger | Would change | Form |
 | --- | --- | --- | --- |
-| P-1 | Always: generator decision from V-03 and V-04 | AD-13, C-07, I-13; QA-26, QA-28, QA-38; `../constraints.md` "Site" row; SRS risk row on tool end of life (wording only if the owner agrees) | ADR-001 (Proposed), superseding or confirming AD-13 |
-| P-2 | Always: re-estimate | SDD §14 effort column and §1; QA-45's ranges | DDR change-log row; SDD edit |
-| P-3 | V-01 rejects AD-14 placement or duplicate-id rule | AD-14, QA-42; I-01 link rule; FR2.10 and FR8.2 check 4 acceptance wording (a requirement change, so it goes to the owner as a request, not an edit) | ADR superseding AD-14 |
-| P-4 | V-02 shows four-space nesting differs | I-01 indentation rule | SDD edit with change-log row; ADR only if two options compete |
-| P-5 | V-05 contradicts any of §11, AD-11, AD-12, W-05 or the W-01 fork row | AD-01, AD-11, AD-12; §11; W-04, W-05; W-01 | ADR per decision changed |
-| P-6 | V-07 shows immutable releases unavailable on Free, or Cloudflare limits exclude the options | C-10, AD-15, §11 release row and site row | ADR amending AD-15 |
-| P-7 | V-08 shows the validator cannot be vendored or runs differently from the Action | AD-08, QA-44, I-09 | ADR amending AD-08 |
-| P-8 | V-09 shows symlinks do not survive a route; owner principle 2026-10-30: provider-agnostic core | AD-16, §6 layout, W-10; `init_library.py` scope; V-09 carried item | ADR superseding AD-16 (neutral `AGENTS.md` entry; Claude Code discovery as an optional adapter), or amending it (copy fallback) |
-| P-9 | V-10 shows imports or links fail with spaces | `CLAUDE.md` import form; `docs/development/` file naming; QA-36, QA-67, AD-21; SRS "Location" line | ADR superseding the naming decision; SRS edits go to the owner |
-| P-10 | V-11 shows OKF derives tiers differently from I-08 | I-08 `verified` mapping; FR3.8 acceptance | SDD edit and ADR |
-| P-11 | V-12 shows archives differ across systems | I-12, W-12 step 5, QA-61; FR6.6 and FR7.3 acceptance wording (owner request) | ADR amending QA-61 |
-| P-12 | V-13 shows tasks or hooks fail on a system | I-16, I-17, AD-20; FR2.11 | SDD edit; ADR if the tool choice (poethepoet) changes |
-| P-13 | V-06 platform steps alone exceed the share of 30 minutes W-01 allows | FR6.1 feasibility; W-01 times | Report to the owner; no entry unless the owner asks |
-| P-15 | Added 2026-10-27 from V-10b and V-03: GitHub resolves `/`-rooted links from the repository root, and Zensical leaves them unresolved | I-01 link rule; W-04 check 4; FR2.10 and FR8.2 check 2 wording (requirement-level: goes to the owner as a request, not an edit) | ADR amending I-01 (for example relative links only) |
-| P-16 | Added 2026-10-28: V-05 5a and 5c, V-06, V-07 (Cloudflare) and V-09 (real symlink, template flow) carried past P0 with gates | SDD §14 (carried-items table); the v1.0.0 gate still requires them closed | SDD edit in the §14 diff |
-| P-17 | Added 2026-10-28 from V-03: MPL-2.0 packages (`pathspec`, `certifi`) in the site stacks | `constraints.md` exception table; licence check wording | ADR |
-| P-18 | Added 2026-10-28 from V-13: Windows line endings | SDD §6 layout and P1 deliverables (`.gitattributes`) | SDD edit |
-| P-14 | Always: V-01 to V-13 outcomes | SDD §15 outcome column; DDR change log | Change-log rows and a §15 diff, as SDD §14's gate says "recorded in the DDR" (SPEC, interpretation 5) |
-
-## Exit steps
-
-1. Collect `RESULT.md` files into the p0-spikes `README.md` index; check every V-item is answered or has a named reason it cannot be.
-2. Write the generator recommendation against the SPEC criteria. Owner direction, 2026-10-28: keep MkDocs blocking with Zensical built in parallel (option A, AD-13 as written), expecting the release site to be Zensical later; the Zensical checks are not rerun in P0, and the known issues are carried as a list (`p0-spikes/exit/generator-recommendation.md`).
-3. Re-estimate P1 to P4 from observed effort and findings.
-4. Draft the proposed entries (P-1, P-2, P-14 and any triggered), plus the SDD §15 and §14 edits as a diff. Do not apply them.
-5. Present to the owner. Apply only what is approved, each as its own ADR file or documented edit, in a docs-only pull request (`../conventions.md`, Git).
-6. On the owner's instruction: move `SPEC.md`, `plan.md` and `todo.md` to `plan/archive/2026-10-p0-verification/`. Do not ask for the SRS status to change.
+| PP-1 | Always: `scripts/vendor/okf-skills/` is a verbatim third-party file and cannot meet the ruff, mypy and coverage limits | `../constraints.md` Code and Tests rows (an exemption for `scripts/vendor/` only) | ADR-007 |
+| PP-2 | Always: SDD I-07's example uses root-relative links, which ADR-005 rejects and P1 does not emit | SDD I-07 example text (wording; no decision changes) | SDD edit with a DDR change-log row |
+| PP-3 | Only if step 1 finds an MPL-2.0 package (for example `pathspec`, a mypy dependency) in the `dev` group | ADR-006 reason text and the `constraints.md` exception table | ADR amending ADR-006 |
+| PP-4 | Always: I-09 gives code ranges only, and every code needs a stable number | New file `../architecture/finding-codes.md` assigning codes within the I-09 ranges; V-08's slots are a starting point | New document; no SDD edit |
+| PP-5 | Only if the owner rejects the OD-2 or OD-3 defaults | SDD §14 and C-04 placement of `scan.py`, `requirements/` export and the revision pure part | SDD edit with a change-log row |
+| PP-6 | Always: FR3.4's "a hand edit fails check 3" cannot be proven from content alone; P1 uses the line grammar plus a base-branch diff | Wording of how the check works, in the finding catalogue and `known-gaps.md`; a stronger rule (for example signed lines) would change I-08 | Note in the catalogue; ADR only if the owner wants a stronger rule |
 
 ## Risks
 
 | Risk | Effect | Response |
 | --- | --- | --- |
-| Zensical changes between the spike and the P0 exit | Stale evidence (0.0.73 is dated 2026-10-26; 0.0.72 to 0.0.73 took one day) | No P0 rerun (owner, 2026-10-28). Version and date are recorded; the parallel non-blocking Zensical job with output checks (W-08) re-tests every change from P3 |
-| Zensical ignores unsupported settings silently | A pass on exit code is false | Judge on HTML output (V-03 step 3) |
-| Material ends on 2026-11-05 before the decision | Pressure to decide early | V-03 and V-04 first; the decision still waits for all evidence |
-| Owner-dependent steps (V-05 App and reviewer, V-06 person) stall | P0 overruns the 2–3 days | Do all other waves first; ask for the App and reviewer at the start |
-| The token on this machine reaches both organisations | A write lands in `open-renewables` | Guards 1 to 3 |
-| p0-spikes is public | Disclosure of proprietary text | Synthetic content only (Guards 6) |
-| Hosted-runner results differ from the owner's hardware | Missed local-only failures | Optional real-machine cross-check (D-4) |
+| P1 is the largest block and no spike exercised `okfprofile` | Overrun beyond 16 | Contingency day; steps 5, 6, 9 are the widest; stop and report after PR 3 with actuals |
+| 85 % branch coverage and `mypy --strict` from the first commit | Effort easy to underestimate | Tests written with each step, not at the end |
+| okf-skills messages have no codes | A re-pin silently changes mapping | Pinned-message test (step 4); vendored file verbatim |
+| PyYAML (vendored script) and ruamel (profile) disagree on YAML 1.1 and 1.2 values | Contradictory findings | Test in step 4; profile validator is the authority (AD-08) |
+| Python-Markdown (site) differs from markdown-it-py (validator) beyond nesting | Passes locally, renders differently | Recorded in `known-gaps.md`; P3 site tests |
+| Spec gaps found while building (scope notes, I-07 links) | A design question mid-step | Stop the step, add a proposed entry or open decision, continue elsewhere |
+| Mixed-change rule not enforced until P2 | Tooling and content merged together by mistake | Separate PRs by discipline (OD-7) |
+| Windows-only runs | Path or line-ending bugs on other systems | `.gitattributes`, CRLF tests, `pathlib` throughout; P2 matrix; OD-9 |
+| Scope creep into P2 (revision writer, adapters, `scan.py`) | P1 overruns | SPEC out-of-scope list; interpretations 1–3 |
+| Dev-group transitive licences off the allowlist | Constraint breach | Licence listing in step 1; PP-3 |
 
-## Decisions needed from the owner
+## Open decisions
 
-| ID | Question | Default if not answered |
+Each has a default that applies if the owner does not answer.
+
+| ID | Question | Default |
 | --- | --- | --- |
-| D-1 | May spikes commit and push to p0-spikes, change its settings, and create further throwaway repositories in `open-renewables-sandbox` (V-06, V-09 template flow)? | Commits and settings in p0-spikes only; no extra repositories, so V-06 and V-09 step 4 wait |
-| D-2 | V-05 reviewer: second account, or the Actions token approving? | Actions token for API shape; second account later |
-| D-3 | V-05 fork: supply a second user or organisation, or accept documentation only? | Documentation only |
-| D-4 | V-12 and V-13: hosted runners only, or also your own macOS and Linux machines? | Hosted runners only |
-| D-5 | V-04 concepts: synthetic, or supply three public-safe real concepts? | Synthetic |
-| D-6 | V-06: accept the reduced P0 scope (SPEC, interpretation 1)? | Reduced scope |
-| D-7 | Accept the proposed generator criteria in the SPEC, and outcome recording as change-log rows (interpretation 5)? | Both as written |
+| OD-1 | Which concept types does the template profile declare? I-07 mentions a "scope note" but the SDD defines no such type or file location | Item (`ITM`), Vocabulary (`VOC`), Glossary (`GLS`), one example each. No scope-note type; folder lines in generated indexes carry the folder title only. Revisit by RFC before P3 |
+| OD-2 | Where does `scan.py` land? SDD §14 names it in neither P1 nor P2, but I-17 lists its hook | P2, with gitleaks and the CI scan jobs; the P1 pre-commit file omits that hook |
+| OD-3 | Where does the revision line parser and tier derivation land, and the `requirements/*.txt` export? | Parser and tiers in P1 (step 8); `requirements/` export in P2 with CI |
+| OD-4 | Map okf-skills messages, or patch the vendored script to emit codes? | Map; vendored copy verbatim (a patch would amend AD-08) |
+| OD-5 | Anchor case rule: require lower-case explicit ids, or only compare case-insensitively? | Both: require lower case, and resolve fragments case-insensitively |
+| OD-6 | Merge order of the open P0 archive pull request ([#8](https://github.com/open-renewables/okf-library-template/pull/8)) | Merge #8 first, then rebase this branch; the only conflict is the three plan files, resolved by keeping this branch's content under `plan/` |
+| OD-7 | Example bundle with the profile in one pull request, or separate? | Separate: tooling PRs first, a content-only PR after (conventions, Git) |
+| OD-8 | Pull request size | Seven PRs as in the table above |
+| OD-9 | Cross-system evidence in P1 | Windows with Python 3.11 and 3.14 only; macOS and Linux in the P2 matrix; recorded as a known gap. Alternative: a sandbox smoke run in `open-renewables-sandbox/p0-spikes` |
+| OD-10 | The `v0.1.0` tag | Owner pushes an annotated tag on `main`; no GitHub Release (`release.yml` is P2) |
