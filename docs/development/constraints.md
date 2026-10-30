@@ -37,7 +37,7 @@ Each row names its source. Rows marked **To fill** are not yet decided; the main
 | Bundle validation | Zero errors from `validate_profile.py` on `knowledge/` and on `tests/library/fixtures/pass/` | `poe check` | SDD W-04 |
 | Generated indexes | `build_indexes.py --check` reports no difference | `poe check` | SDD W-04 check 5 |
 | Validation speed | 600 concepts in under 10 s locally; `validate` job under 3 min | Timed in P2 | SDD §12 |
-| Site | `mkdocs build --strict` passes (blocking); Zensical build non-blocking until the P0 generator decision | `poe docs-build` | SDD AD-13 |
+| Site | `mkdocs build --strict` passes (blocking); Zensical build non-blocking until the switch criterion in ADR-001 is met | `poe docs-build` | SDD AD-13; ADR-001 |
 
 ## Security
 
@@ -55,11 +55,12 @@ Allowed SPDX identifiers (owner decision, 25 October 2026):
 
 `MIT`, `MIT-0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `Apache-2.0`, `PSF-2.0`, `Python-2.0`, `Unlicense`, `0BSD`, `Zlib`.
 
-`MPL-2.0` is allowed only by a recorded exception below. GPL, LGPL and AGPL licences are not allowed in the locked dependency set. Tools run outside the lock with `uvx` (for example Copier or pip-audit) are not covered by this list.
+`MPL-2.0` is allowed only by a recorded exception below. GPL, LGPL and AGPL licences are not allowed in the locked dependency set. The licence check reads SPDX or classifier metadata and treats a missing or non-SPDX value (for example `python-dateutil` "Dual License", `mergedeep` none) as a finding to resolve explicitly. Tools run outside the lock with `uvx` (for example Copier or pip-audit) are not covered by this list.
 
 | Exception | Package | Licence | Reason | Review by |
 | --- | --- | --- | --- | --- |
-| — | — | — | None recorded | — |
+| ADR-006 | `pathspec` | MPL-2.0 | Site dependency of MkDocs and Zensical; unmodified; not part of the `validate` group | 2027-04-30 |
+| ADR-006 | `certifi` | MPL-2.0 | Site dependency of the MkDocs stack; unmodified; not part of the `validate` group | 2027-04-30 |
 
 ### pip-audit exceptions
 

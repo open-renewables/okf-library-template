@@ -32,9 +32,9 @@ The design rests on seven choices, recorded as architecture decisions AD-01 to A
 6. **Site generator kept open.** One `mkdocs.yml` is built by MkDocs 1.6.1 with Material 9.7.x (blocking) and by Zensical (non-blocking, with output checks). Material for MkDocs reaches end of life on 5 November 2026, so the generator is decided at the end of build phase P0.
 7. **Two operating modes.** A library declares `platform: github` or `platform: git-local`. Platform behaviour sits in adapters; in `git-local` mode the library runs on git and Python alone, with provenance from commit trailers, and can later move to GitHub without rewriting history (AD-19, W-12). The same `uv run poe <task>` commands run checks locally and in CI (AD-20).
 
-Build plan (section 14): verification spikes, core tooling, CI and governance, site, release and skills, then a pilot. The template is released as v1.0.0 (stable) only when the pilot gate passes; downstream libraries, starting with the RE risk library, are built from template v1.0.0 or later. Effort was estimated at 27–41 person-days for one maintainer; the review of 25 October 2026 estimated 35–55, and effort is re-estimated at the end of P0.
+Build plan (section 14): verification spikes, core tooling, CI and governance, site, release and skills, then a pilot. The template is released as v1.0.0 (stable) only when the pilot gate passes; downstream libraries, starting with the RE risk library, are built from template v1.0.0 or later. Effort was estimated at 27–41 person-days for one maintainer; the review of 25 October 2026 estimated 35–55; at the end of P0 (2026-10-28) the remaining effort for P1 to P4 is re-estimated at 30.5–45.5 person-days (section 14).
 
-Thirteen behaviours are not yet verified and are scheduled as spikes before build (section 15). The design documents live in the template's `docs/development/` folder, which is template-only (AD-21). The SRS was aligned with this document on 25 October 2026 (section 16).
+Thirteen behaviours were scheduled as spikes before build (section 15); ten are answered, two (V-05, V-07) are partly answered and V-06 is carried, each carried part to a named gate (section 14). The design documents live in the template's `docs/development/` folder, which is template-only (AD-21). The SRS was aligned with this document on 25 October 2026 (section 16).
 
 ## 2. Scope and document relationships
 
@@ -115,7 +115,7 @@ Each decision adopts the stack report's recommendation unless amended. Alternati
 | AD-13 | Site: one `mkdocs.yml`; MkDocs 1.6.1 + Material 9.7.x blocking build; Zensical exact-pinned non-blocking build with lychee and page-list checks. Material reaches end of life on 5 November 2026, so the blocking build depends on software past its end of life; the generator is decided at the end of P0 from V-03 and V-04 | Docusaurus in `detect` mode (kept as fallback, tested in P0); Hugo with `index.md` workaround | FR8, QA-26, QA-28 | Accepted (DR-21; amended by QA-38) |
 | AD-14 | Glossary and other stable anchors are inline HTML `<a id="…"></a>` whose id equals GitHub's automatic slug of the term when it is created and never changes afterwards; duplicate explicit and automatic ids are accepted and checked for consistency; `{#id}` is prohibited | `{#id}` attribute syntax (not rendered by GitHub); ids that track the current heading (not stable) | FR2.10, FR8.2 check 4 | Accepted (DR-21; amended by QA-42) |
 | AD-15 | Delivery: semver tag plus immutable GitHub Release carrying a CI-built bundle archive, which includes the `use-bundle` skill, with its SHA-256 and manifest; cloning at the tag is the alternative. A release fails while any merged pull request lacks its revision line | Package registry; MCP server (adds a runtime dependency) | FR7.3, FR7.4 | Accepted (DR-21; amended by QA-32 and QA-37). Archives are built reproducibly (I-12). In `git-local` mode a release is an annotated tag recording the archive's SHA-256, with the archive in `dist/` (W-07; QA-60, QA-61) |
-| AD-16 | Agent skills in `.agents/skills/` with only the six Agent Skills specification frontmatter fields. Claude Code discovers project skills only in `.claude/skills/`, so each skill also has an entry `.claude/skills/<name>` that is a symlink to `../../.agents/skills/<name>` (V-09); product plugin manifests added later if needed | Root `skills/` folder (not auto-discovered); duplicated skill copies; product-specific frontmatter | FR7.1 | Accepted (DR-21, DR-24) |
+| AD-16 | Agent skills in `.agents/skills/` with only the six Agent Skills specification frontmatter fields. Claude Code discovers project skills only in `.claude/skills/`, so each skill also has an entry `.claude/skills/<name>` that is a symlink to `../../.agents/skills/<name>` (V-09); product plugin manifests added later if needed | Root `skills/` folder (not auto-discovered); duplicated skill copies; product-specific frontmatter | FR7.1 | Superseded by ADR-002 (provider-neutral skills) |
 | AD-17 | Squash merges only, set by `setup_repo.py`, so each commit on `main` corresponds to one pull request | Merge commits; rebase merges (several commits per pull request on `main`) | FR3.1, FR3.2 | Accepted (QA-43) |
 | AD-18 | Content is validated with the base branch's `scripts/`, `profile/` and lock files; a pull request that changes both tooling or profile files and content fails unless labelled `profile-migration` | Each pull request validates itself with its own tooling | FR2.5, FR2.6, NFR6 | Accepted (QA-33; tooling paths amended by QA-70) |
 | AD-19 | Platform adapters. `profile.yaml` declares `platform: github` or `platform: git-local`; core modules never call a platform API, and `okfprofile.platforms` provides one adapter per value. `github`: as AD-11, AD-12, AD-15, with issue forms, labels, rulesets and Pages. `git-local`: no platform API; approval and labels from commit trailers; revision writer, release and staleness report run as local tasks; the repository may push to a plain git remote. Adapters for other git hosting platforms (for example GitLab, Forgejo) are a post-v1.0.0 feature and are not declared until built | GitHub-only tooling with local use limited to validation; declaring a `gitlab` value before its adapter exists | FR6.5, FR6.6, NFR2 | Accepted (QA-58 to QA-61) |
@@ -155,6 +155,7 @@ okf-library-template/
 ├── LICENSE                      # template: Apache 2.0 for the whole repository
 ├── NOTICE                       # attribution for the template's files; retained by every library
 ├── .gitignore                   # .venv, tool caches, coverage files, site/, dist/
+├── .gitattributes               # * text=auto eol=lf, so tooling behaves the same on every system (V-13)
 ├── pyproject.toml               # metadata; groups validate, site-mkdocs, site-zensical, dev; [tool.poe.tasks] (I-16); ruff, mypy, pytest, coverage settings
 ├── .python-version              # 3.12 for daily use (AD-03)
 ├── .pre-commit-config.yaml      # repo: local hooks only (I-17)
@@ -176,7 +177,6 @@ okf-library-template/
 ├── .agents/skills/
 │   ├── author-concept/SKILL.md
 │   └── use-bundle/SKILL.md
-├── .claude/skills/              # per-skill symlinks to .agents/skills/ for Claude Code discovery
 ├── scripts/
 │   ├── okfprofile/              # shared module (C-03)
 │   ├── okfprofile/platforms/    # github.py, git_local.py (AD-19)
@@ -260,7 +260,7 @@ A Python package in `scripts/okfprofile/` used by every script. Modules:
 | `indexes` | Generate `index.md` files (I-07), for the whole bundle or for the folders containing given concepts |
 | `revision` | Through the platform adapter, find the changes merged since the last bot commit (pull requests, or commits on `main` in `git-local` mode), infer approval, approval currency and owner status per concept, derive tiers, format and insert revision lines (I-08), and write `verified` when enabled |
 | `codeowners` | Parse `.github/CODEOWNERS` with GitHub's last-match-wins semantics; return owners for a path (used in both modes) |
-| `platforms` | One adapter per `platform` value (AD-19): `github` wraps the GitHub REST API using the token in the environment, with no third-party client library; `git_local` reads commits and trailers with `git` and resolves authors through `maintainers` (I-02) |
+| `platforms` | One adapter per `platform` value (AD-19): `github` wraps the GitHub REST API using the token in the environment, with no third-party client library, and resolves a commit's pull request without relying on `commits/{sha}/pulls` alone, which lagged the push by about 20 s (V-05); `git_local` reads commits and trailers with `git` and resolves authors through `maintainers` (I-02) |
 | `report` | Emit findings as JSON, GitHub workflow annotations and a Markdown job summary |
 
 The module holds no domain rules. Dependencies are limited to ruamel.yaml, markdown-it-py, mdit-py-plugins and jsonschema, plus the standard library and the vendored okf-skills validator (whose only dependency is PyYAML), to keep the validation dependency set small and separate from site dependencies (NFR6).
@@ -337,7 +337,7 @@ Two skills ship in `.agents/skills/`, a location read by several agent runtimes 
 - `author-concept`: drafts a concept of a declared type by running `new_concept.py`, filling the declared sections in the declared formats, citing sources as footnotes, and labelling its pull request `agent-drafted`. It needs a clone of the repository, because it runs `scripts/`.
 - `use-bundle`: navigates `index.md` files one level at a time, reads declared sections by heading, reports each concept's `uid`, status, trust tier (including the `(self)` qualifier) and the release tag, and never treats unverified concepts as reviewed. It is shipped in the release archive (I-12) and needs no script.
 
-Claude Code finds them through the `.claude/skills/` symlinks (AD-16). Both read `profile.yaml` and the vocabulary concepts rather than hard-coding a library's structure. Frontmatter is limited to the six Agent Skills specification fields (I-14). Bundled scripts are Python and call C-04.
+`AGENTS.md` names them; no provider-specific folder is committed (ADR-002). Claude Code's own discovery is an optional adapter that the user creates in their checkout. Both read `profile.yaml` and the vocabulary concepts rather than hard-coding a library's structure. Frontmatter is limited to the six Agent Skills specification fields (I-14). Bundled scripts are Python and call C-04.
 
 ### C-09 Contribution intake
 
@@ -376,7 +376,7 @@ Rules enforced by C-03:
 
 - Frontmatter opens with `---` on line 1 and closes with `---`; YAML 1.2; all scalar values are read as strings unless the schema says otherwise.
 - Timestamp-valued keys (`stale_after`, `verified[].at`, any declared datetime field) are ISO 8601 datetimes with an explicit offset, for example `2027-01-01T00:00:00Z`.
-- Internal links are bundle-root-relative (`/path/to/concept.md#anchor`) or relative; they must resolve to a file in `knowledge/` and, where an anchor is given, to an automatic heading slug or an explicit anchor (AD-14).
+- Internal links are relative (spaces as `%20` or in angle brackets); root-relative links (`/path/to/concept.md`) are rejected (ADR-005). They must resolve to a file in `knowledge/` and, where an anchor is given, to an automatic heading slug or an explicit anchor (AD-14).
 - Angle-bracket text in prose is written in a code span or escaped, because every CommonMark parser treats `<word>` as raw HTML.
 - Nested list items are indented four spaces, which every candidate parser reads the same way (V-02).
 - Revision lines are inserted after the last existing line of the *Revision history* section, never at the end of the file (DDR QA-51).
@@ -548,7 +548,7 @@ Examples: an agent-drafted concept later given a one-line owner-approved fix sta
 | Concept tier after the revision | `verified` written |
 | --- | --- |
 | Human-reviewed (including self) | One entry per owner approval or owner self-approval in the window: `{by: human:<login>, at: <merge datetime>}` |
-| Machine-confirmed | One entry for the latest revision with a non-human actor, `{by: ci:<bot>, at: <merge datetime>}`, and no `human:` entries |
+| Machine-confirmed | One entry for the latest revision with a non-human actor, `{by: process:<bot>, at: <merge datetime>}`, and no `human:` entries |
 | Unverified | No `verified` key |
 
 V-11 confirms how OKF derives a tier from `verified` (from the latest entry or from any entry, and which non-human actor prefix is expected); the mapping is adjusted to that rule before P2.
@@ -592,7 +592,7 @@ Checklist: concept type and folder; sources cited; own words; whether an AI tool
 - `<library>-<tag>.tar.gz.sha256`: checksum.
 - `<library>-<tag>.manifest.json`: tag, commit, profile version, OKF version and spec commit, template version, concept count by type, status and tier.
 
-The archive is reproducible (QA-61): entries sorted by path, mode normalised, owner and group set to 0 with empty names, modification times set to the tagged commit's timestamp, and gzip written without a file name or timestamp, so rebuilding from the tag yields the same SHA-256 (V-12). The manifest also records `platform`.
+The archive is reproducible (QA-61): entries sorted by path, mode normalised, owner and group set to 0 with empty names, modification times set to the tagged commit's timestamp, and gzip written without a file name or timestamp, so rebuilding from the tag yields the same tar. The gzip stream depends on the zlib implementation (zlib-ng differs from zlib; V-12), so the manifest records the SHA-256 of the uncompressed tar as the content hash, the `.tar.gz` digest, and the Python and zlib versions used; verification compares the tar digest, and the `.tar.gz` digest only when the recorded versions match (ADR-004). The manifest also records `platform`.
 
 `author-concept` is not in the archive because it needs `scripts/`; it is used from a clone. GitHub's automatic source archives are not the citable artefact, because their compression can change **[Doc]**.
 
@@ -607,7 +607,7 @@ strict: true
 use_directory_urls: true
 validation:
   links:
-    absolute_links: relative_to_docs
+    absolute_links: warn            # root-relative links are not allowed (ADR-005); strict mode fails on them
     anchors: warn
 theme:
   name: material
@@ -735,7 +735,7 @@ sequenceDiagram
   G->>R: push event (main)
   R->>R: skip if head commit has Revision-Bot trailer
   R->>G: list commits on main since the last Revision-Bot commit
-  R->>G: per commit: pull request, reviews with commit ids, files, merged_by, labels
+  R->>G: per commit: pull request (closed-pull-request list by merge_commit_sha, then `(#n)` in the subject, then the commit endpoint with retries), reviews with commit ids, files, merged_by, labels
   R->>R: infer approval, currency and owner status per concept; derive tiers
   R->>R: insert revision lines; rebuild affected indexes; rewrite verified if enabled
   R->>G: one commit with Revision-Bot trailer (GITHUB_TOKEN or App token)
@@ -876,7 +876,7 @@ The "for pull requests only" bypass lets the single maintainer merge their own p
 | FR4 Indexes | I-07 | W-04 check 5, W-05 | Golden index files; check 5 green after revision commits |
 | FR5 Contribution workflow | C-09, I-10, I-11, I-15 | W-02, W-03 | Pilot contribution by issue form; per-concept owner status test |
 | FR6 Instantiation | C-04 (`init_library`, `setup_repo`), AD-10, AD-19, I-12 | W-01, W-10, W-12 | Self-test on every template change for both platforms; timed by a second person (V-06); git-local release rebuilt and matched (V-12); W-12 rehearsed on the pilot |
-| FR7 Agent skills and delivery | C-08, C-10, I-12, I-14, AD-15, AD-16 | W-07, W-09 | Pilot agent run from the archive traced to `uid` and tag; release gate test |
+| FR7 Agent skills and delivery | C-08, C-10, I-12, I-14, AD-15, AD-16 (superseded by ADR-002) | W-07, W-09 | Pilot agent run from the archive traced to `uid` and tag; release gate test |
 | FR8 Website | C-07, I-13, AD-13, AD-14 | W-08 | Six compatibility checks on the pilot bundle (V-03, V-04); edit and issue links on a preview |
 | NFR1 Portability | C-01, C-10, AD-15 | W-07, W-09 | Archive readable without tooling |
 | NFR2 Technology neutrality | C-02, C-03 `platforms`, I-02–I-05, AD-19 | W-10 | Review: no domain rule in `scripts/`; no platform call outside the adapters; git-local self-test |
@@ -889,18 +889,26 @@ NFR5 (content style) is an authoring rule enforced by review and has no componen
 
 ## 14. Build and release plan
 
-The template is built and released to a stable version before any downstream library starts. Effort is indicative, for one maintainer, in person-days **[Inf]**. The figures below are the original estimate (27–41 in total), with P2 raised by 2–3 days for the `git-local` adapter and W-12 (QA-58 to QA-61); the review of 25 October 2026 estimated 35–55, mainly for P1 and P2, and effort is re-estimated at the P0 exit (DDR QA-45).
+The template is built and released to a stable version before any downstream library starts. Effort is indicative, for one maintainer, in person-days **[Inf]**. The figures below are the original estimate (27–41 in total), with P2 raised by 2–3 days for the `git-local` adapter and W-12 (QA-58 to QA-61); the review of 25 October 2026 estimated 35–55, mainly for P1 and P2, and effort was re-estimated at the P0 exit on 2026-10-28 (DDR QA-45): the table below carries the revised figures for P1 to P3, 30.5–45.5 person-days for P1 to P4 in total **[Inf]**. The basis is in the P0 re-estimate; the largest uncertainty is P1, which no spike exercised.
 
 | Phase | Content | Effort | Exit |
 | --- | --- | --- | --- |
 | Set-up | Create the free GitHub organisation and the public template repository from the `docs/development/` scaffold, adding `LICENSE`, `NOTICE`, `README.md` and `.gitignore`; squash-only merges, read-only workflow token, secret scanning, push protection and Dependabot alerts; `main` ruleset without the `validate` check (runbook `docs/development/operations/runbook-create-template-repository.md`) | 0.5 | Repository public and marked as a template; a test pull request squash-merged; a direct push to `main` refused |
-| P0 Verification | Spikes V-01 to V-13 in a scratch repository and scratch organisation, separate from the template repository because V-05 and V-07 change rulesets and release settings; site generator decision (V-03, V-04); re-estimate | 2–3 | Each V-item answered; generator decided; design and estimate updated |
-| P1 Core tooling | `pyproject.toml` with tasks, ruff, mypy, pytest and coverage settings; `.python-version`; `.pre-commit-config.yaml`; `docs/development/` scaffold; `okfprofile`; checks 1–6, change rules and publishing pre-check; vendored okf-skills; `new_concept`, `renumber`, `build_indexes`; fixtures and tests | 10–15 | All finding codes tested; v0.1.0 (alpha) |
-| P2 CI and governance | `.github/CODEOWNERS`; `validate.yml` with base-branch tooling, then `validate` added as a required check on the `main` ruleset; `revision.yml` and `write_revision` with catch-up, `stale-report.yml`; issue forms; pull request template; `init_library`, `setup_repo` including `--promote`; instantiation self-test (W-10) for both platforms; `git_local` adapter, `release.py`, reproducible archives and a W-12 rehearsal; gitleaks and pip-audit jobs; Python matrix; GitHub App | 8–12 | Each approval and tier case recorded correctly in a scratch library, including a dropped run |
-| P3 Site, release, skills | `mkdocs.yml` or the chosen generator's configuration; `site.yml`; `release.yml` with the revision gate and `build_bundle`; both skills; `AGENTS.md`, `GOVERNANCE.md`, `README.md`, `NOTICE` | 4–6 | v0.5.0 (beta) |
+| P0 Verification | Spikes V-01 to V-13 in a scratch repository and scratch organisation, separate from the template repository because V-05 and V-07 change rulesets and release settings; site generator decision (V-03, V-04); re-estimate | 2–3 | Done 2026-10-28: each V-item answered or carried to a named gate; generator decided (ADR-001); design and estimate updated |
+| P1 Core tooling | `pyproject.toml` with tasks, ruff, mypy, pytest and coverage settings; `.python-version`; `.pre-commit-config.yaml`; `docs/development/` scaffold; `okfprofile`; checks 1–6, change rules and publishing pre-check; vendored okf-skills; `new_concept`, `renumber`, `build_indexes`; fixtures and tests | 11–16 | All finding codes tested; v0.1.0 (alpha) |
+| P2 CI and governance | `.github/CODEOWNERS`; `validate.yml` with base-branch tooling, then `validate` added as a required check on the `main` ruleset; `revision.yml` and `write_revision` with catch-up, `stale-report.yml`; issue forms; pull request template; `init_library`, `setup_repo` including `--promote`; instantiation self-test (W-10) for both platforms; `git_local` adapter, `release.py`, reproducible archives and a W-12 rehearsal; gitleaks and pip-audit jobs; Python matrix; GitHub App | 9.5–14.5 | Each approval and tier case recorded correctly in a scratch library, including a dropped run |
+| P3 Site, release, skills | `mkdocs.yml` or the chosen generator's configuration; `site.yml`; `release.yml` with the revision gate and `build_bundle`; both skills; `AGENTS.md`, `GOVERNANCE.md`, `README.md`, `NOTICE` | 5–7 | v0.5.0 (beta) |
 | P4 Pilot and hardening | Instantiate a pilot library; author about 20 concepts of its primary type with scope notes, vocabulary values and glossary entries; second person times W-01; agent run | 5–8 | Stable gate met; v1.0.0 |
 
 P1 starts only when the SRS is aligned with this document (DDR QA-35; done 25 October 2026).
+Verification items carried past P0 (decided 2026-10-28; each has a gate, and the v1.0.0 gate below still requires them closed):
+
+| Item | Part carried | Gate |
+| --- | --- | --- |
+| V-05 | App "always" bypass on a protected `main` (5a); approval, stale approval and review `commit_id` API shape (5c) | Before `revision.yml` is written, at the start of P2 |
+| V-06 | Second person times W-01: platform steps first, then the whole | End of P2 (platform steps); P4 (full, FR6.1) |
+| V-07 | Cloudflare Pages access-policy limits on the free plan; immutable releases on a private repository | Only if a library wants a private preview or release; otherwise none |
+
 
 Template v1.0.0 (stable) gate:
 
@@ -913,21 +921,21 @@ Template v1.0.0 (stable) gate:
 
 ## 15. Verification items
 
-| ID | Item | Outcome needed |
-| --- | --- | --- |
-| V-01 | GitHub rendering of `<a id>` anchors placed before or inside headings, duplicate ids with automatic slugs, non-ASCII and parenthesised terms | Confirm AD-14 placement and duplicate-id rule |
-| V-02 | Two-space versus four-space nested list items in Python-Markdown (MkDocs, Zensical) and GitHub | Confirm I-01 indentation rule |
-| V-03 | Zensical: `/`-rooted links (failed 18 October), `validation`, `strict`, `extra.status`, `extra.social`, `content.action.edit`, footnotes, `attr_list`, `toc`, tags; whether MkDocs tolerates Zensical-only theme keys | Generator decision at the P0 exit (C-07) |
-| V-04 | Docusaurus 3.10 in `detect` mode on three real concepts (fallback generator) | Generator decision at the P0 exit |
-| V-05 | Ruleset with admin "for pull requests only" bypass and App "always" bypass on a free organisation; required-check naming across `pull_request` and `pull_request_review`; how an admin bypass merge and a review's commit id appear in the API; concurrency-group cancellation of pending runs; whether a fork of a public repository can be made private | Confirm section 11 and W-05 inference |
-| V-06 | Second person performs W-01 end to end, including the App | FR6.1 measured |
-| V-07 | Immutable releases on GitHub Free; Cloudflare Pages access policy limits on the free plan | Confirm C-10 and alpha or beta options |
-| V-08 | okf-skills mapping of its findings to `OKF1xx`, its behaviour on generated `index.md` files, and running the vendored validator outside the Action | Confirm AD-08 integration |
-| V-09 | Claude Code discovers skills through per-skill symlinks in `.claude/skills/`; symlinks survive "Use this template", the release archive and Windows checkouts (where git may write symlinks as plain files) | Confirm AD-16; otherwise `init_library.py` copies the skills |
-| V-10 | `CLAUDE.md` imports and Markdown links resolve to files whose names contain spaces (`%20` or angle-bracket link targets), including from `docs/development/` subfolders | Confirm the file naming in `docs/development/` (section 6). First check: open Claude Code in the template repository and ask for a summary of the SRS |
-| V-12 | Reproducible archive: the same tag rebuilt on Linux, macOS and Windows, on Python 3.11 and 3.14, gives the same SHA-256 (tarfile and gzip settings in I-12) | Confirm I-12 and W-12 step 5 |
-| V-13 | poethepoet tasks run unchanged on Windows, macOS and Linux; `uv run poe install` works on a fresh clone; `repo: local` pre-commit hooks run through `uv run` on all three | Confirm I-16, I-17 |
-| V-11 | How OKF derives a trust tier from `verified`: from the latest entry or any entry, and which non-human actor prefix denotes machine confirmation | Confirm the I-08 `verified` mapping |
+| ID | Item | Outcome needed | Outcome (2026-10-28) |
+| --- | --- | --- | --- |
+| V-01 | GitHub rendering of `<a id>` anchors placed before or inside headings, duplicate ids with automatic slugs, non-ASCII and parenthesised terms | Confirm AD-14 placement and duplicate-id rule | Confirmed 2026-10-27: AD-14 holds on GitHub; GitHub lower-cases explicit ids, so ids are lower case. **[Test]** |
+| V-02 | Two-space versus four-space nested list items in Python-Markdown (MkDocs, Zensical) and GitHub | Confirm I-01 indentation rule | Confirmed: four-space nesting is identical on GitHub, Python-Markdown (MkDocs, Zensical) and Docusaurus; two-space differs. **[Test]** |
+| V-03 | Zensical: `/`-rooted links (failed 18 October), `validation`, `strict`, `extra.status`, `extra.social`, `content.action.edit`, footnotes, `attr_list`, `toc`, tags; whether MkDocs tolerates Zensical-only theme keys | Generator decision at the P0 exit (C-07) | Zensical 0.0.73 fails FR8.2 check 2 (`/`-rooted links); other tested features equal. Option A (AD-13) with Zensical in parallel; ADR-001 (Proposed). **[Test]** |
+| V-04 | Docusaurus 3.10 in `detect` mode on three real concepts (fallback generator) | Generator decision at the P0 exit | Docusaurus 3.10.2 passes five checks and fails check 5 (`slug`, `id`); not adopted. **[Test]** |
+| V-05 | Ruleset with admin "for pull requests only" bypass and App "always" bypass on a free organisation; required-check naming across `pull_request` and `pull_request_review`; how an admin bypass merge and a review's commit id appear in the API; concurrency-group cancellation of pending runs; whether a fork of a public repository can be made private | Confirm section 11 and W-05 inference | Partly confirmed: admin bypass, check naming, concurrency cancellation, fork privacy **[Doc]**; commit-to-pull-request lookup can lag the push. App bypass and approval cases carried to the start of P2. **[Test]** |
+| V-06 | Second person performs W-01 end to end, including the App | FR6.1 measured | Carried (section 14): platform steps end of P2, full timing in P4. |
+| V-07 | Immutable releases on GitHub Free; Cloudflare Pages access policy limits on the free plan | Confirm C-10 and alpha or beta options | Immutable releases confirmed on Free for a public repository. Private repository and Cloudflare limits carried. **[Test]** |
+| V-08 | okf-skills mapping of its findings to `OKF1xx`, its behaviour on generated `index.md` files, and running the vendored validator outside the Action | Confirm AD-08 integration | Confirmed: one script, the same one the Action runs; no finding codes, so mapping is by message text; offset-less datetimes pass. **[Test]** |
+| V-09 | Claude Code discovers skills through per-skill symlinks in `.claude/skills/`; symlinks survive "Use this template", the release archive and Windows checkouts (where git may write symlinks as plain files) | Confirm AD-16; otherwise `init_library.py` copies the skills | Answered: symlinks survive git, GitHub archives and Linux, macOS and hosted Windows checkouts; a symlink-less Windows checkout breaks Claude Code skill discovery. Owner decision 2026-10-30: provider-neutral core with an optional adapter instead of committed symlinks (ADR-002). **[Test]** |
+| V-10 | `CLAUDE.md` imports and Markdown links resolve to files whose names contain spaces (`%20` or angle-bracket link targets), including from `docs/development/` subfolders | Confirm the file naming in `docs/development/` (section 6). First check: open Claude Code in the template repository and ask for a summary of the SRS | `CLAUDE.md` imports with spaces do not load; the backslash-escaped form does (with hyphens, nested folders, nested imports). **[Test]** |
+| V-12 | Reproducible archive: the same tag rebuilt on Linux, macOS and Windows, on Python 3.11 and 3.14, gives the same SHA-256 (tarfile and gzip settings in I-12) | Confirm I-12 and W-12 step 5 | Tar identical across systems and Python 3.11 and 3.14; tar.gz differs under zlib-ng. **[Test]** |
+| V-13 | poethepoet tasks run unchanged on Windows, macOS and Linux; `uv run poe install` works on a fresh clone; `repo: local` pre-commit hooks run through `uv run` on all three | Confirm I-16, I-17 | Confirmed on Windows, macOS, Linux and Python 3.11 and 3.14. **[Test]** |
+| V-11 | How OKF derives a trust tier from `verified`: from the latest entry or any entry, and which non-human actor prefix denotes machine confirmation | Confirm the I-08 `verified` mapping | Confirmed: tier from any `human:` entry; `process:` is the convention for non-human actors. **[Doc]** |
 
 ## 16. Changes applied to the SRS
 

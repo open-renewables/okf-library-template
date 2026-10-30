@@ -7,11 +7,11 @@ Template only: `init_library.py` removes this file at instantiation, after which
 
 ## Design documents
 
-<!-- The file names contain spaces. V-10 (SDD §15) confirms whether these imports resolve as written; if not, use the form V-10 settles. -->
+<!-- The file names contain spaces. V-10 (SDD §15): only imports with backslash-escaped spaces load (ADR-003). -->
 
-@docs/development/requirements/OKF Library Template - Software Requirements Spec.md
-@docs/development/architecture/OKF Library Template - Software Design Document.md
-@docs/development/adr/OKF Library Template - Design Decision Record.md
-@docs/development/architecture/OKF library technology stack options.md
+@docs/development/requirements/OKF\ Library\ Template\ -\ Software\ Requirements\ Spec.md
+@docs/development/architecture/OKF\ Library\ Template\ -\ Software\ Design\ Document.md
+@docs/development/adr/OKF\ Library\ Template\ -\ Design\ Decision\ Record.md
+@docs/development/architecture/OKF\ library\ technology\ stack\ options.md
 
 The quality bar is `docs/development/constraints.md` and the style guide is `docs/development/conventions.md`; they are referenced from `docs/development/AGENTS.md` rather than imported, to keep the context small.

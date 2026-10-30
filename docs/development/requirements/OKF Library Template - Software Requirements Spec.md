@@ -4,7 +4,7 @@ description: "This document sets out the requirements of the reusable OKF librar
 author: Richard Gledhill
 type: reference
 created: 2026-10-17T09:06
-modified: 2026-10-25
+modified: 2026-10-30
 draft: false
 status: accepted
 confidential: false
@@ -200,7 +200,7 @@ Requirements are grouped FR1 to FR8 and numbered within each group. Each has an 
 | ID | Requirement | Acceptance criterion |
 | --- | --- | --- |
 | FR8.1 | A library may publish a static site built from the bundle without changing any source file; the generator can be replaced without moving concept files | The site build reads the bundle in place |
-| FR8.2 | The generator passes six compatibility checks: (1) `index.md` becomes the folder's landing page; (2) links starting with `/` resolve to site routes; (3) non-standard frontmatter keys are ignored but kept; (4) heading anchors match the hosting platform's, using explicit anchors where needed; (5) keys the generator reserves (for example `id`, `title`, `description`, `tags`, `slug`, `status`) do not change the profile's meaning, and colon-namespaced tags produce valid pages and URLs; (6) angle brackets and braces in prose, and footnotes, render unchanged | A test build on the pilot bundle passes each check |
+| FR8.2 | The generator passes six compatibility checks: (1) `index.md` becomes the folder's landing page; (2) relative links between concepts resolve to site routes; (3) non-standard frontmatter keys are ignored but kept; (4) heading anchors match the hosting platform's, using explicit anchors where needed; (5) keys the generator reserves (for example `id`, `title`, `description`, `tags`, `slug`, `status`) do not change the profile's meaning, and colon-namespaced tags produce valid pages and URLs; (6) angle brackets and braces in prose, and footnotes, render unchanged | A test build on the pilot bundle passes each check |
 | FR8.3 | The site is rebuilt from each release tag and shows the latest release only; earlier releases are cited by tag and archive | The deployed site's manifest matches the latest tag |
 | FR8.4 | Each concept page offers "Suggest an edit", opening the file in the platform's editor; the site carries a link to raise an issue through the issue forms. Pre-filled per-page issue links are deferred until after template v1.0.0 | Both links work on a preview build |
 | FR8.5 | No public site is published before a library's v1.0.0; previews are local or build artifacts. A library may publish an alpha or beta site before then at the owner's discretion, within the free-tier budget, or have no public site | — (governance rule) |
