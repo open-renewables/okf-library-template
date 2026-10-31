@@ -2,11 +2,43 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from okfprofile.document import Concept, load_concept
 
 RESERVED_NAMES = frozenset({"index.md", "log.md"})
+
+
+def glob_match(pattern: str, path: str) -> bool:
+    """Match a path against a glob pattern: ``*`` and ``?`` stay inside one folder, ``**`` crosses folders.
+
+    Args:
+        pattern: Glob pattern with ``/`` separators, relative to the bundle root.
+        path: Path with ``/`` separators.
+
+    Returns:
+        True if the whole path matches.
+    """
+    regex = ""
+    index = 0
+    while index < len(pattern):
+        if pattern.startswith("**/", index):
+            regex += "(?:.*/)?"
+            index += 3
+        elif pattern.startswith("**", index):
+            regex += ".*"
+            index += 2
+        elif pattern[index] == "*":
+            regex += "[^/]*"
+            index += 1
+        elif pattern[index] == "?":
+            regex += "[^/]"
+            index += 1
+        else:
+            regex += re.escape(pattern[index])
+            index += 1
+    return re.fullmatch(regex, path) is not None
 
 
 def concept_files(bundle_root: Path) -> list[Path]:

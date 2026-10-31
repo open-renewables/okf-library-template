@@ -57,12 +57,12 @@ ignore = ["E501", "E731"]
 "tests/*" = ["S101"]
 
 [tool.mypy]
-mypy_path = "scripts"
+mypy_path = "scripts:tests/template"
 explicit_package_bases = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["scripts"]
+pythonpath = ["scripts", "tests/template"]
 addopts = "--cov=okfprofile --cov-branch --cov-report=term-missing"
 
 [tool.coverage.run]

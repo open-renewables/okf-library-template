@@ -1,7 +1,7 @@
 ---
 type: Item
-uid: ITM-1
-title: Example item
+uid: ITM-0001
+title: 5
 description: One sentence.
 tags: [group:example-group, category:example-category]
 status: draft

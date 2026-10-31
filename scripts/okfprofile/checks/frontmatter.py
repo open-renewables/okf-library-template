@@ -38,14 +38,15 @@ def _unknown_fields(profile: Profile, concept: Concept, type_name: str) -> list[
 
 def _schema_finding(concept: Concept, error: ValidationError, skip: set[tuple[str | int, ...]]) -> list[Finding]:
     path = tuple(error.absolute_path)
-    if tuple(path) in skip:
+    is_tag_pattern = error.validator == "pattern" and len(path) == 2 and path[0] == "tags"
+    if path in skip or path == ("uid",) or is_tag_pattern:
         return []
     if error.validator == "required":
         present = error.instance if isinstance(error.instance, dict) else {}
         return [
             Finding.make("OKF202", concept.path, concept.line_of(*path), f"missing required field `{key}`")
             for key in (error.validator_value if isinstance(error.validator_value, list) else [])
-            if key not in present
+            if key not in present and not (key == "uid" and not path)
         ]
     best = best_match([error]) or error
     where = ".".join(str(step) for step in best.absolute_path) or "(frontmatter)"

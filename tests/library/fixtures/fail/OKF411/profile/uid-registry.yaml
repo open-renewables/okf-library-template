@@ -1,0 +1,9 @@
+GLS-0001:
+  path: glossary
+  type: Glossary
+VOC-0001:
+  path: vocab/group
+  type: Vocabulary
+VOC-0002:
+  path: vocab/category
+  type: Vocabulary

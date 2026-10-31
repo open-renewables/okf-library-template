@@ -3,5 +3,17 @@
 from okfprofile.checks.body import check_body
 from okfprofile.checks.conformance import check_conformance
 from okfprofile.checks.frontmatter import check_frontmatter
+from okfprofile.checks.identifiers import BaseState, check_identifiers
+from okfprofile.checks.links import check_links
+from okfprofile.checks.tags import check_paths, check_tags
 
-__all__ = ["check_body", "check_conformance", "check_frontmatter"]
+__all__ = [
+    "BaseState",
+    "check_body",
+    "check_conformance",
+    "check_frontmatter",
+    "check_identifiers",
+    "check_links",
+    "check_paths",
+    "check_tags",
+]

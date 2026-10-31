@@ -1,0 +1,11 @@
+ITM-0001:
+  moved_from:
+    - example-group/example-category/example-item
+  path: example-group/example-category/renamed-item
+  type: Item
+VOC-0001:
+  path: vocab/group
+  type: Vocabulary
+VOC-0002:
+  path: vocab/category
+  type: Vocabulary

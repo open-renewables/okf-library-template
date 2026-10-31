@@ -17,7 +17,7 @@ sources:
 
 ## Description
 
-Some text with a footnote.[^s1] See <a id="anchor"></a>the anchor and `<code>`.
+Some text with a footnote.[^s1] See <a id="anchor"></a>the anchor, [a section](#checks), [the vocabulary](../../vocab/group.md#group-vocabulary) and `<code>`.
 
 ## Checks
 

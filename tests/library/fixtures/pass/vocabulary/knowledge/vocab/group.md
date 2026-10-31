@@ -9,7 +9,7 @@ namespace: group
 
 # Group vocabulary
 
-- `example-group`: The example group.
+- `example-group`: The example-group value.
 
 ## Revision history
 
