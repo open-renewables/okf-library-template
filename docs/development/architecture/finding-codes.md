@@ -19,6 +19,9 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 
 | Code | Level | Check | Meaning | Fixture |
 | --- | --- | --- | --- | --- |
+| OKF001 | error | Change rules | Change touches tooling and content without the migration label | `tests/library/fixtures/fail/OKF001/` |
+| OKF002 | error | Change rules | Profile migration lacks a maintainer's approval of the current head | `tests/library/fixtures/fail/OKF002/` |
+| OKF003 | error | Change rules | Profile migration does not change DECISIONS.md | `tests/library/fixtures/fail/OKF003/` |
 | OKF101 | error | 1 | Frontmatter block missing, not on line 1, or not closed | `tests/library/fixtures/fail/OKF101/` |
 | OKF102 | error | 1 | Frontmatter is not valid YAML | `tests/library/fixtures/fail/OKF102/` |
 | OKF103 | error | 1 | Frontmatter is not a mapping | `tests/library/fixtures/fail/OKF103/` |
@@ -35,6 +38,7 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF203 | error | 2 | Unknown frontmatter field (the profile rejects them) | `tests/library/fixtures/fail/OKF203/` |
 | OKF204 | error | 2 | Frontmatter value does not satisfy the type schema | `tests/library/fixtures/fail/OKF204/` |
 | OKF205 | error | 2 | `status` is not declared in the profile | `tests/library/fixtures/fail/OKF205/` |
+| OKF315 | error | 3 | Revision history was edited, shortened or written by hand | `tests/library/fixtures/fail/OKF315/` |
 | OKF401 | error | 4 | Internal link starts with `/`; internal links are relative | `tests/library/fixtures/fail/OKF401/` |
 | OKF402 | error | 4 | Internal link target does not exist in the bundle | `tests/library/fixtures/fail/OKF402/` |
 | OKF403 | error | 4 | Link fragment matches no heading or explicit anchor in its target | `tests/library/fixtures/fail/OKF403/` |
@@ -60,6 +64,10 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF312 | error | 3 | Nested list item is not indented four spaces | `tests/library/fixtures/fail/OKF312/` |
 | OKF313 | error | 3 | Raw HTML in prose; write it as a code span or escape it | `tests/library/fixtures/fail/OKF313/` |
 | OKF314 | error | 3 | CI-managed section holds something other than valid revision lines | `tests/library/fixtures/fail/OKF314/` |
+| OKF501 | error | 5 | A folder has no generated index.md | `tests/library/fixtures/fail/OKF501/` |
+| OKF502 | error | 5 | A generated index.md is out of date or was edited by hand | `tests/library/fixtures/fail/OKF502/` |
+| OKF503 | error | 5 | An index.md sits in a folder that holds no concepts | `tests/library/fixtures/fail/OKF503/` |
+| OKF504 | warning | 5 | A folder holds more concepts than the profile suggests | `tests/library/fixtures/fail/OKF504/` |
 | OKF601 | error | 6 | Concept has no `uid` | `tests/library/fixtures/fail/OKF601/` |
 | OKF602 | error | 6 | `uid` is malformed or its prefix does not match the type | `tests/library/fixtures/fail/OKF602/` |
 | OKF603 | error | 6 | `uid` is used by more than one concept | `tests/library/fixtures/fail/OKF603/` |
@@ -68,8 +76,15 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF606 | error | 6 | A concept's `uid` changed since the base | `tests/library/fixtures/fail/OKF606/` |
 | OKF607 | error | 6 | A `uid` present in the base is gone (concept deleted or registry entry removed) | `tests/library/fixtures/fail/OKF607/` |
 | OKF608 | error | 6 | Registry entry has no matching concept, or its type differs | `tests/library/fixtures/fail/OKF608/` |
+| OKF701 | error | Publishing rules | Stable concept lacks the required owner approval | `tests/library/fixtures/fail/OKF701/` |
+| OKF702 | warning | Publishing rules | Stable concept will be recorded as self-approved | `tests/library/fixtures/fail/OKF702/` |
+| OKF703 | error | Publishing rules | Stable concept cites no source | `tests/library/fixtures/fail/OKF703/` |
+| OKF801 | warning | Profile warnings | Tag value restates a folder name (profile warning) | `tests/library/fixtures/fail/OKF801/` |
+| OKF802 | warning | Profile warnings | Agent markers found without the agent-drafted label | `tests/library/fixtures/fail/OKF802/` |
+| OKF803 | warning | Profile warnings | Stable concept still holds a placeholder in a named section | `tests/library/fixtures/fail/OKF803/` |
+| OKF804 | warning | Profile warnings | Folder holds more concepts than the profile's limit | `tests/library/fixtures/fail/OKF804/` |
 
-Codes for the change rules (`OKF0xx`), the publishing rules (`OKF7xx`), the profile warnings (`OKF8xx`) and index freshness (`OKF5xx`) are added with the step that implements each (`../plan/plan.md`, P1 steps 8 and 9), together with their failing fixtures. Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered).
+Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered). `OKF9xx` (revision completeness) is declared with the revision writer in build phase P2. The check column holds the I-09 check number, or the name of a group of rules that has no number there.
 
 ## Reading rules
 

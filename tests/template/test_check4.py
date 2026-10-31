@@ -197,7 +197,7 @@ def test_type_paths_are_enforced_for_every_declared_type(make_repo: MakeRepo) ->
 
 
 def test_fragments_into_index_files_and_other_files(make_repo: MakeRepo) -> None:
-    body = "[idx](../index.md#group) [file](pic.png#frag) [bad](../index.md#absent)"
+    body = "[idx](../index.md#example-group) [file](pic.png#frag) [bad](../index.md#absent)"
     profile = make_repo(
         {
             ITEM: item_text(description=body),

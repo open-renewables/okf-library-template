@@ -194,6 +194,7 @@ class Profile:
         okf_spec_commit: Pinned OKF specification commit.
         template_version: Template release the library was instantiated from.
         library_name: Library short name.
+        library_title: Library display title.
         platform: ``github`` or ``git-local``.
         maintainers: Map of login to emails.
         bundle_root: Absolute path of the bundle folder.
@@ -218,6 +219,7 @@ class Profile:
     okf_spec_commit: str
     template_version: str
     library_name: str
+    library_title: str
     platform: str
     maintainers: dict[str, tuple[str, ...]]
     bundle_root: Path
@@ -541,6 +543,7 @@ def load_profile(root: Path) -> Profile:
         okf_spec_commit=data["okf_spec_commit"],
         template_version=data["template_version"],
         library_name=data["library"]["name"],
+        library_title=data["library"]["title"],
         platform=data["platform"],
         maintainers={login: tuple(m["emails"]) for login, m in data.get("maintainers", {}).items()},
         bundle_root=root / data["bundle_root"],

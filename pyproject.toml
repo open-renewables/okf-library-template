@@ -40,9 +40,16 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py tests",
+    "python scripts/validate_profile.py",
+    "python scripts/build_indexes.py --check",
 ]
 default_item_type = "cmd"
+
+[tool.poe.tasks.ci-validate]
+help = "Validate this working tree against a base branch, using the base branch's own tooling and profile"
+cmd = "python scripts/validate_profile.py --tooling-from ${base} --base ${base}"
+args = [{ name = "base", default = "origin/main", help = "base branch or commit" }]
 
 [tool.ruff]
 line-length = 120

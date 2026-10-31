@@ -5,8 +5,10 @@ from pathlib import Path
 
 import pytest
 from okfprofile.bundle import load_bundle
+from okfprofile.changes import ChangeContext
 from okfprofile.config import load_profile
 from okfprofile.document import parse_concept
+from okfprofile.indexes import write_indexes
 from okfprofile.registry import (
     Registry,
     RegistryEntry,
@@ -62,6 +64,8 @@ def test_invalid_registries_are_rejected(text: str) -> None:
 
 
 def test_an_unreadable_meta_schema_is_reported(tmp_path: Path) -> None:
+    (tmp_path / "profile").mkdir()
+    (tmp_path / "profile" / "uid-registry.yaml").write_text("{}", encoding="utf-8")
     with pytest.raises(RegistryError, match="meta-schema"):
         load_registry(tmp_path)
 
@@ -114,7 +118,7 @@ def test_a_move_whose_old_path_is_not_recorded_is_still_rejected(make_repo: Make
         {"ITM-0001": RegistryEntry("example-group/example-category/renamed", "Item")},
     )
     base = BaseState([], Registry({"ITM-0001": RegistryEntry(ITEM_ID, "Item")}))
-    found = validate_bundle(profile, base=base, approved_move=True).findings
+    found = validate_bundle(profile, base=base, change=ChangeContext(labels={"approved-move"})).findings
     assert [f.code for f in found] == ["OKF605"]
     assert "not recorded" in found[0].message
 
@@ -188,7 +192,9 @@ def test_create_concept_writes_a_valid_registered_file(make_repo: MakeRepo) -> N
     assert 'description: "Says something: here."' in text
     assert "tags: [group:example-group, category:example-category]" in text
     assert "## Revision history\n\n<!-- Maintained by CI. Do not edit. -->" in text
-    assert validate_bundle(load_profile(profile.root)).findings == []
+    refreshed = load_profile(profile.root)
+    write_indexes(refreshed, load_bundle(refreshed.bundle_root, refreshed.root))
+    assert validate_bundle(refreshed).findings == []
     again = create_concept(profile, "Item", "example-group/example-category/another")
     assert "uid: ITM-0002" in again.read_text(encoding="utf-8")
     assert load_registry(profile.root).entries["ITM-0002"].path == "example-group/example-category/another"
@@ -218,7 +224,9 @@ def test_create_concept_for_a_type_without_path_tags(make_repo: MakeRepo) -> Non
     text = file.read_text(encoding="utf-8")
     assert 'title: "No"' in text
     assert "tags:" not in text
-    assert validate_bundle(load_profile(profile.root)).findings == []
+    refreshed = load_profile(profile.root)
+    write_indexes(refreshed, load_bundle(refreshed.bundle_root, refreshed.root))
+    assert validate_bundle(refreshed).findings == []
 
 
 def test_a_path_without_the_folders_a_tag_rule_needs_is_refused(make_repo: MakeRepo) -> None:
