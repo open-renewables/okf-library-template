@@ -238,7 +238,7 @@ class Profile:
         """The declared type called ``name``, if any."""
         return next((t for t in self.types if t.name == name), None)
 
-    def type_validator(self, name: str) -> Draft202012Validator:
+    def type_validator(self, name: str, reject_unknown: bool | None = None) -> Draft202012Validator:
         """A frontmatter validator for a declared type.
 
         When ``rules.reject_unknown_fields`` is true, ``unevaluatedProperties: false`` is added to the type
@@ -247,6 +247,7 @@ class Profile:
 
         Args:
             name: Declared type name.
+            reject_unknown: Override of ``rules.reject_unknown_fields``; None uses the profile's setting.
 
         Returns:
             A validator for the type's frontmatter.
@@ -258,7 +259,7 @@ class Profile:
         if declared is None:
             raise KeyError(name)
         schema: dict[str, Any] = {"$ref": declared.schema_id}
-        if self.rules.reject_unknown_fields:
+        if self.rules.reject_unknown_fields if reject_unknown is None else reject_unknown:
             schema["unevaluatedProperties"] = False
         return Draft202012Validator(schema, registry=self.registry)
 

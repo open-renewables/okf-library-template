@@ -3,3 +3,6 @@ Copyright 2026 Richard Gledhill
 
 Licensed under the Apache License, Version 2.0 (see LICENSE).
 Libraries created from this template keep this notice for the files they inherit.
+
+Third-party code vendored in this repository:
+- scripts/vendor/okf-skills/okf_validate.py: MIT licence, Marco Boffo (see scripts/vendor/okf-skills/LICENSE and VENDORED.md). The OKF v0.2 specification text referenced by its NOTICE is Apache-2.0, Google LLC.

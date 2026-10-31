@@ -47,6 +47,7 @@ default_item_type = "cmd"
 [tool.ruff]
 line-length = 120
 target-version = "py311"
+extend-exclude = ["scripts/vendor"]
 
 [tool.ruff.lint]
 select = ["YTT", "S", "B", "A", "C4", "T10", "SIM", "I", "C90", "E", "W", "F", "PGH", "UP", "RUF", "TRY"]

@@ -23,10 +23,10 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 3: checks 1 to 3 (`tooling/p1-checks-1-3`)
 
-- [ ] 4. Vendored okf-skills (verbatim, licences, hash record); message-to-`OKF1xx` mapper; frontmatter-first and datetime-offset; schema check (PP-1 decided)
-- [ ] 4. Check: failing fixture per code; every pinned message maps; vendored hash equals upstream; PyYAML and ruamel disagreement test
-- [ ] 5. Check 3: sections, order, placeholders, formats, CI-managed section, two-space nesting, angle-bracket prose
-- [ ] 5. Check: failing fixture per code; hand-edited, deleted and out-of-grammar revision lines fail
+- [x] 4. Vendored okf-skills (verbatim, licences, hash record); message-to-`OKF1xx` mapper; frontmatter-first and datetime-offset; schema check (PP-1: ADR-008 drafted, awaiting acceptance)
+- [x] 4. Check: failing fixture per code; every pinned message maps; vendored hash equals upstream; PyYAML and ruamel disagreement test
+- [x] 5. Check 3: sections, order, placeholders, formats, CI-managed section, two-space nesting, angle-bracket prose
+- [x] 5. Check: failing fixture per code; hand-edited, deleted and out-of-grammar revision lines fail
 
 ## PR 4: checks 4 to 6 (`tooling/p1-checks-4-6`)
 
@@ -73,8 +73,8 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 1 | Skeleton built, uncommitted on `tooling/p1-skeleton`. `poe check` and `poe test` pass on 3.11.15, 3.12.10, 3.14.0; fresh clone with autocrlf true and false has 0 CRLF files and passes. Matrix needs `UV_PYTHON` and `UV_PROJECT_ENVIRONMENT` set (a bare `uv run --python` fails on Windows). Lock has 36 packages. Licences: `pathspec` 1.1.1 (MPL-2.0, via mypy) is in `dev`; `nodeenv` ("BSD") and `colorama` ("BSD License") have non-SPDX metadata. Windows-only `colorama`/`nodeenv` come from pre-commit, pytest and poethepoet | [Test] | PP-3 raised; non-SPDX pair to resolve with it |
 | 2 | `codes`, `report`, `document`, `config` built in `scripts/okfprofile/`. 94 tests pass on 3.11, 3.12, 3.14; coverage 99.75 %; ruff and mypy strict clean. YAML 1.2 needed the timestamp constructor overridden (ruamel resolves dates even in 1.2 mode). `jsonschema` needs `types-jsonschema` in `dev` (Apache-2.0) | [Test] | PP-7 |
 | 3 | `profile/profile.yaml` (Item ITM, Vocabulary VOC, Glossary GLS; OD-1), meta-schemas for profile, format and registry, OKF base schema from the pinned spec, three type schemas, `check` format. Loader reports all problems with file and line; 25 mutation tests. The scripts hold no type name, prefix, namespace or format name (tested) | [Test] | PP-7 |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 4 | okf-skills vendored verbatim at `a8b96420` (blob hash recorded and tested; MIT and spec-notice texts carried). A test reads every message string out of the vendored source with `ast` and fails on any that the mapper cannot place, so a re-pin is caught. Of the 36 message sites in the file, 19 map to nine codes and 17 are dropped because check 2 or check 4 owns them. Check 2 de-duplicates repeated required-field errors. Datetime rule is `OKF120`; check 2 skips the same keys. 28 fail fixtures and 3 pass fixtures run through `validate_bundle` and each fail fixture raises exactly its code; `OKF118` and `OKF119` are proven by unit tests only (the template profile has no Attested Computation type, and the pinned script never emits an unknown message) | [Test] | PP-1 (ADR-008) |
+| 5 | Check 3 covers title heading, section presence, order, repeats and undeclared sections, placeholders, formats with children and enums, four-space nesting, raw HTML and the CI-managed revision history. The revision-line grammar (`revision.py`) moved here from step 8 because the revision-history check needs it; tier derivation stays in step 8. Reader extended with per-section paragraphs and content flag. 197 tests, 99.6 % coverage on 3.11, 3.12, 3.14 | [Test] | none |
 | 6 |  |  |  |
 | 7 |  |  |  |
 | 8 |  |  |  |

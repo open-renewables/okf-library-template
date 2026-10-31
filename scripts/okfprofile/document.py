@@ -27,6 +27,9 @@ from okfprofile.report import Finding
 DELIMITER = "---"
 TIMESTAMP_TAG = "tag:yaml.org,2002:timestamp"
 SECTION_LEVEL = 2
+BLOCK_KINDS = frozenset(
+    {"paragraph_open", "bullet_list_open", "ordered_list_open", "fence", "code_block", "blockquote_open", "html_block"}
+)
 
 KeyPath = tuple[str | int, ...]
 
@@ -75,18 +78,36 @@ class ListItem:
 
 
 @dataclass(frozen=True)
+class Paragraph:
+    """A top-level paragraph of a section.
+
+    Attributes:
+        text: Source text of the paragraph, lines joined with a newline and stripped.
+        line: 1-based line in the file.
+    """
+
+    text: str
+    line: int
+
+
+@dataclass(frozen=True)
 class Section:
-    """An H2 section and the top-level list items directly under it.
+    """An H2 section and what sits directly under it.
 
     Attributes:
         heading: The H2 heading.
         end_line: Last line of the section (the line before the next H2, or the last line of the file).
         items: Top-level list items in the section.
+        paragraphs: Top-level paragraphs in the section.
+        has_content: True if the section holds any paragraph, list, code, quote or non-comment HTML block.
+            Footnote definitions and HTML comments do not count.
     """
 
     heading: Heading
     end_line: int
     items: tuple[ListItem, ...]
+    paragraphs: tuple[Paragraph, ...] = ()
+    has_content: bool = False
 
 
 @dataclass(frozen=True)
@@ -155,6 +176,7 @@ class Concept:
 
     Attributes:
         path: Path as given by the caller, used in findings.
+        concept_id: Path under the bundle root without ``.md`` (set by the bundle loader).
         frontmatter: Parsed mapping, or None when the block is missing or invalid.
         key_lines: 1-based file line of each frontmatter key path.
         body_first_line: 1-based line of the first body line.
@@ -170,6 +192,7 @@ class Concept:
     """
 
     path: str
+    concept_id: str = ""
     frontmatter: dict[str, Any] | None = None
     key_lines: dict[KeyPath, int] = field(default_factory=dict)
     body_first_line: int = 1
@@ -316,6 +339,9 @@ class _BodyReader:
         self.slugs: dict[str, int] = {}
         self.section_headings: list[Heading] = []
         self.section_items: list[list[ListItem]] = []
+        self.section_paragraphs: list[list[Paragraph]] = []
+        self.section_content: list[bool] = []
+        self.in_footnotes = False
         self.stack: list[_ItemBuilder] = []
         self.current_h2: str | None = None
 
@@ -333,6 +359,8 @@ class _BodyReader:
             self.current_h2 = text
             self.section_headings.append(heading)
             self.section_items.append([])
+            self.section_paragraphs.append([])
+            self.section_content.append(False)
 
     def inline(self, token: Token) -> None:
         concept = self.concept
@@ -360,34 +388,74 @@ class _BodyReader:
             elif child.type == "footnote_ref":
                 concept.footnote_refs.append(Footnote(str(child.meta["label"]), line))
 
+    def note_block(self, token: Token) -> None:
+        """Record top-level content under the current section."""
+        if self.in_footnotes or token.level != 0 or not self.section_content:
+            return
+        if token.type == "html_block" and token.content.lstrip().startswith("<!--"):
+            return
+        self.section_content[-1] = True
+        if token.type == "paragraph_open" and token.map:
+            start, end = token.map
+            text = "\n".join(self.concept.body_lines[start:end]).strip()
+            self.section_paragraphs[-1].append(Paragraph(text, self.first_line + start))
+
+    def on_heading(self, tokens: list[Token], index: int) -> None:
+        token = tokens[index]
+        self.heading(int(token.tag[1:]), _inline_text(tokens[index + 1]), self.line(token))
+
+    def on_html_block(self, tokens: list[Token], index: int) -> None:
+        token = tokens[index]
+        self.concept.html.append(HtmlSpan(token.content.rstrip("\n"), self.line(token), block=True))
+
+    def on_footnote_open(self, tokens: list[Token], index: int) -> None:
+        label = str(tokens[index].meta["label"])
+        self.concept.footnote_defs.append(Footnote(label, self.line(tokens[index + 1])))
+
+    def on_item_open(self, tokens: list[Token], index: int) -> None:
+        token = tokens[index]
+        text, indent, ordered = _item_source(token, self.concept.body_lines)
+        self.stack.append(_ItemBuilder(text, self.line(token), indent, ordered))
+
+    def on_item_close(self, tokens: list[Token], index: int) -> None:
+        item = self.stack.pop().freeze()
+        if self.stack:
+            self.stack[-1].children.append(item)
+        elif self.section_items:
+            self.section_items[-1].append(item)
+
     def run(self, tokens: list[Token]) -> None:
-        concept = self.concept
+        handlers = {
+            "heading_open": self.on_heading,
+            "html_block": self.on_html_block,
+            "footnote_open": self.on_footnote_open,
+            "list_item_open": self.on_item_open,
+            "list_item_close": self.on_item_close,
+        }
         for index, token in enumerate(tokens):
             kind = token.type
-            if kind == "heading_open":
-                self.heading(int(token.tag[1:]), _inline_text(tokens[index + 1]), self.line(token))
-            elif kind == "inline":
+            if kind in BLOCK_KINDS:
+                self.note_block(token)
+            if kind == "inline":
                 self.inline(token)
-            elif kind == "html_block":
-                concept.html.append(HtmlSpan(token.content.rstrip("\n"), self.line(token), block=True))
-            elif kind == "footnote_open":
-                concept.footnote_defs.append(Footnote(str(token.meta["label"]), self.line(tokens[index + 1])))
-            elif kind == "list_item_open":
-                text, indent, ordered = _item_source(token, concept.body_lines)
-                self.stack.append(_ItemBuilder(text, self.line(token), indent, ordered))
-            elif kind == "list_item_close":
-                item = self.stack.pop().freeze()
-                if self.stack:
-                    self.stack[-1].children.append(item)
-                elif self.section_items:
-                    self.section_items[-1].append(item)
+            elif kind in {"footnote_block_open", "footnote_block_close"}:
+                self.in_footnotes = kind == "footnote_block_open"
+            elif kind in handlers:
+                handlers[kind](tokens, index)
 
     def finish(self) -> None:
         last_line = self.first_line + len(self.concept.body_lines) - 1
         headings = self.section_headings
         for position, heading in enumerate(headings):
             end = headings[position + 1].line - 1 if position + 1 < len(headings) else last_line
-            self.concept.sections.append(Section(heading, end, tuple(self.section_items[position])))
+            section = Section(
+                heading,
+                end,
+                tuple(self.section_items[position]),
+                tuple(self.section_paragraphs[position]),
+                self.section_content[position],
+            )
+            self.concept.sections.append(section)
         for span in self.concept.html:
             parser = _AnchorParser()
             parser.feed(span.text)
