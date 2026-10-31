@@ -21,6 +21,8 @@ Each row names its source. Rows marked **To fill** are not yet decided; the main
 | Format | `ruff format --check scripts tests` passes | `poe check` | QA-55 |
 | Types | `mypy --strict` on `scripts/okfprofile` with zero errors; `scripts/*.py` and `tests/` in default mode with zero errors; every `type: ignore` names its error code and carries a comment | `poe check` | QA-72 |
 
+`scripts/vendor/` (verbatim third-party code, hash recorded) is excluded from ruff check and format (ADR-008). Nothing else is excluded.
+
 ## Tests
 
 | Constraint | Limit | Enforced by | Source |

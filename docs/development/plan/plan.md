@@ -134,7 +134,7 @@ Nothing below is written until the owner approves its text. IDs for ADRs are ass
 
 | # | Trigger | Would change | Form |
 | --- | --- | --- | --- |
-| PP-1 | Always: `scripts/vendor/okf-skills/` is a verbatim third-party file and cannot meet the ruff, mypy and coverage limits | `../constraints.md` Code and Tests rows (an exemption for `scripts/vendor/` only) | ADR-008 (ADR-007 was taken by PP-3) |
+| PP-1 | Always: `scripts/vendor/okf-skills/` is a verbatim third-party file and cannot meet the ruff, mypy and coverage limits | `../constraints.md` Code and Tests rows (an exemption for `scripts/vendor/` only) | ADR-008, drafted 2026-10-31 (ADR-007 was taken by PP-3) |
 | PP-2 | Always: SDD I-07's example uses root-relative links, which ADR-005 rejects and P1 does not emit | SDD I-07 example text (wording; no decision changes) | SDD edit with a DDR change-log row |
 | PP-3 | Only if step 1 finds an MPL-2.0 package (for example `pathspec`, a mypy dependency) in the `dev` group | ADR-006 reason text and the `constraints.md` exception table | ADR-007, drafted 2026-10-31 (also resolves the `nodeenv` and `colorama` metadata) |
 | PP-4 | Always: I-09 gives code ranges only, and every code needs a stable number | New file `../architecture/finding-codes.md` assigning codes within the I-09 ranges; V-08's slots are a starting point | New document; no SDD edit |
