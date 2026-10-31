@@ -140,6 +140,7 @@ Nothing below is written until the owner approves its text. IDs for ADRs are ass
 | PP-4 | Always: I-09 gives code ranges only, and every code needs a stable number | New file `../architecture/finding-codes.md` assigning codes within the I-09 ranges; V-08's slots are a starting point | New document; no SDD edit |
 | PP-5 | Only if the owner rejects the OD-2 or OD-3 defaults | SDD §14 and C-04 placement of `scan.py`, `requirements/` export and the revision pure part | SDD edit with a change-log row |
 | PP-6 | Always: FR3.4's "a hand edit fails check 3" cannot be proven from content alone; P1 uses the line grammar plus a base-branch diff | Wording of how the check works, in the finding catalogue and `known-gaps.md`; a stronger rule (for example signed lines) would change I-08 | Note in the catalogue; ADR only if the owner wants a stronger rule |
+| PP-7 | Always: the example profile and schemas need parameters that SDD I-02 to I-04 do not list: `types` on a path rule (so a rule can target one type), `enum` on a format child (RE example in I-04), `publishing` as free text on a status extension, `unevaluatedProperties: false` added by the validator at load rather than stored in each type schema (equivalent to I-03), and the rule that undeclared H2 sections are allowed when a type's body `order` is `any` (settled in step 5). All are additive and optional | SDD I-02, I-03, I-04 wording (additions; no existing behaviour changes) | SDD edit with a DDR change-log row; ADR only if the owner prefers another form |
 
 ## Risks
 

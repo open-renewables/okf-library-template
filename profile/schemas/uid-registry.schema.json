@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "uid-registry.schema.json",
+  "title": "Identifier registry (profile/uid-registry.yaml), SDD I-06",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^[A-Z]{2,5}-[0-9]{4}$": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "type"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "type": { "type": "string", "minLength": 1 },
+        "moved_from": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    }
+  }
+}

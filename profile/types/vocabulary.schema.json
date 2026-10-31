@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "vocabulary.schema.json",
+  "title": "Vocabulary frontmatter (SDD I-05)",
+  "$ref": "okf-base.schema.json",
+  "required": ["type", "uid", "title", "description", "status", "namespace"],
+  "properties": {
+    "type": { "const": "Vocabulary" },
+    "uid": { "pattern": "^VOC-[0-9]{4}$" },
+    "namespace": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }
+  }
+}

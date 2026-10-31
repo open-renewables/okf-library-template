@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "okf-base.schema.json",
+  "$comment": "Frontmatter keys of OKF v0.2 at specification commit ad30107 (sections 4, 5, 10), plus the profile's uid. Type schemas reference this file. Unknown keys are rejected by the validator, which adds unevaluatedProperties: false to the type schema when rules.reject_unknown_fields is true (SDD I-03), so OKF's optional keys are always accepted.",
+  "title": "OKF base frontmatter",
+  "type": "object",
+  "required": ["type"],
+  "properties": {
+    "type": { "type": "string", "minLength": 1 },
+    "uid": { "type": "string", "pattern": "^[A-Z]{2,5}-[0-9]{4}$" },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "resource": { "type": "string", "minLength": 1 },
+    "tags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9-]*$" }
+    },
+    "status": { "type": "string", "minLength": 1 },
+    "stale_after": { "$ref": "#/$defs/datetime" },
+    "generated": {
+      "type": "object",
+      "required": ["by"],
+      "properties": { "by": { "$ref": "#/$defs/actor" }, "at": { "$ref": "#/$defs/datetime" } }
+    },
+    "verified": {
+      "oneOf": [
+        { "$ref": "#/$defs/verification" },
+        { "type": "array", "items": { "$ref": "#/$defs/verification" } }
+      ]
+    },
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } },
+    "usage_window": { "$ref": "#/$defs/window" },
+    "runtime": { "type": "string", "minLength": 1 },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "required"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "type": { "type": "string", "minLength": 1 },
+          "required": { "type": "boolean" }
+        }
+      }
+    },
+    "computation": { "type": "string", "minLength": 1 },
+    "executor": {
+      "type": "object",
+      "properties": {
+        "resource": { "type": "string", "minLength": 1 },
+        "receipt": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "attester": { "type": "object", "properties": { "resource": { "type": "string", "minLength": 1 } } }
+  },
+  "$defs": {
+    "datetime": {
+      "$comment": "ISO 8601 datetime with an explicit UTC offset (OKF section 5). format: date-time is not relied on because format assertion is optional in 2020-12.",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
+    },
+    "actor": { "type": "string", "minLength": 1 },
+    "verification": {
+      "type": "object",
+      "required": ["by", "at"],
+      "properties": { "by": { "$ref": "#/$defs/actor" }, "at": { "$ref": "#/$defs/datetime" } }
+    },
+    "window": {
+      "type": "object",
+      "required": ["from", "to"],
+      "properties": { "from": { "$ref": "#/$defs/datetime" }, "to": { "$ref": "#/$defs/datetime" } }
+    },
+    "source": {
+      "type": "object",
+      "required": ["resource"],
+      "properties": {
+        "resource": { "type": "string", "minLength": 1 },
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "author": { "$ref": "#/$defs/actor" },
+        "usage_count": { "type": "integer", "minimum": 0 },
+        "last_modified": { "$ref": "#/$defs/datetime" },
+        "usage_window": { "$ref": "#/$defs/window" }
+      }
+    }
+  }
+}
