@@ -68,10 +68,11 @@ def test_a_declared_status_extension_is_accepted() -> None:
 
 
 def test_missing_and_invalid_fields_are_reported_one_by_one() -> None:
-    concept = parse_concept("---\ntype: Item\nuid: bad\nstatus: draft\n---\n", "a.md")
+    concept = parse_concept("---\ntype: Item\nuid: bad\nstatus: 5\n---\n", "a.md")
     found = check_frontmatter(PROFILE, concept)
     assert codes(found).count("OKF202") == 3
     assert "OKF204" in codes(found)
+    assert not any("uid" in f.message for f in found)
     assert {"title", "description", "tags"} <= {m.split("`")[1] for m in (f.message for f in found) if "missing" in m}
 
 

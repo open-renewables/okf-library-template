@@ -30,10 +30,10 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 4: checks 4 to 6 (`tooling/p1-checks-4-6`)
 
-- [ ] 6. `vocab`; relative-only links; case-insensitive anchors with lower-case ids; glossary anchor stability; tags; path rules
-- [ ] 6. Check: failing fixture per code; `%20` and angle-bracket links resolve; upper-case id and changed glossary anchor fail
-- [ ] 7. `registry`, check 6, `new_concept.py`, `renumber.py`, `--fix-registry`
-- [ ] 7. Check: failing fixture per code; duplicate `uid` from two local branches cleared by `renumber.py`; `new_concept.py` output passes all checks
+- [x] 6. `vocab`; relative-only links; case-insensitive anchors with lower-case ids; glossary anchor stability; tags; path rules
+- [x] 6. Check: failing fixture per code; `%20` and angle-bracket links resolve; upper-case id and changed glossary anchor fail
+- [x] 7. `registry`, check 6, `new_concept.py`, `renumber.py`, `--fix-registry`
+- [x] 7. Check: failing fixture per code; duplicate `uid` from two local branches cleared by `renumber.py`; `new_concept.py` output passes all checks
 
 ## PR 5: indexes, change rules, entry points (`tooling/p1-indexes-changes`)
 
@@ -75,8 +75,8 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 3 | `profile/profile.yaml` (Item ITM, Vocabulary VOC, Glossary GLS; OD-1), meta-schemas for profile, format and registry, OKF base schema from the pinned spec, three type schemas, `check` format. Loader reports all problems with file and line; 25 mutation tests. The scripts hold no type name, prefix, namespace or format name (tested) | [Test] | PP-7 |
 | 4 | okf-skills vendored verbatim at `a8b96420` (blob hash recorded and tested; MIT and spec-notice texts carried). A test reads every message string out of the vendored source with `ast` and fails on any that the mapper cannot place, so a re-pin is caught. Of the 36 message sites in the file, 19 map to nine codes and 17 are dropped because check 2 or check 4 owns them. Check 2 de-duplicates repeated required-field errors. Datetime rule is `OKF120`; check 2 skips the same keys. 28 fail fixtures and 3 pass fixtures run through `validate_bundle` and each fail fixture raises exactly its code; `OKF118` and `OKF119` are proven by unit tests only (the template profile has no Attested Computation type, and the pinned script never emits an unknown message) | [Test] | PP-1 (ADR-008) |
 | 5 | Check 3 covers title heading, section presence, order, repeats and undeclared sections, placeholders, formats with children and enums, four-space nesting, raw HTML and the CI-managed revision history. The revision-line grammar (`revision.py`) moved here from step 8 because the revision-history check needs it; tier derivation stays in step 8. Reader extended with per-section paragraphs and content flag. 197 tests, 99.6 % coverage on 3.11, 3.12, 3.14 | [Test] | none |
-| 6 |  |  |  |
-| 7 |  |  |  |
+| 6 | Check 4 in `checks/links.py`, `checks/tags.py` and `vocab.py`: root-relative links (ADR-005), missing targets, fragments compared without regard to case, `{#id}` and upper-case ids, tag shape and vocabulary membership, four path-rule kinds, type `paths`. Explicit anchors present in the base must remain (`OKF411`). Reader gained `Concept.top_items`. Check 2 no longer reports tag-pattern or `uid` errors (check 4 and check 6 own them). `OKF404` does not try to tie an explicit id to a particular heading: the SDD does not say where the anchor sits relative to its heading | [Test] | none |
+| 7 | `registry.py` (canonical YAML, next number never reused, cap at 9,999, `apply_moves`, `renumber`), check 6 (`OKF601` to `OKF608`; a duplicated `uid` suppresses the registry findings for it), `scaffold.py` (`create_concept`, `renumber_concept`, CRLF-safe). The command-line wrappers `new_concept.py` and `renumber.py` are step 10. Two local-branch clash exercised without git: both concepts take `ITM-0001`, `OKF603` fires, `renumber_concept` moves the later one to `ITM-0002` and validation is clean. 47 fail and 4 pass fixtures; fixtures with `base/` and an `approved-move` marker cover the checks that compare against the base. 263 tests, 99.7 % coverage on 3.11, 3.12, 3.14 | [Test] | none |
 | 8 |  |  |  |
 | 9 |  |  |  |
 | 10 |  |  |  |

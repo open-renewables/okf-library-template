@@ -35,6 +35,17 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF203 | error | 2 | Unknown frontmatter field (the profile rejects them) | `tests/library/fixtures/fail/OKF203/` |
 | OKF204 | error | 2 | Frontmatter value does not satisfy the type schema | `tests/library/fixtures/fail/OKF204/` |
 | OKF205 | error | 2 | `status` is not declared in the profile | `tests/library/fixtures/fail/OKF205/` |
+| OKF401 | error | 4 | Internal link starts with `/`; internal links are relative | `tests/library/fixtures/fail/OKF401/` |
+| OKF402 | error | 4 | Internal link target does not exist in the bundle | `tests/library/fixtures/fail/OKF402/` |
+| OKF403 | error | 4 | Link fragment matches no heading or explicit anchor in its target | `tests/library/fixtures/fail/OKF403/` |
+| OKF404 | error | 4 | Anchor misuse: upper-case id, `{#id}` syntax, or a repeated explicit id | `tests/library/fixtures/fail/OKF404/` |
+| OKF405 | error | 4 | Tag does not match the tag pattern or names an undeclared namespace | `tests/library/fixtures/fail/OKF405/` |
+| OKF406 | error | 4 | Tag value is not in its vocabulary | `tests/library/fixtures/fail/OKF406/` |
+| OKF407 | error | 4 | Vocabulary concept missing or malformed | `tests/library/fixtures/fail/OKF407/` |
+| OKF408 | error | 4 | Path rule violated | `tests/library/fixtures/fail/OKF408/` |
+| OKF409 | warning | 4 | Tag value restates a folder name | `tests/library/fixtures/fail/OKF409/` |
+| OKF410 | error | 4 | Concept is outside the paths declared for its type | `tests/library/fixtures/fail/OKF410/` |
+| OKF411 | error | 4 | Explicit anchor present in the base is gone | `tests/library/fixtures/fail/OKF411/` |
 | OKF301 | error | 3 | Title heading missing, repeated, or different from `title` | `tests/library/fixtures/fail/OKF301/` |
 | OKF302 | error | 3 | Required body section missing | `tests/library/fixtures/fail/OKF302/` |
 | OKF303 | error | 3 | Body section out of the declared order | `tests/library/fixtures/fail/OKF303/` |
@@ -49,8 +60,16 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF312 | error | 3 | Nested list item is not indented four spaces | `tests/library/fixtures/fail/OKF312/` |
 | OKF313 | error | 3 | Raw HTML in prose; write it as a code span or escape it | `tests/library/fixtures/fail/OKF313/` |
 | OKF314 | error | 3 | CI-managed section holds something other than valid revision lines | `tests/library/fixtures/fail/OKF314/` |
+| OKF601 | error | 6 | Concept has no `uid` | `tests/library/fixtures/fail/OKF601/` |
+| OKF602 | error | 6 | `uid` is malformed or its prefix does not match the type | `tests/library/fixtures/fail/OKF602/` |
+| OKF603 | error | 6 | `uid` is used by more than one concept | `tests/library/fixtures/fail/OKF603/` |
+| OKF604 | error | 6 | Concept's `uid` is not in the registry | `tests/library/fixtures/fail/OKF604/` |
+| OKF605 | error | 6 | Concept path differs from the registry and the move is not approved | `tests/library/fixtures/fail/OKF605/` |
+| OKF606 | error | 6 | A concept's `uid` changed since the base | `tests/library/fixtures/fail/OKF606/` |
+| OKF607 | error | 6 | A `uid` present in the base is gone (concept deleted or registry entry removed) | `tests/library/fixtures/fail/OKF607/` |
+| OKF608 | error | 6 | Registry entry has no matching concept, or its type differs | `tests/library/fixtures/fail/OKF608/` |
 
-Codes for checks 4 to 6, the change rules, the publishing rules and the profile warnings are added with the step that implements each (`../plan/plan.md`, P1 steps 6 to 9), together with their failing fixtures. Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered).
+Codes for the change rules (`OKF0xx`), the publishing rules (`OKF7xx`), the profile warnings (`OKF8xx`) and index freshness (`OKF5xx`) are added with the step that implements each (`../plan/plan.md`, P1 steps 8 and 9), together with their failing fixtures. Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered).
 
 ## Reading rules
 

@@ -47,6 +47,8 @@ def _define(*infos: CodeInfo) -> dict[str, CodeInfo]:
 CHECK_1 = "1 OKF conformance"
 CHECK_2 = "2 Frontmatter schema"
 CHECK_3 = "3 Body structure"
+CHECK_4 = "4 Links, anchors, vocabularies, paths"
+CHECK_6 = "6 Identifiers and registry"
 
 CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF101", Level.ERROR, CHECK_1, "Frontmatter block missing, not on line 1, or not closed"),
@@ -65,6 +67,17 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF203", Level.ERROR, CHECK_2, "Unknown frontmatter field (the profile rejects them)"),
     CodeInfo("OKF204", Level.ERROR, CHECK_2, "Frontmatter value does not satisfy the type schema"),
     CodeInfo("OKF205", Level.ERROR, CHECK_2, "`status` is not declared in the profile"),
+    CodeInfo("OKF401", Level.ERROR, CHECK_4, "Internal link starts with `/`; internal links are relative"),
+    CodeInfo("OKF402", Level.ERROR, CHECK_4, "Internal link target does not exist in the bundle"),
+    CodeInfo("OKF403", Level.ERROR, CHECK_4, "Link fragment matches no heading or explicit anchor in its target"),
+    CodeInfo("OKF404", Level.ERROR, CHECK_4, "Anchor misuse: upper-case id, `{#id}` syntax, or a repeated explicit id"),
+    CodeInfo("OKF405", Level.ERROR, CHECK_4, "Tag does not match the tag pattern or names an undeclared namespace"),
+    CodeInfo("OKF406", Level.ERROR, CHECK_4, "Tag value is not in its vocabulary"),
+    CodeInfo("OKF407", Level.ERROR, CHECK_4, "Vocabulary concept missing or malformed"),
+    CodeInfo("OKF408", Level.ERROR, CHECK_4, "Path rule violated"),
+    CodeInfo("OKF409", Level.WARNING, CHECK_4, "Tag value restates a folder name"),
+    CodeInfo("OKF410", Level.ERROR, CHECK_4, "Concept is outside the paths declared for its type"),
+    CodeInfo("OKF411", Level.ERROR, CHECK_4, "Explicit anchor present in the base is gone"),
     CodeInfo("OKF301", Level.ERROR, CHECK_3, "Title heading missing, repeated, or different from `title`"),
     CodeInfo("OKF302", Level.ERROR, CHECK_3, "Required body section missing"),
     CodeInfo("OKF303", Level.ERROR, CHECK_3, "Body section out of the declared order"),
@@ -79,4 +92,17 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF312", Level.ERROR, CHECK_3, "Nested list item is not indented four spaces"),
     CodeInfo("OKF313", Level.ERROR, CHECK_3, "Raw HTML in prose; write it as a code span or escape it"),
     CodeInfo("OKF314", Level.ERROR, CHECK_3, "CI-managed section holds something other than valid revision lines"),
+    CodeInfo("OKF601", Level.ERROR, CHECK_6, "Concept has no `uid`"),
+    CodeInfo("OKF602", Level.ERROR, CHECK_6, "`uid` is malformed or its prefix does not match the type"),
+    CodeInfo("OKF603", Level.ERROR, CHECK_6, "`uid` is used by more than one concept"),
+    CodeInfo("OKF604", Level.ERROR, CHECK_6, "Concept's `uid` is not in the registry"),
+    CodeInfo("OKF605", Level.ERROR, CHECK_6, "Concept path differs from the registry and the move is not approved"),
+    CodeInfo("OKF606", Level.ERROR, CHECK_6, "A concept's `uid` changed since the base"),
+    CodeInfo(
+        "OKF607",
+        Level.ERROR,
+        CHECK_6,
+        "A `uid` present in the base is gone (concept deleted or registry entry removed)",
+    ),
+    CodeInfo("OKF608", Level.ERROR, CHECK_6, "Registry entry has no matching concept, or its type differs"),
 )

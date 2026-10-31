@@ -183,6 +183,7 @@ class Concept:
         body_lines: Body split into lines (no terminators), CRLF normalised.
         headings: All headings in order.
         sections: H2 sections in order.
+        top_items: Every top-level list item in the body, in order, whether or not it sits under an H2.
         links: Inline links and images.
         html: Raw HTML spans.
         anchors: Explicit anchors found in the HTML.
@@ -199,6 +200,7 @@ class Concept:
     body_lines: list[str] = field(default_factory=list)
     headings: list[Heading] = field(default_factory=list)
     sections: list[Section] = field(default_factory=list)
+    top_items: list[ListItem] = field(default_factory=list)
     links: list[Link] = field(default_factory=list)
     html: list[HtmlSpan] = field(default_factory=list)
     anchors: list[Anchor] = field(default_factory=list)
@@ -421,7 +423,9 @@ class _BodyReader:
         item = self.stack.pop().freeze()
         if self.stack:
             self.stack[-1].children.append(item)
-        elif self.section_items:
+            return
+        self.concept.top_items.append(item)
+        if self.section_items:
             self.section_items[-1].append(item)
 
     def run(self, tokens: list[Token]) -> None:
