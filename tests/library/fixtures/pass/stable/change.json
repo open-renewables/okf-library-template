@@ -1,0 +1,1 @@
+{"paths": ["knowledge/example-group/example-category/example-item.md"], "author": "alice", "head_sha": "h1", "reviews": [{"login": "bob", "approved": true, "commit_id": "h1"}]}

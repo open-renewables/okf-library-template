@@ -48,9 +48,16 @@ CHECK_1 = "1 OKF conformance"
 CHECK_2 = "2 Frontmatter schema"
 CHECK_3 = "3 Body structure"
 CHECK_4 = "4 Links, anchors, vocabularies, paths"
+CHECK_5 = "5 Index freshness"
 CHECK_6 = "6 Identifiers and registry"
+CHANGE = "Change rules"
+PUBLISHING = "Publishing rules"
+WARNINGS = "Profile warnings"
 
 CODES: dict[str, CodeInfo] = _define(
+    CodeInfo("OKF001", Level.ERROR, CHANGE, "Change touches tooling and content without the migration label"),
+    CodeInfo("OKF002", Level.ERROR, CHANGE, "Profile migration lacks a maintainer's approval of the current head"),
+    CodeInfo("OKF003", Level.ERROR, CHANGE, "Profile migration does not change DECISIONS.md"),
     CodeInfo("OKF101", Level.ERROR, CHECK_1, "Frontmatter block missing, not on line 1, or not closed"),
     CodeInfo("OKF102", Level.ERROR, CHECK_1, "Frontmatter is not valid YAML"),
     CodeInfo("OKF103", Level.ERROR, CHECK_1, "Frontmatter is not a mapping"),
@@ -67,6 +74,7 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF203", Level.ERROR, CHECK_2, "Unknown frontmatter field (the profile rejects them)"),
     CodeInfo("OKF204", Level.ERROR, CHECK_2, "Frontmatter value does not satisfy the type schema"),
     CodeInfo("OKF205", Level.ERROR, CHECK_2, "`status` is not declared in the profile"),
+    CodeInfo("OKF315", Level.ERROR, CHECK_3, "Revision history was edited, shortened or written by hand"),
     CodeInfo("OKF401", Level.ERROR, CHECK_4, "Internal link starts with `/`; internal links are relative"),
     CodeInfo("OKF402", Level.ERROR, CHECK_4, "Internal link target does not exist in the bundle"),
     CodeInfo("OKF403", Level.ERROR, CHECK_4, "Link fragment matches no heading or explicit anchor in its target"),
@@ -92,6 +100,10 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF312", Level.ERROR, CHECK_3, "Nested list item is not indented four spaces"),
     CodeInfo("OKF313", Level.ERROR, CHECK_3, "Raw HTML in prose; write it as a code span or escape it"),
     CodeInfo("OKF314", Level.ERROR, CHECK_3, "CI-managed section holds something other than valid revision lines"),
+    CodeInfo("OKF501", Level.ERROR, CHECK_5, "A folder has no generated index.md"),
+    CodeInfo("OKF502", Level.ERROR, CHECK_5, "A generated index.md is out of date or was edited by hand"),
+    CodeInfo("OKF503", Level.ERROR, CHECK_5, "An index.md sits in a folder that holds no concepts"),
+    CodeInfo("OKF504", Level.WARNING, CHECK_5, "A folder holds more concepts than the profile suggests"),
     CodeInfo("OKF601", Level.ERROR, CHECK_6, "Concept has no `uid`"),
     CodeInfo("OKF602", Level.ERROR, CHECK_6, "`uid` is malformed or its prefix does not match the type"),
     CodeInfo("OKF603", Level.ERROR, CHECK_6, "`uid` is used by more than one concept"),
@@ -105,4 +117,11 @@ CODES: dict[str, CodeInfo] = _define(
         "A `uid` present in the base is gone (concept deleted or registry entry removed)",
     ),
     CodeInfo("OKF608", Level.ERROR, CHECK_6, "Registry entry has no matching concept, or its type differs"),
+    CodeInfo("OKF701", Level.ERROR, PUBLISHING, "Stable concept lacks the required owner approval"),
+    CodeInfo("OKF702", Level.WARNING, PUBLISHING, "Stable concept will be recorded as self-approved"),
+    CodeInfo("OKF703", Level.ERROR, PUBLISHING, "Stable concept cites no source"),
+    CodeInfo("OKF801", Level.WARNING, WARNINGS, "Tag value restates a folder name (profile warning)"),
+    CodeInfo("OKF802", Level.WARNING, WARNINGS, "Agent markers found without the agent-drafted label"),
+    CodeInfo("OKF803", Level.WARNING, WARNINGS, "Stable concept still holds a placeholder in a named section"),
+    CodeInfo("OKF804", Level.WARNING, WARNINGS, "Folder holds more concepts than the profile's limit"),
 )

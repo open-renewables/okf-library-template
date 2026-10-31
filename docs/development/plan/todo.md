@@ -37,12 +37,12 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 5: indexes, change rules, entry points (`tooling/p1-indexes-changes`)
 
-- [ ] 8. `indexes` with relative links (PP-2 decided); revision line parser and tier derivation; `build_indexes.py --check`
-- [ ] 8. Check: golden indexes; golden tiers for every I-08 case; second run is a no-op; stale index fails check 5
-- [ ] 9. `changes`, `--tooling-from`, `codeowners`, publishing pre-check, four warning kinds, base-diff rules
-- [ ] 9. Check: FR2.5 and FR2.6 fixtures; two-folder change records two owner statuses; pre-check branch fixtures; warnings do not fail
-- [ ] 10. Thin scripts, `ci-validate` task
-- [ ] 10. Check: `--help`, `--json`, exit codes tested; local and `ci-validate` JSON identical
+- [x] 8. `indexes` with relative links (PP-2 decided); revision line parser and tier derivation; `build_indexes.py --check`
+- [x] 8. Check: golden indexes; golden tiers for every I-08 case; second run is a no-op; stale index fails check 5
+- [x] 9. `changes`, `--tooling-from`, `codeowners`, publishing pre-check, four warning kinds, base-diff rules
+- [x] 9. Check: FR2.5 and FR2.6 fixtures; two-folder change records two owner statuses; pre-check branch fixtures; warnings do not fail
+- [x] 10. Thin scripts, `ci-validate` task
+- [x] 10. Check: `--help`, `--json`, exit codes tested; local and `ci-validate` JSON identical
 
 ## PR 6: example bundle, content only (`concept/p1-example-bundle`)
 
@@ -77,9 +77,9 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 5 | Check 3 covers title heading, section presence, order, repeats and undeclared sections, placeholders, formats with children and enums, four-space nesting, raw HTML and the CI-managed revision history. The revision-line grammar (`revision.py`) moved here from step 8 because the revision-history check needs it; tier derivation stays in step 8. Reader extended with per-section paragraphs and content flag. 197 tests, 99.6 % coverage on 3.11, 3.12, 3.14 | [Test] | none |
 | 6 | Check 4 in `checks/links.py`, `checks/tags.py` and `vocab.py`: root-relative links (ADR-005), missing targets, fragments compared without regard to case, `{#id}` and upper-case ids, tag shape and vocabulary membership, four path-rule kinds, type `paths`. Explicit anchors present in the base must remain (`OKF411`). Reader gained `Concept.top_items`. Check 2 no longer reports tag-pattern or `uid` errors (check 4 and check 6 own them). `OKF404` does not try to tie an explicit id to a particular heading: the SDD does not say where the anchor sits relative to its heading | [Test] | none |
 | 7 | `registry.py` (canonical YAML, next number never reused, cap at 9,999, `apply_moves`, `renumber`), check 6 (`OKF601` to `OKF608`; a duplicated `uid` suppresses the registry findings for it), `scaffold.py` (`create_concept`, `renumber_concept`, CRLF-safe). The command-line wrappers `new_concept.py` and `renumber.py` are step 10. Two local-branch clash exercised without git: both concepts take `ITM-0001`, `OKF603` fires, `renumber_concept` moves the later one to `ITM-0002` and validation is clean. 47 fail and 4 pass fixtures; fixtures with `base/` and an `approved-move` marker cover the checks that compare against the base. 263 tests, 99.7 % coverage on 3.11, 3.12, 3.14 | [Test] | none |
-| 8 |  |  |  |
-| 9 |  |  |  |
-| 10 |  |  |  |
+| 8 | `indexes.py` writes one `index.md` per folder with relative links, status and tier on each concept line, root index with `okf_version`; `revision.py` holds the I-08 tier rules and `history.py` reads a concept's lines. 16 golden tier cases and 4 golden index files. Folder lines carry the folder title only (OD-1: the SDD defines no scope note). Check 5 gives `OKF501` to `OKF504`; the harness generates missing indexes unless a fixture says `no-indexes`. The SDD I-07 example links are now relative (PP-2 applied, DDR change-log row added) | [Test] | PP-2 |
+| 9 | `changes.py` (mixed-change rule, migration conditions, `ChangeContext`), `codeowners.py` (last match wins, per-file owners), publishing pre-check (`OKF701` to `OKF703`, review data supplied, skipped when none is known), four profile warnings (`OKF801` to `OKF804`), history-only-grows check (`OKF315`, matches a moved concept by `uid`). `--tooling-from` stages the base's `scripts/` and `profile/`, copies this tree's bundle and registry, and runs the base's own `validate_profile.py`. Fixtures can carry `change.json` and `CODEOWNERS` | [Test] | none |
+| 10 | `cli.py` plus four thin scripts; `poe check` now runs `validate_profile.py` and `build_indexes.py --check`; `poe ci-validate` runs `--tooling-from` and `--base`. FR2.5 test uses a real scratch git repository: with a relaxed profile and a non-conforming concept the plain run passes and the `--tooling-from HEAD` run fails with `OKF203`. A local run and a `--tooling-from HEAD --base HEAD` run give identical JSON. `tests/template/test_cli.py` runs the commands in process against scratch repositories | [Test] | none |
 | 11 |  |  |  |
 | 12 |  |  |  |
 | 13 |  |  |  |

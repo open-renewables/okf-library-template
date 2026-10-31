@@ -82,3 +82,18 @@ def load_bundle(bundle_root: Path, root: Path) -> list[Concept]:
         concept.concept_id = file.relative_to(bundle_root).with_suffix("").as_posix()
         concepts.append(concept)
     return concepts
+
+
+class BaseIndex:
+    """Find the base version of a concept: by ``uid`` first, so a moved concept still matches, then by concept ID."""
+
+    def __init__(self, base: list[Concept]) -> None:
+        self.by_id = {c.concept_id: c for c in base}
+        self.by_uid = {u: c for c in base if isinstance(u := (c.frontmatter or {}).get("uid"), str)}
+
+    def find(self, concept: Concept) -> Concept | None:
+        """The base version of ``concept``, or None if it is new."""
+        uid = (concept.frontmatter or {}).get("uid")
+        if isinstance(uid, str) and uid in self.by_uid:
+            return self.by_uid[uid]
+        return self.by_id.get(concept.concept_id)

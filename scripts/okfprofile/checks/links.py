@@ -11,6 +11,7 @@ from collections import Counter
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+from okfprofile.bundle import BaseIndex
 from okfprofile.config import Profile
 from okfprofile.document import Concept, parse_concept
 from okfprofile.report import Finding
@@ -97,8 +98,8 @@ def _anchor_findings(concept: Concept) -> list[Finding]:
     return findings
 
 
-def _base_findings(concept: Concept, base: dict[str, Concept]) -> list[Finding]:
-    earlier = base.get(concept.concept_id)
+def _base_findings(concept: Concept, base: BaseIndex) -> list[Finding]:
+    earlier = base.find(concept)
     if earlier is None:
         return []
     kept = {a.id.lower() for a in concept.anchors}
@@ -123,7 +124,7 @@ def check_links(profile: Profile, concepts: list[Concept], base: list[Concept] |
         Findings for root-relative links, missing targets, unmatched fragments, anchor misuse and removed anchors.
     """
     targets = _Targets(profile.bundle_root, concepts)
-    earlier = {c.concept_id: c for c in base or []}
+    earlier = BaseIndex(base or [])
     findings: list[Finding] = []
     for concept in concepts:
         findings.extend(_link_findings(concept, targets))

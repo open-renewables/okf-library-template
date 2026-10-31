@@ -1,0 +1,106 @@
+[
+  {
+    "name": "no revision is unverified",
+    "lines": [],
+    "expected": "unverified"
+  },
+  {
+    "name": "owner approval is human-reviewed",
+    "lines": ["2026-10-20 · author @a · approved @b (owner) · PR #1"],
+    "expected": "human-reviewed"
+  },
+  {
+    "name": "owner self-approval is human-reviewed (self)",
+    "lines": ["2026-10-20 · author @a · self-approved (owner) · PR #1"],
+    "expected": "human-reviewed (self)"
+  },
+  {
+    "name": "self-approval is machine-confirmed when a non-author approver is required",
+    "lines": ["2026-10-20 · author @a · self-approved (owner) · PR #1"],
+    "require_non_author_approver": true,
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "non-owner approval is machine-confirmed",
+    "lines": ["2026-10-20 · author @a · approved @b (non-owner) · PR #1"],
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "stale owner approval is machine-confirmed",
+    "lines": ["2026-10-20 · author @a · approved (stale) @b (owner) · PR #1"],
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "merged without approval is machine-confirmed",
+    "lines": ["2026-10-20 · author @a · merged without approval @m · PR #1"],
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "self-approval by a non-owner is machine-confirmed",
+    "lines": ["2026-10-20 · author @a · self-approved (non-owner) · PR #1"],
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "agent-drafted is machine-confirmed even when an owner approved",
+    "lines": ["2026-10-20 · author @a · approved @b (owner) · PR #1 · agent-drafted"],
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "a one-line owner-approved fix to an agent-drafted concept stays machine-confirmed",
+    "lines": [
+      "2026-10-20 · author @a · approved @b (owner) · PR #1 · agent-drafted",
+      "2026-10-25 · author @a · approved @b (owner) · PR #2"
+    ],
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "an owner-approved full review raises an agent-drafted concept",
+    "lines": [
+      "2026-10-20 · author @a · approved @b (owner) · PR #1 · agent-drafted",
+      "2026-10-25 · author @a · approved @b (owner) · PR #2 · full-review"
+    ],
+    "expected": "human-reviewed"
+  },
+  {
+    "name": "revisions before the last full review no longer count",
+    "lines": [
+      "2026-10-20 · author @a · merged without approval @m · PR #1",
+      "2026-10-21 · author @a · approved @b (owner) · PR #2 · full-review",
+      "2026-10-22 · author @a · approved @b (owner) · PR #3"
+    ],
+    "expected": "human-reviewed"
+  },
+  {
+    "name": "self-approval inside the window is shown",
+    "lines": [
+      "2026-10-20 · author @a · self-approved (owner) · PR #1 · full-review",
+      "2026-10-22 · author @a · approved @b (owner) · PR #2"
+    ],
+    "expected": "human-reviewed (self)"
+  },
+  {
+    "name": "a full-review mark without an owner approval is ignored",
+    "lines": [
+      "2026-10-20 · author @a · approved @b (non-owner) · PR #1",
+      "2026-10-21 · author @a · approved @b (non-owner) · PR #2 · full-review",
+      "2026-10-22 · author @a · approved @b (owner) · PR #3"
+    ],
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "a later unreviewed revision lowers the tier",
+    "lines": [
+      "2026-10-20 · author @a · approved @b (owner) · PR #1",
+      "2026-10-22 · author @a · merged without approval @m · PR #2"
+    ],
+    "expected": "machine-confirmed"
+  },
+  {
+    "name": "a stale approval does not count as a full review",
+    "lines": [
+      "2026-10-20 · author @a · merged without approval @m · PR #1",
+      "2026-10-21 · author @a · approved (stale) @b (owner) · PR #2 · full-review"
+    ],
+    "expected": "machine-confirmed"
+  }
+]

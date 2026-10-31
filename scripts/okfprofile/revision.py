@@ -4,8 +4,8 @@ One line per merged change is appended to a concept's *Revision history* section
 
     - <date> · author @<login> · <approval> · <change>[ · full-review][ · agent-drafted]
 
-Only the grammar is here. Reading pull requests or commits, writing lines and deriving trust tiers
-come in later build phases.
+The grammar and the trust-tier rules are here. Reading pull requests or commits and writing lines come in a
+later build phase.
 """
 
 from __future__ import annotations
@@ -13,6 +13,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from datetime import date
+from enum import StrEnum
 from typing import Literal
 
 SEPARATOR = " · "
@@ -122,3 +123,77 @@ def parse_revision_line(text: str) -> RevisionLine | None:
         "full-review" in flags,
         "agent-drafted" in flags,
     )
+
+
+class Tier(StrEnum):
+    """Trust tier of a revision or a concept, lowest first (OKF section 5.3)."""
+
+    UNVERIFIED = "unverified"
+    MACHINE_CONFIRMED = "machine-confirmed"
+    HUMAN_REVIEWED = "human-reviewed"
+
+
+_ORDER = {Tier.UNVERIFIED: 0, Tier.MACHINE_CONFIRMED: 1, Tier.HUMAN_REVIEWED: 2}
+
+
+@dataclass(frozen=True)
+class TierResult:
+    """A concept's trust tier.
+
+    Attributes:
+        tier: The tier.
+        self_approved: True if the tier is human-reviewed and some revision in its window was self-approved.
+    """
+
+    tier: Tier
+    self_approved: bool = False
+
+    @property
+    def label(self) -> str:
+        """The tier as shown in indexes: ``human-reviewed (self)`` when self-approval contributes."""
+        return (
+            f"{self.tier.value} (self)" if self.tier is Tier.HUMAN_REVIEWED and self.self_approved else self.tier.value
+        )
+
+
+def owner_approved(line: RevisionLine) -> bool:
+    """True if an owner approved the revision on the merged head (a stale approval does not count)."""
+    return line.owner is True and line.approval in {"approved", "self-approved"}
+
+
+def revision_tier(line: RevisionLine, require_non_author_approver: bool = False) -> tuple[Tier, bool]:
+    """Tier of one revision (SDD I-08) and whether it rests on a self-approval.
+
+    Args:
+        line: The parsed revision line.
+        require_non_author_approver: The profile setting; when true, a self-approval is machine-confirmed.
+
+    Returns:
+        The tier, and True if it is human-reviewed by self-approval.
+    """
+    machine = (Tier.MACHINE_CONFIRMED, False)
+    if line.agent_drafted or line.approval in {"approved-stale", "merged-without-approval"}:
+        return machine
+    if line.approval == "approved":
+        return (Tier.HUMAN_REVIEWED, False) if line.owner else machine
+    if line.owner and not require_non_author_approver:
+        return Tier.HUMAN_REVIEWED, True
+    return machine
+
+
+def concept_tier(lines: list[RevisionLine], require_non_author_approver: bool = False) -> TierResult:
+    """A concept's tier: the lowest revision tier since the latest owner-approved full review.
+
+    Args:
+        lines: The concept's revision lines, oldest first.
+        require_non_author_approver: The profile setting.
+
+    Returns:
+        The tier; unverified if there are no revisions.
+    """
+    if not lines:
+        return TierResult(Tier.UNVERIFIED)
+    start = max((i for i, line in enumerate(lines) if line.full_review and owner_approved(line)), default=0)
+    results = [revision_tier(line, require_non_author_approver) for line in lines[start:]]
+    lowest = min((tier for tier, _ in results), key=_ORDER.__getitem__)
+    return TierResult(lowest, lowest is Tier.HUMAN_REVIEWED and any(self for _, self in results))

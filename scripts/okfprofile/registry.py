@@ -162,15 +162,30 @@ def load_registry(root: Path) -> Registry:
     Raises:
         RegistryError: If the file or the meta-schema cannot be read, or the file is invalid.
     """
-    schema_file = root / "profile" / "schemas" / "uid-registry.schema.json"
+    file = registry_path(root)
+    return load_registry_file(file, root) if file.is_file() else Registry()
+
+
+def load_registry_file(file: Path, schema_root: Path) -> Registry:
+    """Load a registry file, checking it against the meta-schema of the repository at ``schema_root``.
+
+    Args:
+        file: The registry file.
+        schema_root: Repository root whose ``profile/schemas/`` holds the meta-schema.
+
+    Returns:
+        The registry.
+
+    Raises:
+        RegistryError: If a file cannot be read or the registry is invalid.
+    """
+    schema_file = schema_root / "profile" / "schemas" / "uid-registry.schema.json"
     try:
         schema = json.loads(schema_file.read_text(encoding="utf-8"))
+        text = file.read_text(encoding="utf-8")
     except (OSError, json.JSONDecodeError) as exc:
-        raise RegistryError([f"{schema_file}: cannot read the registry meta-schema: {exc}"]) from exc
-    file = registry_path(root)
-    if not file.is_file():
-        return Registry()
-    return parse_registry(file.read_text(encoding="utf-8"), schema, str(file))
+        raise RegistryError([f"{schema_file}: cannot read the registry or its meta-schema: {exc}"]) from exc
+    return parse_registry(text, schema, str(file))
 
 
 def save_registry(root: Path, registry: Registry) -> None:
