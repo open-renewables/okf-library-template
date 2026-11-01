@@ -46,8 +46,8 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 6: example bundle, content only (`concept/p1-example-bundle`)
 
-- [ ] 11. One example per declared type (OD-1), vocabularies, glossary entries, generated indexes, registry, passing fixtures
-- [ ] 11. Check: no error on `knowledge/`; `build_indexes.py --check` clean; passing fixture per type
+- [x] 11. One example per declared type (OD-1), vocabularies, glossary entries, generated indexes, registry, passing fixtures
+- [x] 11. Check: no error on `knowledge/`; `build_indexes.py --check` clean; passing fixture per type
 
 ## PR 7: exit (`tooling/p1-exit`)
 
@@ -80,7 +80,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 8 | `indexes.py` writes one `index.md` per folder with relative links, status and tier on each concept line, root index with `okf_version`; `revision.py` holds the I-08 tier rules and `history.py` reads a concept's lines. 16 golden tier cases and 4 golden index files. Folder lines carry the folder title only (OD-1: the SDD defines no scope note). Check 5 gives `OKF501` to `OKF504`; the harness generates missing indexes unless a fixture says `no-indexes`. The SDD I-07 example links are now relative (PP-2 applied, DDR change-log row added) | [Test] | PP-2 |
 | 9 | `changes.py` (mixed-change rule, migration conditions, `ChangeContext`), `codeowners.py` (last match wins, per-file owners), publishing pre-check (`OKF701` to `OKF703`, review data supplied, skipped when none is known), four profile warnings (`OKF801` to `OKF804`), history-only-grows check (`OKF315`, matches a moved concept by `uid`). `--tooling-from` stages the base's `scripts/` and `profile/`, copies this tree's bundle and registry, and runs the base's own `validate_profile.py`. Fixtures can carry `change.json` and `CODEOWNERS` | [Test] | none |
 | 10 | `cli.py` plus four thin scripts; `poe check` now runs `validate_profile.py` and `build_indexes.py --check`; `poe ci-validate` runs `--tooling-from` and `--base`. FR2.5 test uses a real scratch git repository: with a relaxed profile and a non-conforming concept the plain run passes and the `--tooling-from HEAD` run fails with `OKF203`. A local run and a `--tooling-from HEAD --base HEAD` run give identical JSON. `tests/template/test_cli.py` runs the commands in process against scratch repositories | [Test] | none |
-| 11 |  |  |  |
+| 11 | Example bundle built with `new_concept.py` then filled: `example-item` (Item, with `Checks` children at four spaces, footnote citation, relative links), `vocab/group` and `vocab/category`, `glossary` (term with lower-case `<a id>`); indexes by `build_indexes.py`; registry by the tool. `validate_profile.py` 0 errors, 0 warnings; vendored okf-skills reports conformant (FR1.1; 7 recommended-field warnings only, `tags` and `generated`); `build_indexes.py --check` clean; `poe check` and `poe test` pass (349 tests, 98.95 %). No new fixtures: `tests/library/fixtures/pass/` already covers all three types | [Test] | none |
 | 12 |  |  |  |
 | 13 |  |  |  |
 | 14 |  |  |  |
