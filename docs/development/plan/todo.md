@@ -61,7 +61,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 - [x] SPEC "Done when" items 1 to 8 met (evidence table below): items 1 to 7 at PR 7 ([#17](https://github.com/open-renewables/okf-library-template/pull/17), merged as `10e2d3a`); item 8 by the tag and the re-estimate proposal
 - [x] **NEEDS YOU (person):** owner pushed annotated tag `v0.1.0` (alpha) on `main` (OD-10): tag object `88e9ab0` points at `10e2d3a`, present on `origin` (`git ls-remote --tags origin v0.1.0`), message "v0.1.0 (alpha): P1 core tooling"
-- [x] Proposed entries PP-1 to PP-6 decided and, where approved, applied (status table below). PP-7 (raised in step 3) is not part of that line and is still open
+- [x] Proposed entries PP-1 to PP-6 decided and, where approved, applied (status table below). PP-7 (raised in step 3) was decided and applied on 2026-11-03
 - [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-11-p1-core-tooling/`; the SRS status is not changed
 
 ## Outcomes
@@ -96,7 +96,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | PP-4 | Applied | `architecture/finding-codes.md` assigns and mirrors all 64 codes; checked by `test_catalogue.py` |
 | PP-5 | Not triggered | The owner accepted the OD-2 and OD-3 defaults; `scan.py` and the `requirements/` export are P2 and are listed as known gaps G7 |
 | PP-6 | Applied | Line grammar plus base-diff (`OKF314`, `OKF315`); limits recorded in `testing/known-gaps.md` G4 and, as a note, in `architecture/finding-codes.md` (Reading rules). No stronger rule was asked for |
-| PP-7 | **Open** | Raised in step 3; the SDD I-02 to I-04 wording additions and a DDR change-log row are not applied. Needs the owner's decision |
+| PP-7 | Decided and applied | Owner approved as an SDD edit without an ADR (2026-11-03); SDD I-02 to I-04 wording added and a DDR change-log row dated 2026-11-03 |
 
 ### P2 to P4 re-estimate (proposal; the SDD is not edited)
 
