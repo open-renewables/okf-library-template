@@ -59,10 +59,10 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## Exit
 
-- [x] SPEC "Done when" items 1 to 7 met with evidence (table below); item 8 needs the owner's tag
-- [ ] **NEEDS YOU (person):** owner pushes annotated tag `v0.1.0` (alpha) on `main` (OD-10)
-- [ ] Proposed entries PP-1 to PP-6 decided and, where approved, applied as their own ADR or documented edit
-- [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-11-p1-core-tooling/`; the SRS status is not changed
+- [x] SPEC "Done when" items 1 to 8 met (evidence table below): items 1 to 7 at PR 7 ([#17](https://github.com/open-renewables/okf-library-template/pull/17), merged as `10e2d3a`); item 8 by the tag and the re-estimate proposal
+- [x] **NEEDS YOU (person):** owner pushed annotated tag `v0.1.0` (alpha) on `main` (OD-10): tag object `88e9ab0` points at `10e2d3a`, present on `origin` (`git ls-remote --tags origin v0.1.0`), message "v0.1.0 (alpha): P1 core tooling"
+- [x] Proposed entries PP-1 to PP-6 decided and, where approved, applied (status table below). PP-7 (raised in step 3) was decided and applied on 2026-11-03
+- [x] On the owner's instruction (2026-11-03), moved the three plan files to `plan/archive/2026-11-p1-core-tooling/`; relative links re-pointed for the deeper folder; the SRS status is not changed
 
 ## Outcomes
 
@@ -84,7 +84,19 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 12 | `.pre-commit-config.yaml` with four `repo: local` hooks run through `uv run`: `ruff check --fix`, `ruff format` (both with `--force-exclude`, so the vendored folder is skipped), `validate_profile.py --changed`, `build_indexes.py --check`; no `scan.py` hook (OD-2). In a scratch clone outside the repo: Git Bash and PowerShell both refused a commit with an undeclared `status` (`OKF205`, plus `OKF502` for the stale index), ruff fixed and refused a badly formatted Python file, and clean commits passed. 600 generated Items (604 concept files): `validate_profile.py` 2.05–2.28 s, `build_indexes.py --check` 1.23–1.27 s, wall-clock including `uv run` start-up, one Windows machine; target under 10 s (`testing/performance.md`). The generator ran 246 s because `create_concept` reloads the bundle per concept; scaffolder cost only | [Test] | none |
 | 13 | `testing/strategy.md`, `fixtures.md`, `known-gaps.md` (G1–G10) and `performance.md` written; `finding-codes.md` already complete from earlier steps. New `tests/template/test_catalogue.py` (3 tests): every code in `codes.py` has a catalogue row and no row is unknown (64 codes), every listed fixture or test path exists, relative links in `testing/` resolve. It caught a missing `performance.md` link on its first run | [Test] | none |
 | 14 | Full gate on Python 3.11.15, 3.12.10, 3.14.0 with `UV_PYTHON` and `UV_PROJECT_ENVIRONMENT=.venv-<ver>`: `poe check` clean (ruff, mypy strict on 28 files, mypy on 22, `validate_profile.py` 0 errors, indexes clean) and `poe test` 352 passed, coverage 98.95 % (floor 85 %), on each. `constraints.md` unchanged. Done-when 1–7: (1) above; (2) 64 codes catalogued, `test_failing_fixture_raises_exactly_its_code` covers 62 fail folders, `OKF118`/`OKF119` by unit test (known gap G5); (3) example bundle 0 errors, indexes clean, `pass/item`, `pass/vocabulary`, `pass/glossary`; (4) `tiers.json` golden (16 cases) and 4 golden indexes; (5) FR2.5 scratch-repo test and `OKF001` plus `pass/migration`; (6) `test_cli.py` parity test; (7) the three testing files and the catalogue. Item 8: tag and re-estimate below | [Test] | none |
-| Actual effort | P1 person-days against 11–16 |  | P2–P4 re-estimate |
+| Actual effort | Not recorded (owner decision). Seven pull requests merged between 2026-10-31 and 2026-11-03 (#11 to #17) after the P0 outcomes of 2026-10-30; plan range 10.25–15 (SDD 11–16) | [Inf] | P2–P4 re-estimate below |
+
+### Status of proposed entries (checked 2026-11-03 against `main` at `10e2d3a`)
+
+| # | Status | Evidence |
+| --- | --- | --- |
+| PP-1 | Decided and applied | `adr/ADR-008-vendored-code-lint-exemption.md` Accepted (owner, 2026-10-31); `constraints.md` line 24 excludes `scripts/vendor/` from ruff |
+| PP-2 | Decided and applied | SDD I-07 example links relative; DDR change-log row dated 2026-10-31 |
+| PP-3 | Decided and applied | `adr/ADR-007-dev-group-licence-resolutions.md` Accepted (owner, 2026-10-31) |
+| PP-4 | Applied | `architecture/finding-codes.md` assigns and mirrors all 64 codes; checked by `test_catalogue.py` |
+| PP-5 | Not triggered | The owner accepted the OD-2 and OD-3 defaults; `scan.py` and the `requirements/` export are P2 and are listed as known gaps G7 |
+| PP-6 | Applied | Line grammar plus base-diff (`OKF314`, `OKF315`); limits recorded in `testing/known-gaps.md` G4 and, as a note, in `architecture/finding-codes.md` (Reading rules). No stronger rule was asked for |
+| PP-7 | Decided and applied | Owner approved as an SDD edit without an ADR (2026-11-03); SDD I-02 to I-04 wording added and a DDR change-log row dated 2026-11-03 |
 
 ### P2 to P4 re-estimate (proposal; the SDD is not edited)
 

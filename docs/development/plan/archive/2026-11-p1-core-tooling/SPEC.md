@@ -6,10 +6,10 @@ Status: **Approved by the owner on 2026-10-31:** the plan, the defaults for OD-1
 
 | Document | Role | Status |
 | --- | --- | --- |
-| [SRS](<../requirements/OKF Library Template - Software Requirements Spec.md>) | The requirement. Front matter `status: accepted` | Accepted |
-| [SDD](<../architecture/OKF Library Template - Software Design Document.md>) §14 (P1 row), §7 C-03 and C-04, §8 I-01 to I-09, I-16, I-17, §9 W-04 | Defines the phase, the module, the scripts and the interfaces | Fixed for P1 |
-| [DDR](<../adr/OKF Library Template - Design Decision Record.md>) | QA-33, QA-34, QA-41, QA-44, QA-45, QA-52 to QA-57, QA-62 to QA-65, QA-71 to QA-73 | Frozen series |
-| [ADR-002](../adr/ADR-002-provider-neutral-skills.md), [ADR-005](../adr/ADR-005-relative-links-only.md), [ADR-006](../adr/ADR-006-mpl-licence-exceptions.md) | Provider-neutral repository; relative links only; MPL-2.0 exceptions | Accepted |
+| [SRS](<../../../requirements/OKF Library Template - Software Requirements Spec.md>) | The requirement. Front matter `status: accepted` | Accepted |
+| [SDD](<../../../architecture/OKF Library Template - Software Design Document.md>) §14 (P1 row), §7 C-03 and C-04, §8 I-01 to I-09, I-16, I-17, §9 W-04 | Defines the phase, the module, the scripts and the interfaces | Fixed for P1 |
+| [DDR](<../../../adr/OKF Library Template - Design Decision Record.md>) | QA-33, QA-34, QA-41, QA-44, QA-45, QA-52 to QA-57, QA-62 to QA-65, QA-71 to QA-73 | Frozen series |
+| [ADR-002](../../../adr/ADR-002-provider-neutral-skills.md), [ADR-005](../../../adr/ADR-005-relative-links-only.md), [ADR-006](../../../adr/ADR-006-mpl-licence-exceptions.md) | Provider-neutral repository; relative links only; MPL-2.0 exceptions | Accepted |
 | P0 outcomes (SDD §15, V-01 to V-13) | Inputs listed under "P0 follow-ups" below | Applied 2026-10-30 |
 
 **Abbreviations.** P1: build phase 1, "Core tooling" (SDD §14). FR/NFR: SRS requirements. AD-, QA-, DR-, ADR-: decision IDs, cited as written. I-nn, C-nn, W-nn, V-nn: SDD interface, component, workflow and verification items. OKFnnn: validation finding codes (I-09). PP-n: a proposed entry for the owner (`plan.md`).

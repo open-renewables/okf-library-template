@@ -395,11 +395,11 @@ Validated against `profile/schemas/profile.schema.json`. Top-level keys:
 | `maintainers` | Map of platform login to `emails` and `role`; resolves commit authors and `Approved-by` trailers to logins in `git-local` mode, and is kept after W-12 so earlier lines stay attributable |
 | `bundle_root` | `knowledge` |
 | `types[]` | Per type: `name`, `uid_prefix`, `schema`, optional `paths` (glob patterns where the type may live), optional `body` |
-| `types[].body` | `title_heading` (`h1_equals_title` or none), `order` (`strict` or `any`), `empty_placeholder`, `sections[]` of `heading`, `required`, optional `format`, optional `managed_by: ci` |
+| `types[].body` | `title_heading` (`h1_equals_title` or none), `order` (`strict` or `any`), `empty_placeholder`, `sections[]` of `heading`, `required`, optional `format`, optional `managed_by: ci`. With `order: any`, H2 sections the type does not declare are allowed; with `order: strict` they are errors |
 | `vocabularies` | `path` (default `vocab/`), `namespaces[]` of `name`, `kinds` (true if values are grouped by kind), `values_unique_across_kinds` |
 | `tags` | `pattern` for namespaced tags; namespaces are the declared vocabularies |
-| `path_rules[]` | Declarative rules (below) |
-| `status` | `values` (OKF values) and `extensions[]` of `value`, `trust_tier`, publishing rule |
+| `path_rules[]` | Declarative rules (below); each may carry an optional `types` list that limits it to the named concept types |
+| `status` | `values` (OKF values) and `extensions[]` of `value`, `trust_tier`, `publishing` (optional free text stating the publishing rule) |
 | `rules` | Provenance and publishing settings (below) |
 | `warnings[]` | `id`, `kind`, kind parameters, `level` (`low`, `medium`), `enabled` |
 | `reports[]` | `id`, `kind`, parameters; generated as CI artifacts, never blocking |
@@ -449,7 +449,7 @@ rules:
 
 JSON Schema draft 2020-12. `okf-base.schema.json` declares OKF's frontmatter keys (`type`, `title`, `description`, `tags`, `status`, `sources`, `generated`, `verified`, `stale_after` and the other keys of the pinned specification) and the profile's `uid`. Each type schema references it and adds the type's own fields. Conventions:
 
-- Each type schema uses `$ref: okf-base.schema.json` and, when `reject_unknown_fields` is true, `unevaluatedProperties: false`, which (unlike `additionalProperties`) takes account of properties declared through `$ref`. OKF's optional keys are therefore always accepted.
+- Each type schema uses `$ref: okf-base.schema.json` and, when `reject_unknown_fields` is true, `unevaluatedProperties: false`, which (unlike `additionalProperties`) takes account of properties declared through `$ref`. OKF's optional keys are therefore always accepted. The validator may add `unevaluatedProperties: false` when it loads a type schema instead of the schema file storing it; the effect is the same.
 - `type` is a `const` equal to the declared type name; `uid` has a pattern built from the prefix, for example `^ITM-\d{4}$`.
 - Datetimes use `type: string` with a pattern requiring an offset; `format: date-time` alone is not relied on because format assertion is optional in 2020-12.
 - Tags are an array of unique strings matching `^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9-]*$`; vocabulary membership is checked by C-03, not by the schema.
@@ -469,7 +469,7 @@ children: []                      # required sub-items, e.g. {label: Pass, requi
 ---
 ```
 
-C-03 matches `pattern` against the source text of each item's first line, checks named groups against `enums` and vocabularies, and checks children labels (`Label: text`) in order. **RE example:** the Checks format requires `Pass`, `Flag` and `Automatable` children, the last restricted to `yes`, `partial` or `no`.
+C-03 matches `pattern` against the source text of each item's first line, checks named groups against `enums` and vocabularies, and checks children labels (`Label: text`) in order. A child may carry an optional `enum`, the allowed values of its text. **RE example:** the Checks format requires `Pass`, `Flag` and `Automatable` children, the last restricted to `yes`, `partial` or `no`.
 
 ### I-05 Vocabulary concept (`knowledge/vocab/<namespace>.md`)
 
