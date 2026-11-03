@@ -90,3 +90,4 @@ Codes not listed above are unassigned; a retired number is never reused (`OKF110
 
 - **YAML.** Frontmatter is YAML 1.2 with the timestamp type disabled: `no` and dates stay strings; numbers and `true`/`false` keep their types. Findings carry the 1-based file line of the offending key, or the line where the parser stopped.
 - **Levels.** `error` blocks; `warning` never fails a run. The `low` and `medium` priority of a profile warning (I-02) is separate from the level.
+- **Revision-history edits.** FR3.4 (a hand edit fails check 3) cannot be proved from content alone. `OKF314` checks that each line fits the I-08 grammar; `OKF315` checks, against a base, that existing lines are unchanged and only appended to. A well-formed line added by hand, and any edit in a run with no base, are not detected (known gap G4; proposed entry PP-6).
