@@ -11,18 +11,18 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## S1: V-05 closure (sandbox, `open-renewables-sandbox/p0-spikes`)
 
-- [ ] **NEEDS YOU (account, setting):** sandbox GitHub App created, installed, client ID and key stored, on `main` ruleset bypass "always"; no second account (OD-2 decided)
-- [ ] 1. Run sheet and scripts written (explicit `--repo` on every `gh` call, synthetic content)
-- [ ] 1. 5a App "always" bypass proven; `GITHUB_TOKEN` refused
-- [ ] 1. 5c approval, stale approval, review `commit_id`, `merged_by`, commit-to-PR lookup and lag recorded
-- [ ] 1. Check: result labelled **[Test]**; fixtures committed later in PR 2; contradictions raised as PP-6 before step 5
+- [x] **NEEDS YOU (account, setting):** sandbox GitHub App created, installed, client ID and key stored, on `main` ruleset bypass "always"; no second account (OD-2 decided)
+- [x] 1. Run sheet and scripts written (explicit `--repo` on every `gh` call, synthetic content)
+- [x] 1. 5a App "always" bypass proven; `GITHUB_TOKEN` refused
+- [x] 1. 5c approval, stale approval, review `commit_id`, `merged_by`, commit-to-PR lookup and lag recorded
+- [x] 1. Check: result labelled **[Test]**; fixtures committed later in PR 2; contradictions raised as PP-6 before step 5
 
 ## PR 1: supply chain and scan (`tooling/p2-supply-chain`)
 
-- [ ] 2. `requirements/validate.txt` hash-locked export and drift check; `poe export`, `poe audit`, `poe licences`; pinned tool versions (PP-2, OD-7)
-- [ ] 2. Check: clean venv from the hashed file runs the validate tests; licence check fails on a GPL and an unrecorded MPL-2.0 package; export is a no-op on an unchanged lock
-- [ ] 3. `scan.py`, `profile/scan.yaml` and meta-schema (PP-4), pre-commit hook, gitleaks hook if installed, `poe scan`
-- [ ] 3. Check: planted marker and planted secret-shaped string fail; hook refuses in Git Bash and PowerShell; hook skips with a notice without gitleaks
+- [x] 2. `requirements/validate.txt` hash-locked export and drift check; `poe export`, `poe audit`, `poe licences`; pinned tool versions (PP-2, OD-7)
+- [x] 2. Check: clean venv from the hashed file runs the validate tests; licence check fails on a GPL and an unrecorded MPL-2.0 package; export is a no-op on an unchanged lock
+- [x] 3. `scan.py`, `profile/scan.yaml` and meta-schema (PP-4), pre-commit hook, gitleaks hook if installed, `poe scan`
+- [x] 3. Check: planted marker and planted secret-shaped string fail; hook refuses in Git Bash and PowerShell; hook skips with a notice without gitleaks
 
 ## PR 2: adapters and revision writer (`tooling/p2-adapters-revision`)
 
@@ -94,8 +94,8 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 
 | Step | Outcome | Label | Entry |
 | --- | --- | --- | --- |
-| 1 | | | |
-| 2 to 3 | | | |
+| 1 | 5a: App push to protected `main` accepted by the "always" bypass, `GITHUB_TOKEN` push refused (GH013). 5c: a stale approval keeps `commit_id` of the approved head and still satisfies the rule; an unapproved owner merge is `blocked` and passes by the Admin bypass, `merged_by` = author. Lookup: closed-list and subject hit at the first poll (about 4 s), `commits/{sha}/pulls` up to 8.4 s. Org policy refuses "Actions can approve pull requests", so the owner opened the PRs and the App approved. Findings: `persist-credentials: false` for `revision.yml`; bot commits have no author login (use the trailer); client ID needs capital `I`. No contradiction with AD-11, AD-12, W-05, SDD §11. Notes: `side-session-notes/.../p2-s1-result.md` | [Test] | none (PP-6 not triggered) |
+| 2 to 3 | PR 1 built, uncommitted on `tooling/p2-supply-chain`. `requirements/validate.txt` and `dev.txt` exported from `uv.lock` with hashes (`poe export`; `export_requirements.py --check` is a `poe check` step); a clean venv from each with `--require-hashes` validates the bundle and passes `tests/library`. `poe licences`: 36 locked packages checked, 0 findings (allowlist, ADR-006/007 exceptions and metadata resolutions parsed from `constraints.md`). `poe audit`: 0 findings. gitleaks v8.30.1 and its `linux_x64` SHA-256, and lychee-v0.24.2, filled in `constraints.md` (PP-2). `scan.py` with `profile/scan.yaml` and its meta-schema (PP-4); hook refuses a planted marker (Git Bash) and a planted secret (PowerShell, redacted) and passes clean commits; gitleaks hook skips with a notice when not installed. `poe check` clean, `poe test` 403 passed, coverage 98.77 %. New gaps G11 to G13 | [Test] | PP-2, PP-4 applied |
 | 4 | | | |
 | 5 | | | |
 | 6 to 7 | | | |
@@ -111,9 +111,9 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | # | Status | Evidence |
 | --- | --- | --- |
 | PP-1 | Proposed | |
-| PP-2 | Decided 2026-11-03: fill, no ADR | |
+| PP-2 | Decided 2026-11-03: fill, no ADR | Applied in PR 1: `constraints.md` table; DDR change-log row |
 | PP-3 | Proposed | |
-| PP-4 | Proposed | |
+| PP-4 | Approved 2026-11-03 | Applied in PR 1: SDD §6 and C-04 wording; DDR change-log row |
 | PP-5 | Proposed | |
 | PP-6 | Conditional (step 1) | |
 | PP-7 | Conditional (step 12) | |

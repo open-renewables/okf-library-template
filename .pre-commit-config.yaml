@@ -1,5 +1,5 @@
 # Local hooks only: nothing is fetched from a hook repository (SDD AD-20, I-17). Each hook runs
-# through `uv run` from the locked environment. The scan.py hook is added in P2 (plan OD-2).
+# through `uv run` from the locked environment. The scan hook also runs gitleaks if it is installed (QA-74).
 repos:
   - repo: local
     hooks:
@@ -25,3 +25,8 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
+      - id: scan
+        name: scan for markers and secrets
+        entry: uv run python scripts/scan.py --gitleaks
+        language: system
+        types: [text]

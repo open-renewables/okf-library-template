@@ -168,7 +168,8 @@ okf-library-template/
 │   ├── types/okf-base.schema.json   # OKF frontmatter keys, referenced by every type schema (I-03)
 │   ├── types/<type>.schema.json # frontmatter schema per concept type (I-03)
 │   ├── formats/<format>.md      # section formats (I-04)
-│   └── schemas/                 # meta-schemas for profile.yaml and uid-registry.yaml
+│   ├── scan.yaml                # rules for scripts/scan.py: markers, secret patterns, excludes (C-04)
+│   └── schemas/                 # meta-schemas for profile.yaml, uid-registry.yaml and scan.yaml
 ├── knowledge/                   # the OKF bundle root (C-01)
 │   ├── index.md                 # generated; root index carries okf_version
 │   ├── glossary.md              # optional
@@ -188,7 +189,7 @@ okf-library-template/
 │   ├── write_revision.py
 │   ├── stale_report.py
 │   ├── build_bundle.py
-│   ├── scan.py                  # confidentiality and pattern scanner; patterns in configuration
+│   ├── scan.py                  # confidentiality and pattern scanner; rules in profile/scan.yaml
 │   ├── release.py               # release gate, bundle and annotated tag (W-07)
 │   ├── init_library.py
 │   └── setup_repo.py            # platform: github only
@@ -278,7 +279,7 @@ Each script is a thin entry point over C-03, runs with `uv run scripts/<name>.py
 | `write_revision.py` | Record every pull request merged since the last bot commit: append revision lines to each concept touched, regenerate affected indexes, optionally rewrite `verified`; `--check-since <tag>` reports merged pull requests without lines | W-05, W-07 |
 | `stale_report.py` | List concepts past their staleness date | W-06 |
 | `build_bundle.py` | Build the release archive and its checksum and manifest (I-12) | W-07 |
-| `scan.py` | Scan changed or all files for confidentiality markers and configured patterns; gitleaks is run alongside where installed (section 10) | pre-commit, W-04 |
+| `scan.py` | Scan changed or all files for confidentiality markers and the patterns in `profile/scan.yaml`; gitleaks is run alongside where installed (section 10) | pre-commit, W-04 |
 | `release.py` | Release gate (`write_revision --check-since`), full validation, `build_bundle`, then in `git-local` mode an annotated tag recording the SHA-256; in `github` mode it checks only and the tag push triggers `release.yml` | Maintainer, W-07 |
 | `init_library.py` | Personalise a new repository from the questionnaire (including `platform`), interactively or from an answers file (`--answers answers.yaml`, used by W-10); write licence files; remove template-only files | Library owner, once; W-10 |
 | `setup_repo.py` | `platform: github` only. Configure the GitHub repository: labels, squash-only merges, workflow permissions, ruleset and App checks when public (W-01); `--promote` performs W-11; `--dry-run` reports without changing anything | Library owner; rerunnable |

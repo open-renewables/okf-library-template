@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "scan.schema.json",
+  "title": "Scan rules (profile/scan.yaml) read by scripts/scan.py",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "rules"],
+  "properties": {
+    "version": { "const": 1 },
+    "max_file_bytes": { "type": "integer", "minimum": 1024 },
+    "exclude": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "pattern"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "kind": { "enum": ["marker", "secret"] },
+          "pattern": { "type": "string", "minLength": 1 },
+          "description": { "type": "string" }
+        }
+      }
+    }
+  }
+}

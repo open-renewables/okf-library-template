@@ -2,7 +2,7 @@
 
 These limits are enforced by tools, locally through `uv run poe check` and `uv run poe test` and in CI through the same tasks (SDD AD-20 and C-05; DDR QA-62). They apply to the whole template repository. Never weaken a limit to make a change pass: a change to this file needs an ADR in `../adr/`.
 
-Each row names its source. Rows marked **To fill** are not yet decided; the maintainer completes them before build phase P2.
+Each row names its source.
 
 ## Dependencies and environment
 
@@ -82,4 +82,9 @@ Packages whose metadata is not an allowlisted SPDX identifier, resolved by readi
 
 ### Pinned tool versions
 
-**To fill at the start of P2** (owner decision, 25 October 2026): the gitleaks version and the SHA-256 of its release asset, taken from the release's checksums file when the CI job is written; the lychee version (optional local tool). For reference, the latest tags on 25 October 2026 were gitleaks v8.30.1 and lychee v0.24.2.
+Filled at the start of P2 as the owner decided on 25 October 2026 (recorded in the DDR change log, 2026-11-03). The gitleaks checksum is the line for the CI asset in the release's `gitleaks_8.30.1_checksums.txt`, read on 3 November 2026. A bump is a pull request that edits this table and the workflow together; Dependabot does not track these tools.
+
+| Tool | Version | Asset | SHA-256 | Used by |
+| --- | --- | --- | --- | --- |
+| gitleaks | v8.30.1 | `gitleaks_8.30.1_linux_x64.tar.gz` | `551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb` | CI secret scan on Linux; the pre-commit hook runs whichever gitleaks is installed |
+| lychee | lychee-v0.24.2 | — | — | Optional local link check of generated site output (P3); not used by CI before then |

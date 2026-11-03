@@ -1,0 +1,28 @@
+# Rules for scripts/scan.py (SDD C-04, QA-56, QA-74). A library adds its own markers and patterns here.
+# Markers are words that must not appear in a repository; secret rules catch tokens and key blocks.
+# The gitleaks CLI runs alongside this scan in CI and, where installed, in the pre-commit hook.
+version: 1
+max_file_bytes: 1048576
+exclude:
+  - profile/scan.yaml
+rules:
+  - id: confidentiality-marker
+    kind: marker
+    pattern: '\b(CONFIDENTIAL|INTERNAL USE ONLY|DO NOT DISTRIBUTE)\b'
+    description: A confidentiality marking in upper case
+  - id: private-key-block
+    kind: secret
+    pattern: '-----BEGIN [A-Z ]*PRIVATE KEY-----'
+    description: A PEM private key
+  - id: github-token
+    kind: secret
+    pattern: '\b(gh[pousr]_[A-Za-z0-9]{36,}|github_pat_[A-Za-z0-9_]{50,})\b'
+    description: A GitHub personal, OAuth, user, server or refresh token
+  - id: aws-access-key-id
+    kind: secret
+    pattern: '\b(AKIA|ASIA)[0-9A-Z]{16}\b'
+    description: An AWS access key ID
+  - id: slack-token
+    kind: secret
+    pattern: '\bxox[abprs]-[A-Za-z0-9-]{10,}\b'
+    description: A Slack token

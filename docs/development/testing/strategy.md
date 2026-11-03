@@ -53,7 +53,7 @@ Repeat for `3.12` and `3.14`. Hosted CI runs the 3.11 and 3.14 jobs in P2.
 | Recorded platform API responses as fixtures for the platform adapters and the revision writer: golden revision lines for each approval case, a dropped run, catch-up, `verified` mapping | The revision writer and adapters are P2 |
 | `OKF9xx` fixtures (revision completeness) | Declared with `write_revision.py --check-since` |
 | Validation-speed gate on a 600-concept bundle (the constraint is timed in P2) | P1 records a figure for information only |
-| `scan.py`, gitleaks, pip-audit and licence-check jobs, and their tests | Plan OD-2, OD-3 |
+| `scan.py`, gitleaks, pip-audit and licence-check jobs, and their tests | Plan OD-2, OD-3. The scan, licence, audit and export tasks and their tests landed in P2 PR 1 (`test_scanner.py`, `test_licences.py`, `test_supply.py`); the CI jobs that call them come with `template-tests.yml` |
 | Planted-secret test (NFR6) | Needs the scan jobs |
 
 P3 adds the six site compatibility checks on the pilot bundle (FR8.2) and a skills run from the release archive; P4 adds the second-person timing (FR6.1) and the traced agent run (FR7.2).
