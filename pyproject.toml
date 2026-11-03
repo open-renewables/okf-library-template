@@ -40,11 +40,28 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py tests",
     "python scripts/validate_profile.py",
     "python scripts/build_indexes.py --check",
+    "python scripts/export_requirements.py --check",
 ]
 default_item_type = "cmd"
+
+[tool.poe.tasks.export]
+help = "Write requirements/validate.txt and requirements/dev.txt, hash-locked, from uv.lock"
+cmd = "python scripts/export_requirements.py"
+
+[tool.poe.tasks.scan]
+help = "Scan files changed since HEAD for confidentiality markers and secret-shaped strings (add --all for every tracked file)"
+cmd = "python scripts/scan.py"
+
+[tool.poe.tasks.licences]
+help = "Check the licences of the locked, installed packages against the allowlist in constraints.md"
+cmd = "python scripts/check_licences.py"
+
+[tool.poe.tasks.audit]
+help = "Audit the locked dependencies for known vulnerabilities (needs network and uvx)"
+cmd = "python scripts/audit.py"
 
 [tool.poe.tasks.ci-validate]
 help = "Validate this working tree against a base branch, using the base branch's own tooling and profile"
