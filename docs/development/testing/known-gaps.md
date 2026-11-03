@@ -1,6 +1,6 @@
 # Known gaps
 
-Behaviour not covered by an automated test at the end of build phase P1, with the reason and what closes it. Recorded here instead of skipping a test silently (conventions, Tests). Verification items (V-nn) are in SDD §15; OD-n and PP-n are in `plan/plan.md` while P1 is current.
+Behaviour not covered by an automated test at the end of build phase P1, with the reason and what closes it. Recorded here instead of skipping a test silently (conventions, Tests). Verification items (V-nn) are in SDD §15; OD-n and PP-n are in `plan/archive/2026-11-p1-core-tooling/plan.md`.
 
 | # | Gap | Reason | Closed by |
 | --- | --- | --- | --- |
