@@ -51,15 +51,15 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 7: exit (`tooling/p1-exit`)
 
-- [ ] 12. `.pre-commit-config.yaml` (local hooks); 600-concept timing
-- [ ] 12. Check: hooks refuse a bad commit in Git Bash and PowerShell; time recorded
-- [ ] 13. `testing/strategy.md`, `fixtures.md`, `known-gaps.md`; finding catalogue finished
-- [ ] 13. Check: every code has a catalogue row and fixture path (test fails otherwise); links resolve
-- [ ] 14. Full gate on 3.11 and 3.14; coverage figure; P2 to P4 estimate revised (proposal)
+- [x] 12. `.pre-commit-config.yaml` (local hooks); 600-concept timing
+- [x] 12. Check: hooks refuse a bad commit in Git Bash and PowerShell; time recorded
+- [x] 13. `testing/strategy.md`, `fixtures.md`, `known-gaps.md`; finding catalogue finished
+- [x] 13. Check: every code has a catalogue row and fixture path (test fails otherwise); links resolve
+- [x] 14. Full gate on 3.11, 3.12 and 3.14; coverage figure; P2 to P4 estimate revised (proposal, below)
 
 ## Exit
 
-- [ ] SPEC "Done when" items 1 to 8 ticked with evidence
+- [x] SPEC "Done when" items 1 to 7 met with evidence (table below); item 8 needs the owner's tag
 - [ ] **NEEDS YOU (person):** owner pushes annotated tag `v0.1.0` (alpha) on `main` (OD-10)
 - [ ] Proposed entries PP-1 to PP-6 decided and, where approved, applied as their own ADR or documented edit
 - [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-11-p1-core-tooling/`; the SRS status is not changed
@@ -81,7 +81,39 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 9 | `changes.py` (mixed-change rule, migration conditions, `ChangeContext`), `codeowners.py` (last match wins, per-file owners), publishing pre-check (`OKF701` to `OKF703`, review data supplied, skipped when none is known), four profile warnings (`OKF801` to `OKF804`), history-only-grows check (`OKF315`, matches a moved concept by `uid`). `--tooling-from` stages the base's `scripts/` and `profile/`, copies this tree's bundle and registry, and runs the base's own `validate_profile.py`. Fixtures can carry `change.json` and `CODEOWNERS` | [Test] | none |
 | 10 | `cli.py` plus four thin scripts; `poe check` now runs `validate_profile.py` and `build_indexes.py --check`; `poe ci-validate` runs `--tooling-from` and `--base`. FR2.5 test uses a real scratch git repository: with a relaxed profile and a non-conforming concept the plain run passes and the `--tooling-from HEAD` run fails with `OKF203`. A local run and a `--tooling-from HEAD --base HEAD` run give identical JSON. `tests/template/test_cli.py` runs the commands in process against scratch repositories | [Test] | none |
 | 11 | Example bundle built with `new_concept.py` then filled: `example-item` (Item, with `Checks` children at four spaces, footnote citation, relative links), `vocab/group` and `vocab/category`, `glossary` (term with lower-case `<a id>`); indexes by `build_indexes.py`; registry by the tool. `validate_profile.py` 0 errors, 0 warnings; vendored okf-skills reports conformant (FR1.1; 7 recommended-field warnings only, `tags` and `generated`); `build_indexes.py --check` clean; `poe check` and `poe test` pass (349 tests, 98.95 %). No new fixtures: `tests/library/fixtures/pass/` already covers all three types | [Test] | none |
-| 12 |  |  |  |
-| 13 |  |  |  |
-| 14 |  |  |  |
+| 12 | `.pre-commit-config.yaml` with four `repo: local` hooks run through `uv run`: `ruff check --fix`, `ruff format` (both with `--force-exclude`, so the vendored folder is skipped), `validate_profile.py --changed`, `build_indexes.py --check`; no `scan.py` hook (OD-2). In a scratch clone outside the repo: Git Bash and PowerShell both refused a commit with an undeclared `status` (`OKF205`, plus `OKF502` for the stale index), ruff fixed and refused a badly formatted Python file, and clean commits passed. 600 generated Items (604 concept files): `validate_profile.py` 2.05–2.28 s, `build_indexes.py --check` 1.23–1.27 s, wall-clock including `uv run` start-up, one Windows machine; target under 10 s (`testing/performance.md`). The generator ran 246 s because `create_concept` reloads the bundle per concept; scaffolder cost only | [Test] | none |
+| 13 | `testing/strategy.md`, `fixtures.md`, `known-gaps.md` (G1–G10) and `performance.md` written; `finding-codes.md` already complete from earlier steps. New `tests/template/test_catalogue.py` (3 tests): every code in `codes.py` has a catalogue row and no row is unknown (64 codes), every listed fixture or test path exists, relative links in `testing/` resolve. It caught a missing `performance.md` link on its first run | [Test] | none |
+| 14 | Full gate on Python 3.11.15, 3.12.10, 3.14.0 with `UV_PYTHON` and `UV_PROJECT_ENVIRONMENT=.venv-<ver>`: `poe check` clean (ruff, mypy strict on 28 files, mypy on 22, `validate_profile.py` 0 errors, indexes clean) and `poe test` 352 passed, coverage 98.95 % (floor 85 %), on each. `constraints.md` unchanged. Done-when 1–7: (1) above; (2) 64 codes catalogued, `test_failing_fixture_raises_exactly_its_code` covers 62 fail folders, `OKF118`/`OKF119` by unit test (known gap G5); (3) example bundle 0 errors, indexes clean, `pass/item`, `pass/vocabulary`, `pass/glossary`; (4) `tiers.json` golden (16 cases) and 4 golden indexes; (5) FR2.5 scratch-repo test and `OKF001` plus `pass/migration`; (6) `test_cli.py` parity test; (7) the three testing files and the catalogue. Item 8: tag and re-estimate below | [Test] | none |
 | Actual effort | P1 person-days against 11–16 |  | P2–P4 re-estimate |
+
+### P2 to P4 re-estimate (proposal; the SDD is not edited)
+
+SDD §14 carries P2 9.5–14.5, P3 5–7, P4 5–8 (19.5–29.5 together). P1 ran as seven pull requests and the step ranges in `plan.md` held; days actually spent were not logged by the session that did steps 12 to 14, so the "Actual effort" cell is for the owner to fill. Proposed changes from what P1 found:
+
+| Phase | SDD range | Proposed | Why |
+| --- | --- | --- | --- |
+| P2 CI and governance | 9.5–14.5 | 10.5–16 | Adds work P1 deferred or exposed: `scan.py`, its hook and gitleaks (OD-2); `requirements/*.txt` export (OD-3); approved-move label and base-ref plumbing into `validate.yml` (FR1.5); `OKF9xx` and its fixtures; macOS and Linux runs of everything P1 proved on Windows only (known gaps G1, G10); recorded API responses as fixtures (G9); 600-concept speed gate (G8) |
+| P3 Site, release, skills | 5–7 | 5.5–7.5 | Python-Markdown divergence checks beyond nesting (G2), an RFC on scope notes (G6) and an anchor-placement rule (G3) |
+| P4 Pilot and hardening | 5–8 | 5–8 | No new information |
+| Total | 19.5–29.5 | 21–31.5 | |
+
+Risk: P2 includes the GitHub App, the ruleset and the three-way approval inference, none of which P1 exercised; the V-05 carried items must be closed first.
+
+### Draft `v0.1.0` tag message (owner tags on `main` after PR 7 merges; not tagged)
+
+```
+okf-library-template v0.1.0 (alpha)
+
+Build phase P1: core profile tooling.
+
+- okfprofile: reader, six checks, change rules, publishing pre-check, profile warnings,
+  registry, generated indexes, revision-tier derivation (64 finding codes).
+- Scripts: validate_profile, new_concept, renumber, build_indexes; poe tasks check, test, ci-validate.
+- Example profile (Item, Vocabulary, Glossary) and example bundle; vendored okf-skills validator at a8b96420.
+- Local pre-commit hooks. Gate: poe check and poe test on Python 3.11, 3.12, 3.14; 352 tests, 98.95 % coverage.
+
+Not in this release: CI, platform adapters, revision writer, releases, site, skills (P2 to P3).
+Verified on Windows only; see docs/development/testing/known-gaps.md.
+```
+
+Command for the owner: `git tag -a v0.1.0 -F <message-file> && git push origin v0.1.0`.

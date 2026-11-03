@@ -1,0 +1,27 @@
+# Local hooks only: nothing is fetched from a hook repository (SDD AD-20, I-17). Each hook runs
+# through `uv run` from the locked environment. The scan.py hook is added in P2 (plan OD-2).
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix --force-exclude
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format --force-exclude
+        language: system
+        types: [python]
+      - id: validate-profile
+        name: validate changed concepts
+        entry: uv run python scripts/validate_profile.py --changed
+        language: system
+        pass_filenames: false
+        always_run: true
+      - id: build-indexes-check
+        name: check generated indexes
+        entry: uv run python scripts/build_indexes.py --check
+        language: system
+        pass_filenames: false
+        always_run: true
