@@ -53,6 +53,7 @@ CHECK_6 = "6 Identifiers and registry"
 CHANGE = "Change rules"
 PUBLISHING = "Publishing rules"
 WARNINGS = "Profile warnings"
+REVISION = "Revision completeness"
 
 CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF001", Level.ERROR, CHANGE, "Change touches tooling and content without the migration label"),
@@ -124,4 +125,5 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF802", Level.WARNING, WARNINGS, "Agent markers found without the agent-drafted label"),
     CodeInfo("OKF803", Level.WARNING, WARNINGS, "Stable concept still holds a placeholder in a named section"),
     CodeInfo("OKF804", Level.WARNING, WARNINGS, "Folder holds more concepts than the profile's limit"),
+    CodeInfo("OKF901", Level.ERROR, REVISION, "A merged change has no revision line in a concept it touched"),
 )

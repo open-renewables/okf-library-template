@@ -50,8 +50,8 @@ Repeat for `3.12` and `3.14`. Hosted CI runs the 3.11 and 3.14 jobs in P2.
 | --- | --- |
 | Hosted CI on Linux, macOS and Windows, Python 3.11 and 3.14 | P1 ran on one machine (plan OD-9) |
 | `tests/template/instantiation/` and the W-10 self-test, with and without a platform | `init_library.py` is P2 |
-| Recorded platform API responses as fixtures for the platform adapters and the revision writer: golden revision lines for each approval case, a dropped run, catch-up, `verified` mapping | The revision writer and adapters are P2 |
-| `OKF9xx` fixtures (revision completeness) | Declared with `write_revision.py --check-since` |
+| Recorded platform API responses as fixtures for the platform adapters and the revision writer: golden revision lines for each approval case, a dropped run, catch-up, `verified` mapping | The revision writer and adapters are P2. Landed in P2 PR 2: `tests/template/fixtures/github/` (recorded in the sandbox), `test_platforms.py`, `test_revision_writer.py` (approval inference by row, insertion, dropped run, `verified`, `OKF901`); live proof is the step 15 rehearsal |
+| `OKF9xx` fixtures (revision completeness) | Declared with `write_revision.py --check-since`; `OKF901` is raised from git history, so it is proved by a unit test with a scratch repository, not a bundle fixture |
 | Validation-speed gate on a 600-concept bundle (the constraint is timed in P2) | P1 records a figure for information only |
 | `scan.py`, gitleaks, pip-audit and licence-check jobs, and their tests | Plan OD-2, OD-3. The scan, licence, audit and export tasks and their tests landed in P2 PR 1 (`test_scanner.py`, `test_licences.py`, `test_supply.py`); the CI jobs that call them come with `template-tests.yml` |
 | Planted-secret test (NFR6) | Needs the scan jobs |

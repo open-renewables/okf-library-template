@@ -13,7 +13,7 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | `OKF6xx` | 6. Identifier and registry integrity |
 | `OKF7xx` | Publishing rules (approval, citation) |
 | `OKF8xx` | Profile-declared warnings |
-| `OKF9xx` | Revision completeness (declared in P2 with the revision writer) |
+| `OKF9xx` | Revision completeness (`write_revision.py --check-since`) |
 
 ## Codes defined
 
@@ -83,8 +83,9 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF802 | warning | Profile warnings | Agent markers found without the agent-drafted label | `tests/library/fixtures/fail/OKF802/` |
 | OKF803 | warning | Profile warnings | Stable concept still holds a placeholder in a named section | `tests/library/fixtures/fail/OKF803/` |
 | OKF804 | warning | Profile warnings | Folder holds more concepts than the profile's limit | `tests/library/fixtures/fail/OKF804/` |
+| OKF901 | error | Revision completeness | A merged change has no revision line in a concept it touched | unit test, `tests/template/test_revision_writer.py` (raised by `write_revision.py --check-since`, which reads git history, so no bundle fixture can show it) |
 
-Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered). `OKF9xx` (revision completeness) is declared with the revision writer in build phase P2. The check column holds the I-09 check number, or the name of a group of rules that has no number there.
+Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered). `OKF9xx` (revision completeness) is raised by `write_revision.py --check-since`, not by `validate_profile.py`. The check column holds the I-09 check number, or the name of a group of rules that has no number there.
 
 ## Reading rules
 
