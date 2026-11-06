@@ -56,4 +56,6 @@ Repeat for `3.12` and `3.14`. Hosted CI runs the 3.11 and 3.14 jobs in P2.
 | `scan.py`, gitleaks, pip-audit and licence-check jobs, and their tests | Plan OD-2, OD-3. The scan, licence, audit and export tasks and their tests landed in P2 PR 1 (`test_scanner.py`, `test_licences.py`, `test_supply.py`); the CI jobs that call them come with `template-tests.yml` |
 | Planted-secret test (NFR6) | Needs the scan jobs |
 
+The acceptance level above these tests (a library built from the template, every SRS criterion, both platform modes) is the [Master Test Plan](master-test-plan.md), run at P4; its cases run the tests above where they exist and cite this file instead of repeating it.
+
 P3 adds the six site compatibility checks on the pilot bundle (FR8.2) and a skills run from the release archive; P4 adds the second-person timing (FR6.1) and the traced agent run (FR7.2).
