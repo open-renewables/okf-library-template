@@ -1,9 +1,7 @@
 """The revision writer: inference, insertion, catch-up, ``verified`` and ``OKF901`` (plan step 5, G4, G9)."""
 
 import json
-import os
 import shutil
-import subprocess
 from datetime import UTC, date, datetime
 from pathlib import Path
 
@@ -31,12 +29,11 @@ from okfprofile.revision_writer import (
     set_verified,
     verified_entries,
 )
-from support import ROOT
+from support import PATH, ROOT, edit, git
 
 pytestmark = pytest.mark.skipif(shutil.which("git") is None, reason="git is not installed")
 
 OWNERS = parse_codeowners("/knowledge/ @alice\n")
-PATH = "knowledge/example-group/example-category/example-item.md"
 HEAD = "h" * 40
 WHEN = datetime(2026, 11, 1, 10, 0, tzinfo=UTC)
 
@@ -242,52 +239,6 @@ def test_verified_entries_give_a_generic_tool_the_same_tier(
 
 
 # ---------------------------------------------------------------------------------------------- git-local runs
-
-
-def git(root: Path, *args: str, when: str | None = None) -> str:
-    env = dict(os.environ)
-    if when:
-        env["GIT_AUTHOR_DATE"] = env["GIT_COMMITTER_DATE"] = when
-    done = subprocess.run(["git", "-C", str(root), *args], capture_output=True, check=True, env=env, text=True)  # noqa: S603, S607
-    return done.stdout.strip()
-
-
-@pytest.fixture
-def library(tmp_path: Path) -> Path:
-    """A git-local library: the template's profile and example bundle, owner alice, one base commit."""
-    root = tmp_path / "lib"
-    for name in ("profile", "knowledge"):
-        shutil.copytree(ROOT / name, root / name)
-    text = (root / "profile" / "profile.yaml").read_text(encoding="utf-8")
-    text = text.replace("platform: github", "platform: git-local").replace(
-        "maintainers: {}",
-        "maintainers:\n  alice:\n    emails: [alice@example.org]\n    role: maintainer\n"
-        "  bob:\n    emails: [bob@example.org]\n    role: contributor\n",
-    )
-    (root / "profile" / "profile.yaml").write_text(text, encoding="utf-8", newline="\n")
-    (root / ".github").mkdir()
-    (root / ".github" / "CODEOWNERS").write_text("/knowledge/ @alice\n", encoding="utf-8", newline="\n")
-    git(root, "init", "-q", "-b", "main")
-    git(root, "config", "user.email", "bot@example.org")
-    git(root, "config", "user.name", "Bot")
-    git(root, "add", "-A")
-    git(root, "commit", "-q", "-m", "base", when="2026-10-31T09:00:00+00:00")
-    return root
-
-
-def edit(root: Path, who: str, subject: str, when: str, trailers: str = "", tag: str = "x") -> str:
-    file = root / PATH
-    file.write_text(
-        file.read_text(encoding="utf-8").replace("plain prose", f"plain prose ({tag})", 1),
-        encoding="utf-8",
-        newline="\n",
-    )
-    git(root, "add", "-A")
-    args = ["commit", "-q", f"--author={who} <{who}@example.org>", "-m", subject]
-    if trailers:
-        args += ["-m", trailers]
-    git(root, *args, when=when)
-    return git(root, "rev-parse", "--short=7", "HEAD")
 
 
 def lines_of(root: Path) -> list[str]:

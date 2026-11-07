@@ -1,5 +1,7 @@
 """Shared helpers for the template tests."""
 
+import os
+import subprocess
 from collections.abc import Callable
 from pathlib import Path
 
@@ -37,3 +39,28 @@ DEFAULT_REGISTRY = {
 }
 
 MakeRepo = Callable[..., Profile]
+
+PATH = "knowledge/example-group/example-category/example-item.md"
+
+
+def git(root: Path, *args: str, when: str | None = None) -> str:
+    env = dict(os.environ)
+    if when:
+        env["GIT_AUTHOR_DATE"] = env["GIT_COMMITTER_DATE"] = when
+    done = subprocess.run(["git", "-C", str(root), *args], capture_output=True, check=True, env=env, text=True)  # noqa: S603, S607
+    return done.stdout.strip()
+
+
+def edit(root: Path, who: str, subject: str, when: str, trailers: str = "", tag: str = "x") -> str:
+    file = root / PATH
+    file.write_text(
+        file.read_text(encoding="utf-8").replace("plain prose", f"plain prose ({tag})", 1),
+        encoding="utf-8",
+        newline="\n",
+    )
+    git(root, "add", "-A")
+    args = ["commit", "-q", f"--author={who} <{who}@example.org>", "-m", subject]
+    if trailers:
+        args += ["-m", trailers]
+    git(root, *args, when=when)
+    return git(root, "rev-parse", "--short=7", "HEAD")

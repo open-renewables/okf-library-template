@@ -11,8 +11,7 @@ from okfprofile.document import Concept, parse_concept
 from okfprofile.report import Finding
 from okfprofile.revision_cli import stale_main
 from okfprofile.stale import DurationError, StaleReport, add_duration, find_stale
-from support import ROOT
-from test_revision_writer import PATH, edit, git, library  # noqa: F401 - `library` is a fixture used here
+from support import PATH, ROOT, edit, git
 
 NOW = datetime(2026, 11, 3, tzinfo=UTC)
 
@@ -152,7 +151,7 @@ def test_a_missing_profile_is_a_usage_error(tmp_path: Path) -> None:
 
 
 def test_check_since_adds_the_changes_without_a_revision_line(
-    library: Path,  # noqa: F811
+    library: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     git(library, "tag", "v0.0.1")
