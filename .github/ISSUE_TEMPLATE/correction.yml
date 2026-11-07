@@ -1,0 +1,29 @@
+name: Suggest a correction
+description: Report something wrong in an existing concept
+title: "Correction: "
+labels: ["intake:correction"]
+body:
+  - type: input
+    id: concept
+    attributes:
+      label: Concept
+      description: Its `uid` (for example ITM-0001) or a link to its page.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong
+    validations:
+      required: true
+  - type: textarea
+    id: proposed
+    attributes:
+      label: Proposed text
+  - type: textarea
+    id: source
+    attributes:
+      label: Source
+      description: Where the correct statement comes from.
+    validations:
+      required: true

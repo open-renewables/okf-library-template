@@ -1,0 +1,8 @@
+# Code owners (SDD I-15). The last matching line decides; ownership is assessed per concept file (FR5.4).
+# Replace the login with your own, and add a line per bundle folder when directory owners join.
+*                @richard-gledhill
+/knowledge/      @richard-gledhill
+/scripts/        @richard-gledhill
+/profile/        @richard-gledhill
+/.github/        @richard-gledhill
+/docs/           @richard-gledhill

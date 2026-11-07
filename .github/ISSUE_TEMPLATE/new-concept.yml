@@ -1,0 +1,59 @@
+name: Propose a new concept
+description: Suggest a concept to add to the library
+title: "New concept: "
+labels: ["intake:new-concept"]
+body:
+  - type: markdown
+    attributes:
+      value: A maintainer or an agent turns an accepted proposal into a pull request. You do not need to use git, and you do not need to know the `uid`, tags or registry.
+  - type: dropdown
+    id: concept-type
+    attributes:
+      label: Concept type
+      options:
+        - Item
+        - Vocabulary
+        - Glossary term
+    validations:
+      required: true
+  - type: input
+    id: folder
+    attributes:
+      label: Proposed folder
+      description: Where it belongs in the library, if you know.
+  - type: input
+    id: title
+    attributes:
+      label: Title
+    validations:
+      required: true
+  - type: input
+    id: description
+    attributes:
+      label: One-sentence description
+      description: Used as the concept's line in the index.
+    validations:
+      required: true
+  - type: textarea
+    id: content
+    attributes:
+      label: Content
+      description: In your own words.
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources
+      description: Standards by number and edition, documents, or links.
+    validations:
+      required: true
+  - type: dropdown
+    id: ai-assisted
+    attributes:
+      label: Did an AI tool help draft this?
+      options:
+        - "No"
+        - "Yes"
+    validations:
+      required: true

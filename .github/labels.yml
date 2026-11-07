@@ -1,0 +1,28 @@
+# Labels that setup_repo.py creates (SDD C-09). Colours are quoted: 5319e7 would otherwise read as a number. Issue forms and the pull request template name only these.
+- name: intake:new-concept
+  color: "0e8a16"
+  description: A proposed new concept, from the issue form
+- name: intake:correction
+  color: "d93f0b"
+  description: A correction to an existing concept, from the issue form
+- name: intake:feedback
+  color: "5319e7"
+  description: General feedback, from the issue form
+- name: agent-drafted
+  color: "fbca04"
+  description: An AI tool drafted some of the content; its revisions are machine-confirmed
+- name: full-review
+  color: "1d76db"
+  description: The whole of each changed concept was reviewed, not only the change
+- name: approved-move
+  color: "c5def5"
+  description: A reviewed move or rename of a concept; the registry records the old path
+- name: profile-migration
+  color: "b60205"
+  description: A profile or tooling change that must update content in the same pull request; released as a major version
+- name: stale
+  color: "ededed"
+  description: The tracking issue for concepts due for review
+- name: validation-failure
+  color: "e11d21"
+  description: The tracking issue for a failed validation of the main branch

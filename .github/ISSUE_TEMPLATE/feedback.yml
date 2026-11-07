@@ -1,0 +1,16 @@
+name: Give feedback
+description: Tell us what works and what does not
+title: "Feedback: "
+labels: ["intake:feedback"]
+body:
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Your feedback
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Page or concept
+      description: A link, if it is about one place.

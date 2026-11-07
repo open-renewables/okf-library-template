@@ -12,8 +12,10 @@ import os
 import re
 import sys
 from collections.abc import Sequence
+from datetime import datetime
 from pathlib import Path
 
+from okfprofile.bundle import load_bundle
 from okfprofile.codeowners import load_codeowners
 from okfprofile.config import Profile, ProfileError, load_profile
 from okfprofile.gitutil import GitError, git
@@ -22,12 +24,13 @@ from okfprofile.platforms.git_local import GitLocalAdapter
 from okfprofile.platforms.github import GitHubAdapter, HttpTransport
 from okfprofile.report import Report
 from okfprofile.revision_writer import RevisionError, catch_up, check_since, commit_revision
+from okfprofile.stale import DurationError, find_stale
 
 EXIT_OK = 0
 EXIT_FINDINGS = 1
 EXIT_USAGE = 2
 REMOTE = re.compile(r"github\.com[:/](?P<repo>[^/\s]+/[^/\s]+?)(?:\.git)?/?$")
-RECOVERABLE = (ProfileError, GitError, PlatformError, RevisionError, OSError, ValueError)
+RECOVERABLE = (ProfileError, GitError, PlatformError, RevisionError, DurationError, OSError, ValueError)
 
 
 def repository_from_remote(url: str) -> str | None:
@@ -126,4 +129,46 @@ def write_revision_main(argv: Sequence[str] | None = None) -> int:
                 indent=2,
             )
         )
+    return EXIT_OK
+
+
+def stale_main(argv: Sequence[str] | None = None) -> int:
+    """``stale_report.py``: list concepts past their review date (and, optionally, changes with no revision line).
+
+    The report is information, not a gate: the exit code is 0 whatever it finds, and 2 when it cannot run.
+    """
+    parser = argparse.ArgumentParser(prog="stale_report.py", description="Report concepts due for review.")
+    parser.add_argument("--root", default=".", help="repository root (default: the current folder)")
+    parser.add_argument(
+        "--now", metavar="DATETIME", help="judge by this ISO 8601 instant, with an offset (default: now)"
+    )
+    parser.add_argument("--check-since", metavar="TAG", help="also list merged changes after TAG with no revision line")
+    parser.add_argument("--repo", help="owner/name for platform github")
+    parser.add_argument("--markdown", metavar="FILE", help="write the issue body to FILE")
+    parser.add_argument("--json", action="store_true", help="write the result as JSON to standard output")
+    args = parser.parse_args(argv)
+    root = Path(args.root).resolve()
+    try:
+        now = datetime.fromisoformat(args.now) if args.now else None
+        if now is not None and now.tzinfo is None:
+            msg = "--now needs an offset, for example 2026-11-03T00:00:00Z"
+            raise ValueError(msg)
+        profile = load_profile(root)
+        report = find_stale(profile, load_bundle(profile.bundle_root, root), now)
+        if args.check_since:
+            report.gaps = check_since(profile, make_adapter(profile, args.repo), args.check_since)
+    except RECOVERABLE as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return EXIT_USAGE
+    if report.human():
+        print(report.human(), file=sys.stderr)
+    gap_count = len(report.gaps or [])
+    print(
+        f"{len(report.stale)} stale, {len(report.unrevised)} with no revision, {gap_count} change(s) without a line",
+        file=sys.stderr,
+    )
+    if args.markdown:
+        Path(args.markdown).write_text(report.to_markdown(), encoding="utf-8", newline="\n")
+    if args.json:
+        print(report.to_json())
     return EXIT_OK
