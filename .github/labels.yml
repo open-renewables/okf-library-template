@@ -19,7 +19,7 @@
   description: A reviewed move or rename of a concept; the registry records the old path
 - name: profile-migration
   color: "b60205"
-  description: A profile or tooling change that must update content in the same pull request; released as a major version
+  description: A profile or tooling change that must update content in one pull request; a major version
 - name: stale
   color: "ededed"
   description: The tracking issue for concepts due for review
