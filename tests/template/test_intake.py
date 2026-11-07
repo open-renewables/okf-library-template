@@ -92,7 +92,12 @@ def test_the_code_owners_cover_every_tooling_and_content_path() -> None:
 def test_config_commands_cover_the_files_that_exist(tmp_path: Path) -> None:
     assert config_commands(tmp_path) == []
     commands = config_commands(ROOT)
-    assert [c[3] for c in commands] == ["vendor.github-issue-forms", "vendor.github-issue-config", "vendor.dependabot"]
+    assert [c[3] for c in commands] == [
+        "vendor.github-issue-forms",
+        "vendor.github-issue-config",
+        "vendor.github-workflows",
+        "vendor.dependabot",
+    ]
     assert all(c[:3] == ["uvx", "check-jsonschema", "--builtin-schema"] for c in commands)
     assert ".github/ISSUE_TEMPLATE/config.yml" not in commands[0]
     workflows = tmp_path / ".github" / "workflows"
@@ -104,6 +109,6 @@ def test_config_commands_cover_the_files_that_exist(tmp_path: Path) -> None:
 
 def test_check_config_prints_or_refuses(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
     assert check_config_main(["--root", str(ROOT), "--print-command"]) == 0
-    assert capsys.readouterr().out.count("check-jsonschema") == 3
+    assert capsys.readouterr().out.count("check-jsonschema") == 4
     monkeypatch.setattr(supply_cli.shutil, "which", lambda _name: None)
     assert check_config_main(["--root", str(ROOT)]) == 2

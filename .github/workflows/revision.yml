@@ -1,0 +1,100 @@
+# Revision history (SDD W-05, C-06, AD-12). After each push to main, record every change merged since the last
+# revision commit in the concepts it touched, regenerate their indexes and push one commit with the trailer
+# `Revision-Bot: true`. A run that is cancelled or fails loses nothing: the next run catches up.
+name: revision
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: revision
+  cancel-in-progress: false
+
+jobs:
+  mode:
+    name: mode
+    if: "${{ !contains(github.event.head_commit.message, 'Revision-Bot: true') }}"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      token: ${{ steps.mode.outputs.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Read rules.revision_token from the profile
+        id: mode
+        run: |
+          token=$(sed -n 's/^  revision_token: *//p' profile/profile.yaml | head -1 | tr -d '\r"')
+          echo "token=${token}" >> "$GITHUB_OUTPUT"
+
+  revision-app:
+    name: revision (App token)
+    needs: [mode]
+    if: ${{ needs.mode.outputs.token == 'github-app' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        id: app
+        with:
+          client-id: ${{ vars.APP_CLIENT_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - run: uv sync --locked
+      - name: Record revision history and push
+        env:
+          GITHUB_TOKEN: ${{ steps.app.outputs.token }}
+        run: |
+          git config user.name "revision-bot"
+          git config user.email "revision-bot@users.noreply.github.com"
+          uv run poe revision
+          for attempt in 1 2 3; do
+            if git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main; then
+              exit 0
+            fi
+            git pull --rebase "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" main
+          done
+          exit 1
+
+  revision-token:
+    name: revision (workflow token)
+    needs: [mode]
+    if: ${{ needs.mode.outputs.token == 'github-token' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - run: uv sync --locked
+      - name: Record revision history and push
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "revision-bot"
+          git config user.email "revision-bot@users.noreply.github.com"
+          uv run poe revision
+          for attempt in 1 2 3; do
+            if git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main; then
+              exit 0
+            fi
+            git pull --rebase "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" main
+          done
+          exit 1

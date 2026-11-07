@@ -428,3 +428,24 @@ def test_unusable_label_files_are_refused(tmp_path: Path) -> None:
 def test_every_label_in_the_repository_list_is_created() -> None:
     names = {label["name"] for label in read_labels(ROOT)}
     assert set(LABELS) <= names
+
+
+def test_an_existing_ruleset_under_another_name_is_converged_in_place(library: Path) -> None:
+    api = FakeGitHub()
+    api.state["rulesets"][5] = {
+        "name": "main",
+        "enforcement": "active",
+        "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}},
+        "bypass_actors": [{"actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "pull_request"}],
+        "rules": [{"type": "deletion"}, {"type": "non_fast_forward"}],
+    }
+    assert run(library, api, "--ruleset-name", "main", "--app-slug", "rev-bot") == 0
+    assert list(api.state["rulesets"]) == [5]
+    ruleset = api.state["rulesets"][5]
+    assert ruleset["name"] == "main"
+    assert {"actor_id": 77, "actor_type": "Integration", "bypass_mode": "always"} in ruleset["bypass_actors"]
+    assert "pull_request" in {r["type"] for r in ruleset["rules"]}
+    api.state["variables"]["APP_CLIENT_ID"] = "Iv23liREAL"
+    api.state["secrets"].add("APP_PRIVATE_KEY")
+    assert run(library, api, "--check", "--ruleset-name", "main", "--app-slug", "rev-bot") == 0
+    assert run(library, api, "--check", "--app-slug", "rev-bot") == 1

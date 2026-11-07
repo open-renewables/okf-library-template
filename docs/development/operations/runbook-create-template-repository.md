@@ -103,7 +103,18 @@ If a flag is rejected, use **Settings → General** and **Settings → Code secu
 
 **Settings → Rules → Rulesets → New branch ruleset**: name `main`; enforcement Active; target the default branch; bypass list *Repository admin*, **For pull requests only**. Rules: restrict deletions; block force pushes; require a pull request before merging with 1 approval and code-owner review; allowed merge method squash. Leave off "Require approval of the most recent reviewable push" and "Do not allow bypassing" (SDD §11).
 
-Added in P2: the required status check `validate` and the GitHub App on the bypass list ("always").
+Added in P2 (plan step 13): the required status check `validate` and the GitHub App on the bypass list ("always"). Do this once, after the pull request that adds `.github/workflows/validate.yml` has merged and the `validate` job has run green on `main`; a check that has never run can block every pull request.
+
+1. Create and install the organisation App (`runbook-promote-to-public.md`, step 3) and note its slug.
+2. Look first, then apply. The ruleset on this repository is called `main`, so name it:
+
+   ```bash
+   uv run python scripts/setup_repo.py --repo open-renewables/okf-library-template --ruleset-name main --app-slug <app-slug> --dry-run
+   uv run python scripts/setup_repo.py --repo open-renewables/okf-library-template --ruleset-name main --app-slug <app-slug>
+   ```
+
+   It adds the `validate` check and the App bypass to the existing ruleset, creates the labels, and leaves the other settings as they are. By hand, the same change is **Settings → Rules → Rulesets → main → Require status checks to pass → Add checks → `validate`**, and **Bypass list → Add bypass → the App → Always**.
+3. Check: `uv run python scripts/setup_repo.py --repo open-renewables/okf-library-template --ruleset-name main --app-slug <app-slug> --check` reports no problem. Then open a throwaway pull request that changes `docs/` and `knowledge/` together (close it unmerged): `validate` must fail with `OKF001` and the pull request must not be mergeable without an admin bypass.
 
 ## 7. Check
 

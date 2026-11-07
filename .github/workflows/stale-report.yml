@@ -1,0 +1,49 @@
+# Weekly review report (SDD W-06): concepts past their review date, merged changes without a revision line, and
+# known vulnerabilities in the locked dependencies, kept in one tracking issue labelled `stale`.
+name: stale-report
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  report:
+    name: report
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+      - run: uv sync --locked
+      - name: Stale concepts and changes without a revision line
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          previous=$(git tag --list 'v*' --sort=-v:refname | head -1)
+          if [ -n "$previous" ]; then
+            uv run poe stale --markdown stale.md --check-since "$previous"
+          else
+            uv run poe stale --markdown stale.md
+          fi
+      - name: Known vulnerabilities in the locked dependencies
+        run: |
+          status=0
+          uv run poe audit > audit.txt 2>&1 || status=$?
+          {
+            printf '\n## Vulnerabilities (pip-audit)\n\n'
+            if [ "$status" -eq 0 ]; then printf 'None found.\n'; else printf 'The audit failed or found problems (exit %s):\n\n```\n' "$status"; cat audit.txt; printf '```\n'; fi
+          } >> stale.md
+      - name: Update the tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uv run poe report-issue --label stale --title "Review report" --body-file stale.md

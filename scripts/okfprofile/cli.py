@@ -76,6 +76,11 @@ def _validate_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--tooling-from", metavar="REF", help="run the tooling and profile of REF on this working tree")
     parser.add_argument("--change", metavar="FILE", help="JSON file describing the change proposal")
+    parser.add_argument(
+        "--merged",
+        action="store_true",
+        help="the change is already merged: compare with --base but skip the change rules and the publishing pre-check",
+    )
     parser.add_argument("--label", action="append", default=[], help="a label on the change proposal (repeatable)")
     parser.add_argument(
         "--fix-registry", action="store_true", help="record moved concepts (needs --label approved-move)"
@@ -118,6 +123,8 @@ def _context(
         change = ChangeContext.from_file(Path(args.change))
     elif args.base or args.label:
         change = ChangeContext(paths=paths)
+    if args.merged and not args.change:
+        change = None
     if change is not None:
         change.labels |= set(args.label)
         if not change.paths:
