@@ -47,12 +47,12 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 5: instantiation (`tooling/p2-instantiate`)
 
-- [ ] 9. `init_library.py` (questionnaire, `--answers`, licences, template-only removal, idempotent)
-- [ ] 9. Check: no placeholder, template-only file or `docs/` left; licence files, Apache 2.0 text and `NOTICE` present; rerun is a no-op; result validates
-- [ ] 10. `setup_repo.py` with `--dry-run`, `--check`, `--promote`; `runbook-promote-library.md`
-- [ ] 10. Check: dry run against recorded responses lists exactly the needed changes; sandbox run sets everything and a second run changes nothing; deleted label and setting restored; `--promote` reaches the W-11 end state
-- [ ] 11. `tests/template/instantiation/`, W-10 self-test, `poe selftest`
-- [ ] 11. Check: both modes pass; seeded leftover placeholder and template-only file fail; `git-local` run makes no platform call; rebuilt archive digest matches
+- [x] 9. `init_library.py` (questionnaire, `--answers`, licences, template-only removal, idempotent)
+- [x] 9. Check: no placeholder, template-only file or `docs/` left; licence files, Apache 2.0 text and `NOTICE` present; rerun is a no-op; result validates
+- [x] 10. `setup_repo.py` with `--dry-run`, `--check`, `--promote`; `runbook-promote-library.md`
+- [x] 10. Check: dry run against recorded responses lists exactly the needed changes; sandbox run sets everything and a second run changes nothing; deleted label and setting restored; `--promote` reaches the W-11 end state
+- [x] 11. `tests/template/instantiation/`, W-10 self-test, `poe selftest`
+- [x] 11. Check: both modes pass; seeded leftover placeholder and template-only file fail; `git-local` run makes no platform call; rebuilt archive digest matches
 
 ## S2: sandbox rehearsal of workflows
 
@@ -100,7 +100,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 5 | `write_revision.py` (`poe revision`): catch-up since the last `Revision-Bot` commit or `--since`, W-05 inference per concept file (14 table rows), line insertion before footnotes with CRLF kept, indexes refreshed, optional `verified` (G15), `--commit` with the trailer, `--check-since` raising `OKF901` (PP-3: code, catalogue row, unit test). Scratch-repository tests: order, second run no-op, dropped run recovered, dry run, `validate_main` clean afterwards. A read-only dry run against the real template history resolved PR #16 live (four lines, `self-approved (non-owner)` because CODEOWNERS arrives in PR 3). 469 tests pass, coverage 98.3 %. New gaps G14 to G16; G4 and G9 narrowed | [Test] | PP-3 applied |
 | 6 to 7 | PR 3 built, uncommitted on `tooling/p2-intake`. `stale_report.py` (`poe stale`): earlier of `stale_after` and the default interval after the latest revision line; ISO durations of years, months, weeks and days with calendar clamping; offset-less or unreadable `stale_after` ignored; a concept with no revision is listed as unverified, and is stale only by its own date; deprecated concepts left out (to confirm); Markdown body for one issue (marker line), JSON, `--check-since` adds the OKF901 list; exit 0 whatever it finds. `.github/`: CODEOWNERS, `labels.yml` (9 labels), PR template, three issue forms, `config.yml`, `dependabot.yml` (actions, uv). `poe check-config` (uvx check-jsonschema, built-in schemas) passes on all files and fails on a planted bad form (run by hand, G17). Found by the tests: label colour `5319e7` reads as a number in YAML 1.2, so colours are quoted. `poe check` clean, new tests pass | [Test] | none |
 | 8 | PR 4 built, uncommitted on `tooling/p2-release`. `build_bundle.py` (`poe bundle <tag>`): files read from git at a commit (one `git cat-file --batch`), sorted by path, mode 0644/0755, owner 0 with empty names, mtime = commit time, GNU tar, gzip with no name or timestamp; checksum in `sha256sum` format; manifest (tag, commit, profile and OKF versions, platform, counts by type, status and tier, tar and `.tar.gz` digests, Python and zlib versions). `--verify` compares the tar digest, and the `.tar.gz` digest only for the same Python and zlib (ADR-004); `--rebuild-check` rebuilds from a ref. `release.py` (`poe release <tag>`): semver tag, clean tree, new tag, revision-line gate from the previous release (FR7.4), validation, archive into `dist/`, annotated tag whose message records the tar digest (`git-local`); `github` mode checks only; `--dry-run`, `--sign`. Tests: golden tar digest of fixed content (the V-12 anchor for the PR 6 matrix), rebuild from a clone at the tag reproduces the digest, a missing line fails a release and leaves no tag. New gaps G19 to G22 | [Test] | none |
-| 9 to 11 | | | |
+| 9 to 11 | PR 5 built, uncommitted on `tooling/p2-instantiate`. `init_library.py` (`poe init`): answers file or questionnaire; rewrites profile (name, platform, maintainers, `revision_token: github-token`), project name and licence in `pyproject.toml` and `uv.lock` (the lock still passes `uv lock --locked`), `LICENSE` (Apache kept, MIT written, or a proprietary notice), `LICENSE-template`, `LICENSE-content`, README, CITATION.cff, `DECISIONS.md` DR-01, CODEOWNERS, the issue-chooser link; removes `CLAUDE.md`, `docs/`, `tests/template/` (and the coverage gate with it) and, for `git-local`, the platform files; indexes regenerated; rerun changes nothing; leftover template names are reported. `setup_repo.py` (`poe setup-repo`): merge methods, read-only workflow token, dependency alerts, labels from `labels.yml`, `main-protect` ruleset (App bypass, `validate` check once the workflow exists), secret scanning, `--dry-run`, `--check` (including the client-ID capital `I` from S1), `--promote`; compares with the live state first, so a rerun restores deletions; tested against an in-memory GitHub. W-10 self-test: both platforms, 17 checks, library tests pass without the template tests, `git-local` release with every platform call forbidden. `runbook-promote-to-public.md` written. Found by the tests: the root index carries the library title, so indexes must be rebuilt at instantiation. New gaps G23 to G26; live `setup_repo` run on the sandbox repositories still to do | [Test] | PP-10 |
 | 12 to 13 | | | |
 | 14 | | | |
 | 15 to 16 | | | |
@@ -119,3 +119,4 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | PP-7 | Conditional (step 12) | |
 | PP-8 | Proposed (OD-3 decided) | |
 | PP-9 | Proposed (OD-10 decided) | |
+| PP-10 | Proposed (raised in step 9) | |

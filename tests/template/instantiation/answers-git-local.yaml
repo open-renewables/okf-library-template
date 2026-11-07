@@ -1,0 +1,14 @@
+# Answers for the W-10 self-test, platform git-local. No hosting platform; the MIT licence for code.
+platform: git-local
+name: local-library
+title: Local library
+description: A library that runs on git and Python alone.
+maintainer:
+  login: local-owner
+  name: Lou Owner
+  email: lou@example.org
+content_licence: CC-BY-4.0
+code_licence: MIT
+keep_examples: true
+keep_tests: false
+year: 2026
