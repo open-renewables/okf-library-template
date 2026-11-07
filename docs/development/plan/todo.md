@@ -34,11 +34,11 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 3: stale report and intake files (`tooling/p2-intake`)
 
-- [ ] 6. `stale_report.py`, `poe stale`
-- [ ] 6. Check: fixtures past each limit listed; offset-less `stale_after` rejected; no-revision concept reported Unverified
-- [ ] **NEEDS YOU (decision):** GitHub login(s) for CODEOWNERS and `maintainers` (OD-12)
-- [ ] 7. CODEOWNERS, PR template, three issue forms and `config.yml`, `dependabot.yml`, label list, `poe check-config`
-- [ ] 7. Check: config check passes and fails on a planted bad form; forms name only listed labels; two-folder path resolves to two owners
+- [x] 6. `stale_report.py`, `poe stale`
+- [x] 6. Check: fixtures past each limit listed; offset-less `stale_after` rejected; no-revision concept reported Unverified
+- [x] **NEEDS YOU (decision):** GitHub login(s) for CODEOWNERS and `maintainers` (OD-12): `richard-gledhill` taken from the owner's `gh` account and merge history; owner to confirm in the PR review
+- [x] 7. CODEOWNERS, PR template, three issue forms and `config.yml`, `dependabot.yml`, label list, `poe check-config`
+- [x] 7. Check: config check passes and fails on a planted bad form; forms name only listed labels; two-folder path resolves to two owners
 
 ## PR 4: bundle and release (`tooling/p2-release`)
 
@@ -98,7 +98,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 2 to 3 | PR 1 built and merged as #20. `requirements/validate.txt` and `dev.txt` exported from `uv.lock` with hashes (`poe export`; `export_requirements.py --check` is a `poe check` step); a clean venv from each with `--require-hashes` validates the bundle and passes `tests/library`. `poe licences`: 36 locked packages checked, 0 findings (allowlist, ADR-006/007 exceptions and metadata resolutions parsed from `constraints.md`). `poe audit`: 0 findings. gitleaks v8.30.1 and its `linux_x64` SHA-256, and lychee-v0.24.2, filled in `constraints.md` (PP-2). `scan.py` with `profile/scan.yaml` and its meta-schema (PP-4); hook refuses a planted marker (Git Bash) and a planted secret (PowerShell, redacted) and passes clean commits; gitleaks hook skips with a notice when not installed. `poe check` clean, `poe test` 403 passed, coverage 98.77 %. New gaps G11 to G13 | [Test] | PP-2, PP-4 applied |
 | 4 | PR 2 built, uncommitted on `tooling/p2-adapters-revision`. `okfprofile.platforms`: data model, `commits` (first-parent history, trailers, UTC dates), `github` (standard-library REST behind an injectable transport; lookup order closed list, `(#n)` subject, `commits/{sha}/pulls`; 30 s retry budget only for a commit whose subject names a PR) and `git_local` (maintainers map, `Approved-by`, `Full-Review`, `Agent-Drafted`). Replayed from responses recorded in the sandbox (`tests/template/fixtures/github/`, 48 KB). Found by the tests: a 404 on the closed list must not stop the lookup; bot logins need `[bot]` stripped to fit the grammar. `git-local` takes the author as the merger (G16) | [Test] | none |
 | 5 | `write_revision.py` (`poe revision`): catch-up since the last `Revision-Bot` commit or `--since`, W-05 inference per concept file (14 table rows), line insertion before footnotes with CRLF kept, indexes refreshed, optional `verified` (G15), `--commit` with the trailer, `--check-since` raising `OKF901` (PP-3: code, catalogue row, unit test). Scratch-repository tests: order, second run no-op, dropped run recovered, dry run, `validate_main` clean afterwards. A read-only dry run against the real template history resolved PR #16 live (four lines, `self-approved (non-owner)` because CODEOWNERS arrives in PR 3). 469 tests pass, coverage 98.3 %. New gaps G14 to G16; G4 and G9 narrowed | [Test] | PP-3 applied |
-| 6 to 7 | | | |
+| 6 to 7 | PR 3 built, uncommitted on `tooling/p2-intake`. `stale_report.py` (`poe stale`): earlier of `stale_after` and the default interval after the latest revision line; ISO durations of years, months, weeks and days with calendar clamping; offset-less or unreadable `stale_after` ignored; a concept with no revision is listed as unverified, and is stale only by its own date; deprecated concepts left out (to confirm); Markdown body for one issue (marker line), JSON, `--check-since` adds the OKF901 list; exit 0 whatever it finds. `.github/`: CODEOWNERS, `labels.yml` (9 labels), PR template, three issue forms, `config.yml`, `dependabot.yml` (actions, uv). `poe check-config` (uvx check-jsonschema, built-in schemas) passes on all files and fails on a planted bad form (run by hand, G17). Found by the tests: label colour `5319e7` reads as a number in YAML 1.2, so colours are quoted. `poe check` clean, new tests pass | [Test] | none |
 | 8 | | | |
 | 9 to 11 | | | |
 | 12 to 13 | | | |

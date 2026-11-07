@@ -229,3 +229,48 @@ def export_main(argv: Sequence[str] | None = None) -> int:
         print(f"out of date with uv.lock: {', '.join(stale)}; run `uv run poe export`", file=sys.stderr)
         return EXIT_FINDINGS
     return EXIT_OK
+
+
+CONFIG_SCHEMAS = (
+    ("vendor.github-issue-forms", ".github/ISSUE_TEMPLATE", "*.yml", ("config.yml",)),
+    ("vendor.github-issue-config", ".github/ISSUE_TEMPLATE", "config.yml", ()),
+    ("vendor.github-workflows", ".github/workflows", "*.yml", ()),
+    ("vendor.dependabot", ".github", "dependabot.yml", ()),
+)
+
+
+def config_commands(root: Path) -> list[list[str]]:
+    """The ``check-jsonschema`` commands for the configuration files that exist under ``root``.
+
+    Args:
+        root: Repository root.
+
+    Returns:
+        One command per built-in schema that has at least one file; nothing is run for a missing folder.
+    """
+    commands = []
+    for schema, folder, pattern, skip in CONFIG_SCHEMAS:
+        files = sorted(p.relative_to(root).as_posix() for p in (root / folder).glob(pattern) if p.name not in skip)
+        if files:
+            commands.append(["uvx", "check-jsonschema", "--builtin-schema", schema, *files])
+    return commands
+
+
+def check_config_main(argv: Sequence[str] | None = None) -> int:
+    """``check_config.py``: validate workflows, issue forms and Dependabot configuration (needs ``uvx``, network)."""
+    parser = argparse.ArgumentParser(prog="check_config.py", description="Check CI configuration against its schemas.")
+    _root(parser)
+    parser.add_argument("--print-command", action="store_true", help="print the commands and exit")
+    args = parser.parse_args(argv)
+    root = Path(args.root).resolve()
+    commands = config_commands(root)
+    if args.print_command:
+        print("\n".join(" ".join(c) for c in commands))
+        return EXIT_OK
+    if shutil.which("uvx") is None:
+        return _fail("uvx is not installed (it comes with uv)")
+    status = EXIT_OK
+    for command in commands:
+        if subprocess.run(command, cwd=root, check=False).returncode:  # noqa: S603 - fixed arguments
+            status = EXIT_FINDINGS
+    return status
