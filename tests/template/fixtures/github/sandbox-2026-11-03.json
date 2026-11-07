@@ -1,0 +1,1228 @@
+{
+ "recorded": "2026-11-03",
+ "repo": "open-renewables-sandbox/p0-spikes",
+ "merge_shas": {
+  "stale": "a5714267c0644cca8a56523b962dac1256e845ce",
+  "noreview": "a42f92fac277c6d38a1074393c04aa3baea05084",
+  "lk1": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+  "lk2": "bae2ad1275c075587fc8e7d0143d06aaee5204d0"
+ },
+ "direct_shas": {
+  "app-push": "c84d7f14d68819a967f25261c657e19df5bde825",
+  "app-push-2": "27acfdf72c4498d25192ffaddd995203104b3277"
+ },
+ "routes": {
+  "repos/open-renewables-sandbox/p0-spikes/pulls/2": {
+   "id": 5130778404,
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/2",
+   "number": 2,
+   "state": "closed",
+   "locked": false,
+   "title": "p2-s1 stale",
+   "user": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "labels": [
+    {
+     "id": 12936664344,
+     "name": "approved-move",
+     "description": null,
+     "color": "ededed",
+     "default": false,
+     "archived_at": null,
+     "archived_by": null
+    }
+   ],
+   "milestone": null,
+   "active_lock_reason": null,
+   "created_at": "2026-11-03T02:18:49Z",
+   "updated_at": "2026-11-03T02:19:20Z",
+   "closed_at": "2026-11-03T02:19:20Z",
+   "merged_at": "2026-11-03T02:19:20Z",
+   "merge_commit_sha": "a5714267c0644cca8a56523b962dac1256e845ce",
+   "assignee": null,
+   "assignees": [],
+   "requested_reviewers": [],
+   "requested_teams": [],
+   "head": {
+    "label": "open-renewables-sandbox:p2-s1/pr-stale-stale-021843",
+    "ref": "p2-s1/pr-stale-stale-021843",
+    "sha": "7bf2b9fbd9c89169270794f89b5db89db59f29a3",
+    "user": {
+     "login": "open-renewables-sandbox",
+     "id": 348155082,
+     "html_url": "https://github.com/open-renewables-sandbox",
+     "type": "Organization"
+    }
+   },
+   "base": {
+    "label": "open-renewables-sandbox:main",
+    "ref": "main",
+    "sha": "27acfdf72c4498d25192ffaddd995203104b3277",
+    "user": {
+     "login": "open-renewables-sandbox",
+     "id": 348155082,
+     "html_url": "https://github.com/open-renewables-sandbox",
+     "type": "Organization"
+    }
+   },
+   "author_association": "MEMBER",
+   "auto_merge": null,
+   "draft": false,
+   "merged": true,
+   "mergeable": null,
+   "rebaseable": null,
+   "mergeable_state": "unknown",
+   "merged_by": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "comments": 0,
+   "review_comments": 0,
+   "maintainer_can_modify": false,
+   "commits": 5,
+   "additions": 171,
+   "deletions": 0,
+   "changed_files": 4
+  },
+  "repos/open-renewables-sandbox/p0-spikes/pulls/2/reviews?per_page=100": [
+   {
+    "id": 5746390390,
+    "user": {
+     "login": "okf-sandbox-revision-bot[bot]",
+     "id": 351760065,
+     "html_url": "https://github.com/apps/okf-sandbox-revision-bot",
+     "type": "Bot"
+    },
+    "state": "APPROVED",
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/2#pullrequestreview-5746390390",
+    "author_association": "NONE",
+    "is_copilot_code_review": false,
+    "copilot_code_review_effort": null,
+    "submitted_at": "2026-11-03T02:19:00Z",
+    "commit_id": "081457a49a6e3dab4f031b91a45be1ffd81141e6"
+   }
+  ],
+  "repos/open-renewables-sandbox/p0-spikes/commits/a5714267c0644cca8a56523b962dac1256e845ce/pulls": [
+   {
+    "id": 5130778404,
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/2",
+    "number": 2,
+    "state": "closed",
+    "locked": false,
+    "title": "p2-s1 stale",
+    "user": {
+     "login": "richard-gledhill",
+     "id": 61820266,
+     "html_url": "https://github.com/richard-gledhill",
+     "type": "User"
+    },
+    "created_at": "2026-11-03T02:18:49Z",
+    "updated_at": "2026-11-03T02:19:20Z",
+    "closed_at": "2026-11-03T02:19:20Z",
+    "merged_at": "2026-11-03T02:19:20Z",
+    "merge_commit_sha": "a5714267c0644cca8a56523b962dac1256e845ce",
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "labels": [
+     {
+      "id": 12936664344,
+      "name": "approved-move",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+     }
+    ],
+    "milestone": null,
+    "draft": false,
+    "head": {
+     "label": "open-renewables-sandbox:p2-s1/pr-stale-stale-021843",
+     "ref": "p2-s1/pr-stale-stale-021843",
+     "sha": "7bf2b9fbd9c89169270794f89b5db89db59f29a3",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "base": {
+     "label": "open-renewables-sandbox:main",
+     "ref": "main",
+     "sha": "27acfdf72c4498d25192ffaddd995203104b3277",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "author_association": "MEMBER",
+    "auto_merge": null,
+    "assignee": null,
+    "active_lock_reason": null
+   }
+  ],
+  "repos/open-renewables-sandbox/p0-spikes/commits/a5714267c0644cca8a56523b962dac1256e845ce": {
+   "sha": "a5714267c0644cca8a56523b962dac1256e845ce",
+   "commit": {
+    "author": {
+     "name": "Richard G",
+     "email": "61820266+richard-gledhill@users.noreply.github.com",
+     "date": "2026-11-03T02:19:19Z"
+    },
+    "committer": {
+     "name": "GitHub",
+     "email": "noreply@github.com",
+     "date": "2026-11-03T02:19:19Z"
+    },
+    "message": "p2-s1 stale (#2)\n\n* p2-s1: probe workflow for V-05 5a, 5c and lookup lag\n\n* p2-s1: do not persist checkout credentials, so the two tokens are tested separately\n\n* p2-s1: review workflow (App approves the opening head)\n\n* p2-s1: stale commit A\n\n* p2-s1: stale commit B",
+    "tree": {
+     "sha": "106e8f090e34ae997aa0cdda5dc7080c5ba3c7e5"
+    },
+    "comment_count": 0,
+    "verification": {
+     "verified": true,
+     "reason": "valid",
+     "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq6USnCRC1aQ7uu5UhlAAAVsAQACv+6M7te+t+7HrvZQj0EU3c\n16x0iSdDEX31DDbEDrJu1YwHFIIsnzNU+3KKyZ8GdcoDLhVuUINZoXIgsin7qC8r\nT7GmAGVDn/zOA/bC/623Cd0ZBJQQ9v/+oSJrlUySfJGWIHIpI/NBC/QABIWbFqeL\nFlJ4eM/Pmopfj1pgIoNb7kyfmMULKVqU/VDmWPTLL+L79PYRMM6To5YoLs3kPETB\nZJ4tPhSVnRkORz8MALEwoYcz+9QJ5mq4ojGTGjKr70BnQmgIiOP+BS4Nkk7KlNOs\nRjCeS5AaZXd4E6wEOwvDlqVz1Ybr1CxAeSvGOnsDJ+wIpKbNYheKNnXCpIcluuCR\nqNpkh2QD7ZllcevTm4hDnm9Cs9J/VUBex/J0PXuw+GTtixes3jx9EqVEaRxFjfWT\nLJI1VDmbKHkFYEfbpn+9GpgkWgkcSK/FoUf8F6E6sE1YlGj/3NxpIKfSMyLXlP/z\n1stA/stvlurfF5QckbxP/H3n+FBWWv9Qv4INg+0eMlZKFKYy7TB7Nfq1tmeFo6Fa\nUp5bQlNXQdVp3u0IEKapxZqUvG4NqymCBIYlFvWIW06DGhlZH+nFPbNs7wqzdmpT\nWGbX0/vB1yOjMcvpGLjF1Jf0TeMDAyO00nf0AFGxZ17OCA6qmSmUtUz2eTFBq1B1\ngMhBo/4gdqP7cZu1NcBA\n=DA/q\n-----END PGP SIGNATURE-----\n",
+     "payload": "tree 106e8f090e34ae997aa0cdda5dc7080c5ba3c7e5\nparent 27acfdf72c4498d25192ffaddd995203104b3277\nauthor Richard G <61820266+richard-gledhill@users.noreply.github.com> 1793672359 +1100\ncommitter GitHub <noreply@github.com> 1793672359 +1100\n\np2-s1 stale (#2)\n\n* p2-s1: probe workflow for V-05 5a, 5c and lookup lag\n\n* p2-s1: do not persist checkout credentials, so the two tokens are tested separately\n\n* p2-s1: review workflow (App approves the opening head)\n\n* p2-s1: stale commit A\n\n* p2-s1: stale commit B",
+     "verified_at": "2026-11-03T02:19:19Z"
+    }
+   },
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/a5714267c0644cca8a56523b962dac1256e845ce",
+   "author": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "committer": {
+    "login": "web-flow",
+    "id": 19864447,
+    "html_url": "https://github.com/web-flow",
+    "type": "User"
+   },
+   "parents": [
+    {
+     "sha": "27acfdf72c4498d25192ffaddd995203104b3277",
+     "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/27acfdf72c4498d25192ffaddd995203104b3277"
+    }
+   ],
+   "stats": {
+    "total": 171,
+    "additions": 171,
+    "deletions": 0
+   },
+   "files": [
+    {
+     "sha": "1155bed3f01a889b959c39f6a3d12fe9bdcc73d8",
+     "filename": ".github/workflows/p2-s1-probe.yml",
+     "status": "added",
+     "additions": 38,
+     "deletions": 0,
+     "changes": 38,
+     "patch": "@@ -0,0 +1,38 @@\n+name: p2-s1-probe\n+\n+# P2 step 1 (V-05 5a, 5c, lookup lag). Sandbox only; synthetic content under p2-s1/.\n+# The case is the branch suffix: push p2-s1/run-5a-push, p2-s1/run-5c-review or p2-s1/run-lookup.\n+on:\n+  push:\n+    branches: [\"p2-s1/run-*\"]\n+\n+permissions:\n+  contents: write\n+  pull-requests: write\n+\n+jobs:\n+  probe:\n+    runs-on: ubuntu-latest\n+    steps:\n+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0\n+        id: app\n+        with:\n+          client-id: ${{ vars.APP_CLIENT_ID }}\n+          private-key: ${{ secrets.APP_PRIVATE_KEY }}\n+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1\n+        with:\n+          fetch-depth: 0\n+          persist-credentials: false\n+          token: ${{ steps.app.outputs.token }}\n+      - name: Probe\n+        env:\n+          APP_TOKEN: ${{ steps.app.outputs.token }}\n+          ACTIONS_TOKEN: ${{ github.token }}\n+          REPO: ${{ github.repository }}\n+          CASE: ${{ github.ref_name }}\n+        run: bash p2-s1/probe.sh\n+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2\n+        if: always()\n+        with:\n+          name: p2-s1-${{ github.run_id }}\n+          path: out/"
+    },
+    {
+     "sha": "2c0a4a30cf6f4b5162a12bb5b192800b2288a8fe",
+     "filename": ".github/workflows/p2-s1-review.yml",
+     "status": "added",
+     "additions": 35,
+     "deletions": 0,
+     "changes": 35,
+     "patch": "@@ -0,0 +1,35 @@\n+name: p2-s1-review\n+\n+# P2 step 1 (V-05 5c). Sandbox only. The pull request is opened by the owner; the App approves the\n+# head at the time the pull request is opened if the branch name contains \"-stale-\".\n+on:\n+  pull_request:\n+    types: [opened]\n+\n+permissions:\n+  contents: read\n+\n+jobs:\n+  review:\n+    if: contains(github.head_ref, 'p2-s1/pr-stale-')\n+    runs-on: ubuntu-latest\n+    steps:\n+      - uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0\n+        id: app\n+        with:\n+          client-id: ${{ vars.APP_CLIENT_ID }}\n+          private-key: ${{ secrets.APP_PRIVATE_KEY }}\n+      - name: Approve the opening head as the App\n+        env:\n+          GH_TOKEN: ${{ steps.app.outputs.token }}\n+          REPO: ${{ github.repository }}\n+          PR: ${{ github.event.pull_request.number }}\n+          HEAD: ${{ github.event.pull_request.head.sha }}\n+        run: |\n+          mkdir -p out\n+          gh api \"repos/$REPO/pulls/$PR/reviews\" -f event=APPROVE -f commit_id=\"$HEAD\" -f body=\"synthetic approval\" > out/review-post.json\n+          cat out/review-post.json\n+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2\n+        with:\n+          name: p2-s1-review-${{ github.event.pull_request.number }}\n+          path: out/"
+    },
+    {
+     "sha": "2c44e60f8c1022c93cf24e19622c42b3f897cff2",
+     "filename": "p2-s1/pr-stale.txt",
+     "status": "added",
+     "additions": 2,
+     "deletions": 0,
+     "changes": 2,
+     "patch": "@@ -0,0 +1,2 @@\n+pr stale commit A\n+pr stale commit B"
+    },
+    {
+     "sha": "df5f1b86e9a39aa38650ce6ead90a9035a9546d6",
+     "filename": "p2-s1/probe.sh",
+     "status": "added",
+     "additions": 96,
+     "deletions": 0,
+     "changes": 96,
+     "patch": "@@ -0,0 +1,96 @@\n+#!/usr/bin/env bash\n+# P2 step 1 probe. Runs in GitHub Actions in the sandbox only. Synthetic content.\n+set -uo pipefail\n+mkdir -p out\n+API=\"repos/$REPO\"\n+RUN=\"${GITHUB_RUN_ID:-0}\"\n+CASE_NAME=\"${CASE#p2-s1/run-}\"\n+\n+gh_app() { GH_TOKEN=\"$APP_TOKEN\" gh \"$@\"; }\n+gh_act() { GH_TOKEN=\"$ACTIONS_TOKEN\" gh \"$@\"; }\n+ms() { date +%s%3N; }\n+scrub() { sed -e \"s#${APP_TOKEN}#<app-token>#g\" -e \"s#${ACTIONS_TOKEN}#<actions-token>#g\"; }\n+set_remote() { git remote set-url origin \"https://x-access-token:$1@github.com/${REPO}.git\"; }\n+\n+git config user.name \"p2-s1-probe\"\n+git config user.email \"p2-s1@example.invalid\"\n+git fetch -q origin main\n+\n+probe_5a() {\n+  git checkout -q -B s1-main origin/main\n+  mkdir -p p2-s1\n+  echo \"5a app push $RUN\" > p2-s1/5a-app.txt\n+  git add p2-s1/5a-app.txt\n+  git commit -qm \"p2-s1: 5a push with the app token\"\n+  set_remote \"$APP_TOKEN\"\n+  git push origin HEAD:main 2>&1 | scrub > out/5a-app-push.txt\n+  echo \"exit=${PIPESTATUS[0]}\" >> out/5a-app-push.txt\n+\n+  echo \"5a actions-token push $RUN\" > p2-s1/5a-actions.txt\n+  git add p2-s1/5a-actions.txt\n+  git commit -qm \"p2-s1: 5a push with GITHUB_TOKEN\"\n+  set_remote \"$ACTIONS_TOKEN\"\n+  git push origin HEAD:main 2>&1 | scrub > out/5a-actions-push.txt\n+  echo \"exit=${PIPESTATUS[0]}\" >> out/5a-actions-push.txt\n+\n+  gh_app api \"$API/rules/branches/main\" > out/5a-rules-main.json 2>&1\n+  gh_app api \"$API/commits/main\" --jq '{sha: .sha, author: .author.login, committer: .committer.login, message: .commit.message}' > out/5a-main-head.json 2>&1\n+}\n+\n+lookup() { # id pr sha\n+  local id=$1 pr=$2 sha=$3 t0 t m1 m2 m3 i\n+  t0=$(ms)\n+  printf 'ms_since_merge\\tclosed_list\\tsubject\\tcommit_pulls\\n' > \"out/$id-lookup.tsv\"\n+  for i in $(seq 1 45); do\n+    t=$(( $(ms) - t0 ))\n+    m1=$(gh_app api \"$API/pulls?state=closed&sort=updated&direction=desc&per_page=30\" --jq \"[.[] | select(.merge_commit_sha == \\\"$sha\\\") | .number] | first // empty\" 2>/dev/null)\n+    m2=$(gh_app api \"$API/commits/$sha\" --jq '.commit.message' 2>/dev/null | head -1 | sed -n 's/.*(#\\([0-9][0-9]*\\))$/\\1/p')\n+    m3=$(gh_app api \"$API/commits/$sha/pulls\" --jq '.[0].number // empty' 2>/dev/null)\n+    printf '%s\\t%s\\t%s\\t%s\\n' \"$t\" \"$m1\" \"$m2\" \"$m3\" >> \"out/$id-lookup.tsv\"\n+    if [ -n \"$m1\" ] && [ -n \"$m2\" ] && [ -n \"$m3\" ]; then break; fi\n+    sleep 2\n+  done\n+}\n+\n+pr_cycle() { # id with_review(1|0)\n+  local id=$1 review=$2 br pr headA headB sha\n+  br=\"p2-s1/pr-$id-$RUN\"\n+  git checkout -q -B \"$br\" origin/main\n+  mkdir -p p2-s1\n+  echo \"pr $id commit A $RUN\" > \"p2-s1/$id.txt\"\n+  git add \"p2-s1/$id.txt\"\n+  git commit -qm \"p2-s1: $id commit A\"\n+  set_remote \"$APP_TOKEN\"\n+  git push -q origin \"$br\" 2>&1 | scrub > \"out/$id-push-a.txt\"\n+  headA=$(git rev-parse HEAD)\n+  pr=$(gh_app api \"$API/pulls\" -f title=\"p2-s1 $id\" -f head=\"$br\" -f base=main -f body=\"synthetic\" --jq .number)\n+  echo \"$pr\" > \"out/$id-pr-number.txt\"\n+  gh_app api \"$API/issues/$pr/labels\" -f 'labels[]=approved-move' > \"out/$id-labels.json\" 2>&1\n+  if [ \"$review\" = \"1\" ]; then\n+    gh_act api \"$API/pulls/$pr/reviews\" -f event=APPROVE -f commit_id=\"$headA\" -f body=\"synthetic approval\" > \"out/$id-review-post.json\" 2>&1\n+  fi\n+  echo \"pr $id commit B $RUN\" >> \"p2-s1/$id.txt\"\n+  git add \"p2-s1/$id.txt\"\n+  git commit -qm \"p2-s1: $id commit B\"\n+  git push -q origin \"$br\" 2>&1 | scrub > \"out/$id-push-b.txt\"\n+  headB=$(git rev-parse HEAD)\n+  printf '{\"head_a\":\"%s\",\"head_b\":\"%s\"}\\n' \"$headA\" \"$headB\" > \"out/$id-heads.json\"\n+  sleep 3\n+  gh_app api \"$API/pulls/$pr/reviews\" > \"out/$id-reviews.json\" 2>&1\n+  gh_app api \"$API/pulls/$pr\" > \"out/$id-pr-before.json\" 2>&1\n+  gh_app api \"$API/pulls/$pr/files\" > \"out/$id-files.json\" 2>&1\n+  gh_app api -X PUT \"$API/pulls/$pr/merge\" -f merge_method=squash > \"out/$id-merge.json\" 2>&1\n+  sha=$(sed -n 's/.*\"sha\": *\"\\([0-9a-f]*\\)\".*/\\1/p' \"out/$id-merge.json\" | head -1)\n+  echo \"merge_sha=$sha\" > \"out/$id-merge-sha.txt\"\n+  gh_app api \"$API/pulls/$pr\" > \"out/$id-pr-after.json\" 2>&1\n+  [ -n \"$sha\" ] && lookup \"$id\" \"$pr\" \"$sha\"\n+  git fetch -q origin main\n+}\n+\n+case \"$CASE_NAME\" in\n+  5a-push)   probe_5a ;;\n+  5c-review) pr_cycle stale 1; pr_cycle noreview 0 ;;\n+  lookup)    pr_cycle lk1 0; pr_cycle lk2 0; pr_cycle lk3 0 ;;\n+  *) echo \"unknown case $CASE_NAME\" >&2; exit 2 ;;\n+esac\n+ls -l out"
+    }
+   ]
+  },
+  "repos/open-renewables-sandbox/p0-spikes/pulls/3": {
+   "id": 5130788100,
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/3",
+   "number": 3,
+   "state": "closed",
+   "locked": false,
+   "title": "p2-s1 noreview",
+   "user": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "labels": [
+    {
+     "id": 12936664344,
+     "name": "approved-move",
+     "description": null,
+     "color": "ededed",
+     "default": false,
+     "archived_at": null,
+     "archived_by": null
+    }
+   ],
+   "milestone": null,
+   "active_lock_reason": null,
+   "created_at": "2026-11-03T02:19:40Z",
+   "updated_at": "2026-11-03T02:19:53Z",
+   "closed_at": "2026-11-03T02:19:53Z",
+   "merged_at": "2026-11-03T02:19:53Z",
+   "merge_commit_sha": "a42f92fac277c6d38a1074393c04aa3baea05084",
+   "assignee": null,
+   "assignees": [],
+   "requested_reviewers": [],
+   "requested_teams": [],
+   "head": {
+    "label": "open-renewables-sandbox:p2-s1/pr-noreview-noreview-021934",
+    "ref": "p2-s1/pr-noreview-noreview-021934",
+    "sha": "78e4cf2d71cfb4ebd1a5fd0b4cb04bbb1dbd1e33",
+    "user": {
+     "login": "open-renewables-sandbox",
+     "id": 348155082,
+     "html_url": "https://github.com/open-renewables-sandbox",
+     "type": "Organization"
+    }
+   },
+   "base": {
+    "label": "open-renewables-sandbox:main",
+    "ref": "main",
+    "sha": "a5714267c0644cca8a56523b962dac1256e845ce",
+    "user": {
+     "login": "open-renewables-sandbox",
+     "id": 348155082,
+     "html_url": "https://github.com/open-renewables-sandbox",
+     "type": "Organization"
+    }
+   },
+   "author_association": "MEMBER",
+   "auto_merge": null,
+   "draft": false,
+   "merged": true,
+   "mergeable": null,
+   "rebaseable": null,
+   "mergeable_state": "unknown",
+   "merged_by": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "comments": 0,
+   "review_comments": 0,
+   "maintainer_can_modify": false,
+   "commits": 5,
+   "additions": 171,
+   "deletions": 0,
+   "changed_files": 4
+  },
+  "repos/open-renewables-sandbox/p0-spikes/pulls/3/reviews?per_page=100": [],
+  "repos/open-renewables-sandbox/p0-spikes/commits/a42f92fac277c6d38a1074393c04aa3baea05084/pulls": [
+   {
+    "id": 5130788100,
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/3",
+    "number": 3,
+    "state": "closed",
+    "locked": false,
+    "title": "p2-s1 noreview",
+    "user": {
+     "login": "richard-gledhill",
+     "id": 61820266,
+     "html_url": "https://github.com/richard-gledhill",
+     "type": "User"
+    },
+    "created_at": "2026-11-03T02:19:40Z",
+    "updated_at": "2026-11-03T02:19:53Z",
+    "closed_at": "2026-11-03T02:19:53Z",
+    "merged_at": "2026-11-03T02:19:53Z",
+    "merge_commit_sha": "a42f92fac277c6d38a1074393c04aa3baea05084",
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "labels": [
+     {
+      "id": 12936664344,
+      "name": "approved-move",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+     }
+    ],
+    "milestone": null,
+    "draft": false,
+    "head": {
+     "label": "open-renewables-sandbox:p2-s1/pr-noreview-noreview-021934",
+     "ref": "p2-s1/pr-noreview-noreview-021934",
+     "sha": "78e4cf2d71cfb4ebd1a5fd0b4cb04bbb1dbd1e33",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "base": {
+     "label": "open-renewables-sandbox:main",
+     "ref": "main",
+     "sha": "a5714267c0644cca8a56523b962dac1256e845ce",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "author_association": "MEMBER",
+    "auto_merge": null,
+    "assignee": null,
+    "active_lock_reason": null
+   }
+  ],
+  "repos/open-renewables-sandbox/p0-spikes/commits/a42f92fac277c6d38a1074393c04aa3baea05084": {
+   "sha": "a42f92fac277c6d38a1074393c04aa3baea05084",
+   "commit": {
+    "author": {
+     "name": "Richard G",
+     "email": "61820266+richard-gledhill@users.noreply.github.com",
+     "date": "2026-11-03T02:19:52Z"
+    },
+    "committer": {
+     "name": "GitHub",
+     "email": "noreply@github.com",
+     "date": "2026-11-03T02:19:52Z"
+    },
+    "message": "p2-s1 noreview (#3)\n\n* p2-s1: probe workflow for V-05 5a, 5c and lookup lag\n\n* p2-s1: do not persist checkout credentials, so the two tokens are tested separately\n\n* p2-s1: review workflow (App approves the opening head)\n\n* p2-s1: noreview commit A\n\n* p2-s1: noreview commit B",
+    "tree": {
+     "sha": "e43b15014eb0098b9d14b09ae248329986aabb40"
+    },
+    "comment_count": 0,
+    "verification": {
+     "verified": true,
+     "reason": "valid",
+     "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq6UTICRC1aQ7uu5UhlAAAMfsQAA+SfM4ka57vyvWQRgpbqJoG\nXwk2ty16Kd3kSFiv/Op4uier2km4tEPZ0WYgsZ4g05CYMFcaCeRYYxY8Tf0ulEws\nZoMgmAULbUXXYJxtzkpxQ/tguLtfHltu37TZIiujjbrJvRu/A27d3aNSN1qpcCk/\n8COxitf3UnAEyzwnhWhel8qXloDB51dKuR8sI/fl+Am9M6dBQbZAwzic6WhWGkeR\nl1tpvLAZDhHr2n085XgKTKozX9psvbOA3KFnhVmjWrdQr0zf9MeIpn/GRvl8D/1A\ng0RFIGBy3QqVU6pMgveRpp2WpIv1hEhEs+vCxZO5DGaT8ph8rwuHSse3344jqMXX\nMNwVN+mKiPXRG64LwAZP2Pe3OkH71rjrNAuYFkQ0ueGkNUv/qKxXgE6zT0jk1k0G\nT41ntVy6IKJUjG1gO8ilV09DlaeXHFgf6lqhUl+q1/bnif3TX6Z7eFhN30t86+q5\naOImCNYkaSolun7ESgulJEP5x7WdCTlcigPHuU8JmlvRz5xcJlYI/ObgtWxOk/nm\nVMHrX7ygTJtJZi/D6qo7y7okHv81GDGCOEMgFV6D5V1aKPJUolhpu7lDHMuw5mkh\nnVHa6fk9swk/r+XGco6/F4Pqd6dS+M62uOJP1G8Vm9bD5LcUrvtIKdwf481EKM4U\nsiJ4evqB1asZQHGjUfNj\n=264C\n-----END PGP SIGNATURE-----\n",
+     "payload": "tree e43b15014eb0098b9d14b09ae248329986aabb40\nparent a5714267c0644cca8a56523b962dac1256e845ce\nauthor Richard G <61820266+richard-gledhill@users.noreply.github.com> 1793672392 +1100\ncommitter GitHub <noreply@github.com> 1793672392 +1100\n\np2-s1 noreview (#3)\n\n* p2-s1: probe workflow for V-05 5a, 5c and lookup lag\n\n* p2-s1: do not persist checkout credentials, so the two tokens are tested separately\n\n* p2-s1: review workflow (App approves the opening head)\n\n* p2-s1: noreview commit A\n\n* p2-s1: noreview commit B",
+     "verified_at": "2026-11-03T02:19:52Z"
+    }
+   },
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/a42f92fac277c6d38a1074393c04aa3baea05084",
+   "author": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "committer": {
+    "login": "web-flow",
+    "id": 19864447,
+    "html_url": "https://github.com/web-flow",
+    "type": "User"
+   },
+   "parents": [
+    {
+     "sha": "a5714267c0644cca8a56523b962dac1256e845ce",
+     "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/a5714267c0644cca8a56523b962dac1256e845ce"
+    }
+   ],
+   "stats": {
+    "total": 2,
+    "additions": 2,
+    "deletions": 0
+   },
+   "files": [
+    {
+     "sha": "13d53bf39efeaa7b2953c4d3ad4cb9e75ca40e40",
+     "filename": "p2-s1/pr-noreview.txt",
+     "status": "added",
+     "additions": 2,
+     "deletions": 0,
+     "changes": 2,
+     "patch": "@@ -0,0 +1,2 @@\n+pr noreview commit A\n+pr noreview commit B"
+    }
+   ]
+  },
+  "repos/open-renewables-sandbox/p0-spikes/pulls/4": {
+   "id": 5130791731,
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/4",
+   "number": 4,
+   "state": "closed",
+   "locked": false,
+   "title": "p2-s1 lk1",
+   "user": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "labels": [
+    {
+     "id": 12936664344,
+     "name": "approved-move",
+     "description": null,
+     "color": "ededed",
+     "default": false,
+     "archived_at": null,
+     "archived_by": null
+    }
+   ],
+   "milestone": null,
+   "active_lock_reason": null,
+   "created_at": "2026-11-03T02:20:01Z",
+   "updated_at": "2026-11-03T02:20:15Z",
+   "closed_at": "2026-11-03T02:20:15Z",
+   "merged_at": "2026-11-03T02:20:15Z",
+   "merge_commit_sha": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+   "assignee": null,
+   "assignees": [],
+   "requested_reviewers": [],
+   "requested_teams": [],
+   "head": {
+    "label": "open-renewables-sandbox:p2-s1/pr-lk-lk1-021955",
+    "ref": "p2-s1/pr-lk-lk1-021955",
+    "sha": "5ec22358d4107738dba12b17c9f0fd16d921bfde",
+    "user": {
+     "login": "open-renewables-sandbox",
+     "id": 348155082,
+     "html_url": "https://github.com/open-renewables-sandbox",
+     "type": "Organization"
+    }
+   },
+   "base": {
+    "label": "open-renewables-sandbox:main",
+    "ref": "main",
+    "sha": "a42f92fac277c6d38a1074393c04aa3baea05084",
+    "user": {
+     "login": "open-renewables-sandbox",
+     "id": 348155082,
+     "html_url": "https://github.com/open-renewables-sandbox",
+     "type": "Organization"
+    }
+   },
+   "author_association": "MEMBER",
+   "auto_merge": null,
+   "draft": false,
+   "merged": true,
+   "mergeable": null,
+   "rebaseable": null,
+   "mergeable_state": "unknown",
+   "merged_by": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "comments": 0,
+   "review_comments": 0,
+   "maintainer_can_modify": false,
+   "commits": 5,
+   "additions": 171,
+   "deletions": 0,
+   "changed_files": 4
+  },
+  "repos/open-renewables-sandbox/p0-spikes/pulls/4/reviews?per_page=100": [],
+  "repos/open-renewables-sandbox/p0-spikes/commits/d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555/pulls": [
+   {
+    "id": 5130791731,
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/4",
+    "number": 4,
+    "state": "closed",
+    "locked": false,
+    "title": "p2-s1 lk1",
+    "user": {
+     "login": "richard-gledhill",
+     "id": 61820266,
+     "html_url": "https://github.com/richard-gledhill",
+     "type": "User"
+    },
+    "created_at": "2026-11-03T02:20:01Z",
+    "updated_at": "2026-11-03T02:20:15Z",
+    "closed_at": "2026-11-03T02:20:15Z",
+    "merged_at": "2026-11-03T02:20:15Z",
+    "merge_commit_sha": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "labels": [
+     {
+      "id": 12936664344,
+      "name": "approved-move",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+     }
+    ],
+    "milestone": null,
+    "draft": false,
+    "head": {
+     "label": "open-renewables-sandbox:p2-s1/pr-lk-lk1-021955",
+     "ref": "p2-s1/pr-lk-lk1-021955",
+     "sha": "5ec22358d4107738dba12b17c9f0fd16d921bfde",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "base": {
+     "label": "open-renewables-sandbox:main",
+     "ref": "main",
+     "sha": "a42f92fac277c6d38a1074393c04aa3baea05084",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "author_association": "MEMBER",
+    "auto_merge": null,
+    "assignee": null,
+    "active_lock_reason": null
+   }
+  ],
+  "repos/open-renewables-sandbox/p0-spikes/commits/d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555": {
+   "sha": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+   "commit": {
+    "author": {
+     "name": "Richard G",
+     "email": "61820266+richard-gledhill@users.noreply.github.com",
+     "date": "2026-11-03T02:20:14Z"
+    },
+    "committer": {
+     "name": "GitHub",
+     "email": "noreply@github.com",
+     "date": "2026-11-03T02:20:14Z"
+    },
+    "message": "p2-s1 lk1 (#4)\n\n* p2-s1: probe workflow for V-05 5a, 5c and lookup lag\n\n* p2-s1: do not persist checkout credentials, so the two tokens are tested separately\n\n* p2-s1: review workflow (App approves the opening head)\n\n* p2-s1: lk1 commit A\n\n* p2-s1: lk1 commit B",
+    "tree": {
+     "sha": "e8538d1da96a009917913294ca4285c23bddd27f"
+    },
+    "comment_count": 0,
+    "verification": {
+     "verified": true,
+     "reason": "valid",
+     "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq6UTeCRC1aQ7uu5UhlAAAJP8QAEA+XxKQuD+tQYq9QAswfwQL\nNl2w9EoQDpz99gQDF2uaQXxDAqUEzRvVqo05jolgt1lIAsL2iF3WtgWmiNQ7Zkj+\nQzeRJu95nvkYFRaKWasleSv6WZus4xz8u9mWUzK0lZtJupV5isDnLQJMWiwiAZ+m\nXW4h+p1G3Oq4uF/0771Z0YngkdC3SYqaGwIYUGgVi1pyuL2Ew8ADytEer5QM/ILK\n/xBBdAcykBwKaZkfMZ/fBMN4YGUMZ9p1z3oox9MtQlMaKlZwaAos+fQgRCU/M2po\nQgpBPc53moGIztCc1J3jTlDuo81fHME6NA+ClSI8dpZBFYfD3/Fz7Lh/gp+5xtvF\nX0eoj1fMDIBj/CktV6ZkTQ2Y3eKpx8j1uNrasQVcVEV5UgFfmAXLtqeKkPK85kkl\nJyd5gtwCUNQ6DlV98KPmXwP6ueB7mANMrRhWuDJXcenZHyrJ1fvnMGxuErNwcyoD\nYUqBqFeH1pBnDragCgb04MbogQcI+yvw9zNbDhNyMxAxLPl9CMYY+itM/b3rD6ez\n/HNc3d/zQKJRhUDdaV0ZRby4A6JmMOXqH0Ywdg3Y62aTwxOzf7+Ii/ZlSUMnWH7R\nAdN0FlIe0tkK6ln+JJg7h6cnJ0P57fIabOts//hQH70YjkKs6Oe56AXLH7ltr4pL\nwpfY8Z6xCVEwgRCiUOxk\n=NczA\n-----END PGP SIGNATURE-----\n",
+     "payload": "tree e8538d1da96a009917913294ca4285c23bddd27f\nparent a42f92fac277c6d38a1074393c04aa3baea05084\nauthor Richard G <61820266+richard-gledhill@users.noreply.github.com> 1793672414 +1100\ncommitter GitHub <noreply@github.com> 1793672414 +1100\n\np2-s1 lk1 (#4)\n\n* p2-s1: probe workflow for V-05 5a, 5c and lookup lag\n\n* p2-s1: do not persist checkout credentials, so the two tokens are tested separately\n\n* p2-s1: review workflow (App approves the opening head)\n\n* p2-s1: lk1 commit A\n\n* p2-s1: lk1 commit B",
+     "verified_at": "2026-11-03T02:20:15Z"
+    }
+   },
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+   "author": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "committer": {
+    "login": "web-flow",
+    "id": 19864447,
+    "html_url": "https://github.com/web-flow",
+    "type": "User"
+   },
+   "parents": [
+    {
+     "sha": "a42f92fac277c6d38a1074393c04aa3baea05084",
+     "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/a42f92fac277c6d38a1074393c04aa3baea05084"
+    }
+   ],
+   "stats": {
+    "total": 2,
+    "additions": 2,
+    "deletions": 0
+   },
+   "files": [
+    {
+     "sha": "cc1821d3f81a477eb5fd5c31a5895e471580e948",
+     "filename": "p2-s1/pr-lk1.txt",
+     "status": "added",
+     "additions": 2,
+     "deletions": 0,
+     "changes": 2,
+     "patch": "@@ -0,0 +1,2 @@\n+pr lk1 commit A\n+pr lk1 commit B"
+    }
+   ]
+  },
+  "repos/open-renewables-sandbox/p0-spikes/pulls/5": {
+   "id": 5130795766,
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/5",
+   "number": 5,
+   "state": "closed",
+   "locked": false,
+   "title": "p2-s1 lk2",
+   "user": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "labels": [
+    {
+     "id": 12936664344,
+     "name": "approved-move",
+     "description": null,
+     "color": "ededed",
+     "default": false,
+     "archived_at": null,
+     "archived_by": null
+    }
+   ],
+   "milestone": null,
+   "active_lock_reason": null,
+   "created_at": "2026-11-03T02:20:23Z",
+   "updated_at": "2026-11-03T02:20:37Z",
+   "closed_at": "2026-11-03T02:20:37Z",
+   "merged_at": "2026-11-03T02:20:37Z",
+   "merge_commit_sha": "bae2ad1275c075587fc8e7d0143d06aaee5204d0",
+   "assignee": null,
+   "assignees": [],
+   "requested_reviewers": [],
+   "requested_teams": [],
+   "head": {
+    "label": "open-renewables-sandbox:p2-s1/pr-lk-lk2-022018",
+    "ref": "p2-s1/pr-lk-lk2-022018",
+    "sha": "ef2bfeba255fe5b74ea0f60024d3884bfc0d3cdc",
+    "user": {
+     "login": "open-renewables-sandbox",
+     "id": 348155082,
+     "html_url": "https://github.com/open-renewables-sandbox",
+     "type": "Organization"
+    }
+   },
+   "base": {
+    "label": "open-renewables-sandbox:main",
+    "ref": "main",
+    "sha": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+    "user": {
+     "login": "open-renewables-sandbox",
+     "id": 348155082,
+     "html_url": "https://github.com/open-renewables-sandbox",
+     "type": "Organization"
+    }
+   },
+   "author_association": "MEMBER",
+   "auto_merge": null,
+   "draft": false,
+   "merged": true,
+   "mergeable": null,
+   "rebaseable": null,
+   "mergeable_state": "unknown",
+   "merged_by": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "comments": 0,
+   "review_comments": 0,
+   "maintainer_can_modify": false,
+   "commits": 5,
+   "additions": 171,
+   "deletions": 0,
+   "changed_files": 4
+  },
+  "repos/open-renewables-sandbox/p0-spikes/pulls/5/reviews?per_page=100": [],
+  "repos/open-renewables-sandbox/p0-spikes/commits/bae2ad1275c075587fc8e7d0143d06aaee5204d0/pulls": [
+   {
+    "id": 5130795766,
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/5",
+    "number": 5,
+    "state": "closed",
+    "locked": false,
+    "title": "p2-s1 lk2",
+    "user": {
+     "login": "richard-gledhill",
+     "id": 61820266,
+     "html_url": "https://github.com/richard-gledhill",
+     "type": "User"
+    },
+    "created_at": "2026-11-03T02:20:23Z",
+    "updated_at": "2026-11-03T02:20:37Z",
+    "closed_at": "2026-11-03T02:20:37Z",
+    "merged_at": "2026-11-03T02:20:37Z",
+    "merge_commit_sha": "bae2ad1275c075587fc8e7d0143d06aaee5204d0",
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "labels": [
+     {
+      "id": 12936664344,
+      "name": "approved-move",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+     }
+    ],
+    "milestone": null,
+    "draft": false,
+    "head": {
+     "label": "open-renewables-sandbox:p2-s1/pr-lk-lk2-022018",
+     "ref": "p2-s1/pr-lk-lk2-022018",
+     "sha": "ef2bfeba255fe5b74ea0f60024d3884bfc0d3cdc",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "base": {
+     "label": "open-renewables-sandbox:main",
+     "ref": "main",
+     "sha": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "author_association": "MEMBER",
+    "auto_merge": null,
+    "assignee": null,
+    "active_lock_reason": null
+   }
+  ],
+  "repos/open-renewables-sandbox/p0-spikes/commits/bae2ad1275c075587fc8e7d0143d06aaee5204d0": {
+   "sha": "bae2ad1275c075587fc8e7d0143d06aaee5204d0",
+   "commit": {
+    "author": {
+     "name": "Richard G",
+     "email": "61820266+richard-gledhill@users.noreply.github.com",
+     "date": "2026-11-03T02:20:36Z"
+    },
+    "committer": {
+     "name": "GitHub",
+     "email": "noreply@github.com",
+     "date": "2026-11-03T02:20:36Z"
+    },
+    "message": "p2-s1 lk2 (#5)\n\n* p2-s1: probe workflow for V-05 5a, 5c and lookup lag\n\n* p2-s1: do not persist checkout credentials, so the two tokens are tested separately\n\n* p2-s1: review workflow (App approves the opening head)\n\n* p2-s1: lk2 commit A\n\n* p2-s1: lk2 commit B",
+    "tree": {
+     "sha": "23a4947a2ef8826c29751891cdb5c398967104cf"
+    },
+    "comment_count": 0,
+    "verification": {
+     "verified": true,
+     "reason": "valid",
+     "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq6UT0CRC1aQ7uu5UhlAAA+d8QAG0PUNW/ZvMNL5d5jtCTqI2J\nbXnOPQW/OjEZX/zJArAJCkRenoDvmf7AkZtq79KQIz+RrR1chcdjCwJtCPAWD5lC\nTUtZaM0z00t6UMgtZAKYLjPIujYYu8fFCQ8/+Bnn2UuRAliYqyM8OVP7iOobmrHY\n/nMq6l6AABRzh7i8AUXNkwzkkdcVgQLkYceo5+aWiMt32dxZDP6KD0bynB7Mrg+H\nRKvFJO00/FAxM2J4WkjitOctC7IQrtRLgN+VN43+6LJMciycfiarozrGf5PCq/lJ\n2OUsUHtY0iCIOWzQIuSaYpE6o5mIcLEsk33NWNTBlhHrz1f99WVJ6Glbjr8T1Kov\nsNJZG/GultPnuRsF3eWtnp23z9lLLaMOQ4miKUa2TzqNsygI4c/8EzM0L/kkSnxn\nvLvL/06mDaAn/8zeryBW+z9zku3bgSUbIv/Q5oSFw+oFi+IvqrQ2lJD0H4BrVHWC\n3A7hrjqD6g1iLgLqifHdMlI8srSCJGt9b+7KwGw/7pWUn0WwBy2alMWkygVCTLrS\nIxeAuUuB+gq67slw/eMKdq8GDmpaKzvrJVTrsIRlOC+q/QlHUinXSjgTKmZnDa+z\nDDmIR2fVOb6d58xiR7KObEHHdrZwWftAgOHwG0mjidzzBAJPiw0o5ObrvD7Jk7l/\ntHHO3hdCSx8qEjFlD7a7\n=DSZ2\n-----END PGP SIGNATURE-----\n",
+     "payload": "tree 23a4947a2ef8826c29751891cdb5c398967104cf\nparent d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555\nauthor Richard G <61820266+richard-gledhill@users.noreply.github.com> 1793672436 +1100\ncommitter GitHub <noreply@github.com> 1793672436 +1100\n\np2-s1 lk2 (#5)\n\n* p2-s1: probe workflow for V-05 5a, 5c and lookup lag\n\n* p2-s1: do not persist checkout credentials, so the two tokens are tested separately\n\n* p2-s1: review workflow (App approves the opening head)\n\n* p2-s1: lk2 commit A\n\n* p2-s1: lk2 commit B",
+     "verified_at": "2026-11-03T02:20:37Z"
+    }
+   },
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/bae2ad1275c075587fc8e7d0143d06aaee5204d0",
+   "author": {
+    "login": "richard-gledhill",
+    "id": 61820266,
+    "html_url": "https://github.com/richard-gledhill",
+    "type": "User"
+   },
+   "committer": {
+    "login": "web-flow",
+    "id": 19864447,
+    "html_url": "https://github.com/web-flow",
+    "type": "User"
+   },
+   "parents": [
+    {
+     "sha": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+     "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555"
+    }
+   ],
+   "stats": {
+    "total": 2,
+    "additions": 2,
+    "deletions": 0
+   },
+   "files": [
+    {
+     "sha": "938aefe7cab4d87689dc87f4760bdf612d3d4e6e",
+     "filename": "p2-s1/pr-lk2.txt",
+     "status": "added",
+     "additions": 2,
+     "deletions": 0,
+     "changes": 2,
+     "patch": "@@ -0,0 +1,2 @@\n+pr lk2 commit A\n+pr lk2 commit B"
+    }
+   ]
+  },
+  "repos/open-renewables-sandbox/p0-spikes/pulls?state=closed&sort=updated&direction=desc&per_page=100": [
+   {
+    "id": 5130795766,
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/5",
+    "number": 5,
+    "state": "closed",
+    "locked": false,
+    "title": "p2-s1 lk2",
+    "user": {
+     "login": "richard-gledhill",
+     "id": 61820266,
+     "html_url": "https://github.com/richard-gledhill",
+     "type": "User"
+    },
+    "created_at": "2026-11-03T02:20:23Z",
+    "updated_at": "2026-11-03T02:20:37Z",
+    "closed_at": "2026-11-03T02:20:37Z",
+    "merged_at": "2026-11-03T02:20:37Z",
+    "merge_commit_sha": "bae2ad1275c075587fc8e7d0143d06aaee5204d0",
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "labels": [
+     {
+      "id": 12936664344,
+      "name": "approved-move",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+     }
+    ],
+    "milestone": null,
+    "draft": false,
+    "head": {
+     "label": "open-renewables-sandbox:p2-s1/pr-lk-lk2-022018",
+     "ref": "p2-s1/pr-lk-lk2-022018",
+     "sha": "ef2bfeba255fe5b74ea0f60024d3884bfc0d3cdc",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "base": {
+     "label": "open-renewables-sandbox:main",
+     "ref": "main",
+     "sha": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "author_association": "MEMBER",
+    "auto_merge": null,
+    "assignee": null,
+    "active_lock_reason": null
+   },
+   {
+    "id": 5130791731,
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/4",
+    "number": 4,
+    "state": "closed",
+    "locked": false,
+    "title": "p2-s1 lk1",
+    "user": {
+     "login": "richard-gledhill",
+     "id": 61820266,
+     "html_url": "https://github.com/richard-gledhill",
+     "type": "User"
+    },
+    "created_at": "2026-11-03T02:20:01Z",
+    "updated_at": "2026-11-03T02:20:15Z",
+    "closed_at": "2026-11-03T02:20:15Z",
+    "merged_at": "2026-11-03T02:20:15Z",
+    "merge_commit_sha": "d58e68e4ecb3ea25f5f455527ca9ccb8a03d9555",
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "labels": [
+     {
+      "id": 12936664344,
+      "name": "approved-move",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+     }
+    ],
+    "milestone": null,
+    "draft": false,
+    "head": {
+     "label": "open-renewables-sandbox:p2-s1/pr-lk-lk1-021955",
+     "ref": "p2-s1/pr-lk-lk1-021955",
+     "sha": "5ec22358d4107738dba12b17c9f0fd16d921bfde",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "base": {
+     "label": "open-renewables-sandbox:main",
+     "ref": "main",
+     "sha": "a42f92fac277c6d38a1074393c04aa3baea05084",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "author_association": "MEMBER",
+    "auto_merge": null,
+    "assignee": null,
+    "active_lock_reason": null
+   },
+   {
+    "id": 5130788100,
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/3",
+    "number": 3,
+    "state": "closed",
+    "locked": false,
+    "title": "p2-s1 noreview",
+    "user": {
+     "login": "richard-gledhill",
+     "id": 61820266,
+     "html_url": "https://github.com/richard-gledhill",
+     "type": "User"
+    },
+    "created_at": "2026-11-03T02:19:40Z",
+    "updated_at": "2026-11-03T02:19:53Z",
+    "closed_at": "2026-11-03T02:19:53Z",
+    "merged_at": "2026-11-03T02:19:53Z",
+    "merge_commit_sha": "a42f92fac277c6d38a1074393c04aa3baea05084",
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "labels": [
+     {
+      "id": 12936664344,
+      "name": "approved-move",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+     }
+    ],
+    "milestone": null,
+    "draft": false,
+    "head": {
+     "label": "open-renewables-sandbox:p2-s1/pr-noreview-noreview-021934",
+     "ref": "p2-s1/pr-noreview-noreview-021934",
+     "sha": "78e4cf2d71cfb4ebd1a5fd0b4cb04bbb1dbd1e33",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "base": {
+     "label": "open-renewables-sandbox:main",
+     "ref": "main",
+     "sha": "a5714267c0644cca8a56523b962dac1256e845ce",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "author_association": "MEMBER",
+    "auto_merge": null,
+    "assignee": null,
+    "active_lock_reason": null
+   },
+   {
+    "id": 5130778404,
+    "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/pull/2",
+    "number": 2,
+    "state": "closed",
+    "locked": false,
+    "title": "p2-s1 stale",
+    "user": {
+     "login": "richard-gledhill",
+     "id": 61820266,
+     "html_url": "https://github.com/richard-gledhill",
+     "type": "User"
+    },
+    "created_at": "2026-11-03T02:18:49Z",
+    "updated_at": "2026-11-03T02:19:20Z",
+    "closed_at": "2026-11-03T02:19:20Z",
+    "merged_at": "2026-11-03T02:19:20Z",
+    "merge_commit_sha": "a5714267c0644cca8a56523b962dac1256e845ce",
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "labels": [
+     {
+      "id": 12936664344,
+      "name": "approved-move",
+      "color": "ededed",
+      "default": false,
+      "description": null,
+      "archived_at": null,
+      "archived_by": null
+     }
+    ],
+    "milestone": null,
+    "draft": false,
+    "head": {
+     "label": "open-renewables-sandbox:p2-s1/pr-stale-stale-021843",
+     "ref": "p2-s1/pr-stale-stale-021843",
+     "sha": "7bf2b9fbd9c89169270794f89b5db89db59f29a3",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "base": {
+     "label": "open-renewables-sandbox:main",
+     "ref": "main",
+     "sha": "27acfdf72c4498d25192ffaddd995203104b3277",
+     "user": {
+      "login": "open-renewables-sandbox",
+      "id": 348155082,
+      "html_url": "https://github.com/open-renewables-sandbox",
+      "type": "Organization"
+     }
+    },
+    "author_association": "MEMBER",
+    "auto_merge": null,
+    "assignee": null,
+    "active_lock_reason": null
+   }
+  ],
+  "repos/open-renewables-sandbox/p0-spikes/commits/c84d7f14d68819a967f25261c657e19df5bde825": {
+   "sha": "c84d7f14d68819a967f25261c657e19df5bde825",
+   "commit": {
+    "author": {
+     "name": "p2-s1-probe",
+     "email": "p2-s1@example.invalid",
+     "date": "2026-11-03T02:14:57Z"
+    },
+    "committer": {
+     "name": "p2-s1-probe",
+     "email": "p2-s1@example.invalid",
+     "date": "2026-11-03T02:14:57Z"
+    },
+    "message": "p2-s1: 5a push with the app token",
+    "tree": {
+     "sha": "e0c46c10d3916b68e93a9ad62c81428c32dac802"
+    },
+    "comment_count": 0,
+    "verification": {
+     "verified": false,
+     "reason": "unsigned",
+     "signature": null,
+     "payload": null,
+     "verified_at": null
+    }
+   },
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/c84d7f14d68819a967f25261c657e19df5bde825",
+   "author": null,
+   "committer": null,
+   "parents": [
+    {
+     "sha": "017c12f380149157e39a8183f6759c62b550237a",
+     "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/017c12f380149157e39a8183f6759c62b550237a"
+    }
+   ],
+   "stats": {
+    "total": 1,
+    "additions": 1,
+    "deletions": 0
+   },
+   "files": [
+    {
+     "sha": "ca2a79a55dee3a88d4fe995b917165286243dc16",
+     "filename": "p2-s1/5a-app.txt",
+     "status": "added",
+     "additions": 1,
+     "deletions": 0,
+     "changes": 1,
+     "patch": "@@ -0,0 +1 @@\n+5a app push 41564818090"
+    }
+   ]
+  },
+  "repos/open-renewables-sandbox/p0-spikes/commits/c84d7f14d68819a967f25261c657e19df5bde825/pulls": [],
+  "repos/open-renewables-sandbox/p0-spikes/commits/27acfdf72c4498d25192ffaddd995203104b3277": {
+   "sha": "27acfdf72c4498d25192ffaddd995203104b3277",
+   "commit": {
+    "author": {
+     "name": "p2-s1-probe",
+     "email": "p2-s1@example.invalid",
+     "date": "2026-11-03T02:16:09Z"
+    },
+    "committer": {
+     "name": "p2-s1-probe",
+     "email": "p2-s1@example.invalid",
+     "date": "2026-11-03T02:16:09Z"
+    },
+    "message": "p2-s1: 5a push with the app token",
+    "tree": {
+     "sha": "02ec7dcd2da17f8af8fa336c06fc548cb56162bf"
+    },
+    "comment_count": 0,
+    "verification": {
+     "verified": false,
+     "reason": "unsigned",
+     "signature": null,
+     "payload": null,
+     "verified_at": null
+    }
+   },
+   "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/27acfdf72c4498d25192ffaddd995203104b3277",
+   "author": null,
+   "committer": null,
+   "parents": [
+    {
+     "sha": "c6a506b2e37962e42a1b25b7ef0302d4048dd214",
+     "html_url": "https://github.com/open-renewables-sandbox/p0-spikes/commit/c6a506b2e37962e42a1b25b7ef0302d4048dd214"
+    }
+   ],
+   "stats": {
+    "total": 2,
+    "additions": 1,
+    "deletions": 1
+   },
+   "files": [
+    {
+     "sha": "5f9b40f4805a12fa7f820cfd362e9d7256ac73f0",
+     "filename": "p2-s1/5a-app.txt",
+     "status": "modified",
+     "additions": 1,
+     "deletions": 1,
+     "changes": 2,
+     "patch": "@@ -1 +1 @@\n-5a app push 41564818090\n+5a app push 41565032893"
+    }
+   ]
+  },
+  "repos/open-renewables-sandbox/p0-spikes/commits/27acfdf72c4498d25192ffaddd995203104b3277/pulls": []
+ }
+}

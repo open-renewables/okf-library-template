@@ -26,11 +26,11 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 2: adapters and revision writer (`tooling/p2-adapters-revision`)
 
-- [ ] 4. `okfprofile.platforms`: data model, `github` (standard library REST, retries), `git_local` (trailers, `maintainers`), event-to-`ChangeContext` helper; step 1 fixtures committed
-- [ ] 4. Check: replay tests for every approval case; lagging lookup retried then resolved by subject; `PR none`; unknown author recorded as non-owner; no core module imports an adapter
+- [x] 4. `okfprofile.platforms`: data model, `github` (standard library REST, retries), `git_local` (trailers, `maintainers`), event-to-`ChangeContext` helper; step 1 fixtures committed
+- [x] 4. Check: replay tests for every approval case; lagging lookup retried then resolved by subject; `PR none`; unknown author recorded as non-owner; no core module imports an adapter
 
-- [ ] 5. `write_revision.py` with catch-up, inference, insertion, indexes, optional `verified`, `--check-since`; `OKF9xx` codes in the catalogue (PP-3); `poe revision`
-- [ ] 5. Check: golden lines for every I-08 row and two concepts in one PR; dropped run recovered; second run no-op; hand-edited and deleted lines caught on `main`; `verified` agrees with an OKF reading; failing fixture per `OKF9xx`; `git_local` gives the same lines
+- [x] 5. `write_revision.py` with catch-up, inference, insertion, indexes, optional `verified`, `--check-since`; `OKF9xx` codes in the catalogue (PP-3); `poe revision`
+- [x] 5. Check: golden lines for every I-08 row and two concepts in one PR; dropped run recovered; second run no-op; hand-edited and deleted lines caught on `main`; `verified` agrees with an OKF reading; failing fixture per `OKF9xx`; `git_local` gives the same lines
 
 ## PR 3: stale report and intake files (`tooling/p2-intake`)
 
@@ -95,9 +95,9 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | Step | Outcome | Label | Entry |
 | --- | --- | --- | --- |
 | 1 | 5a: App push to protected `main` accepted by the "always" bypass, `GITHUB_TOKEN` push refused (GH013). 5c: a stale approval keeps `commit_id` of the approved head and still satisfies the rule; an unapproved owner merge is `blocked` and passes by the Admin bypass, `merged_by` = author. Lookup: closed-list and subject hit at the first poll (about 4 s), `commits/{sha}/pulls` up to 8.4 s. Org policy refuses "Actions can approve pull requests", so the owner opened the PRs and the App approved. Findings: `persist-credentials: false` for `revision.yml`; bot commits have no author login (use the trailer); client ID needs capital `I`. No contradiction with AD-11, AD-12, W-05, SDD §11. Notes: `side-session-notes/.../p2-s1-result.md` | [Test] | none (PP-6 not triggered) |
-| 2 to 3 | PR 1 built, uncommitted on `tooling/p2-supply-chain`. `requirements/validate.txt` and `dev.txt` exported from `uv.lock` with hashes (`poe export`; `export_requirements.py --check` is a `poe check` step); a clean venv from each with `--require-hashes` validates the bundle and passes `tests/library`. `poe licences`: 36 locked packages checked, 0 findings (allowlist, ADR-006/007 exceptions and metadata resolutions parsed from `constraints.md`). `poe audit`: 0 findings. gitleaks v8.30.1 and its `linux_x64` SHA-256, and lychee-v0.24.2, filled in `constraints.md` (PP-2). `scan.py` with `profile/scan.yaml` and its meta-schema (PP-4); hook refuses a planted marker (Git Bash) and a planted secret (PowerShell, redacted) and passes clean commits; gitleaks hook skips with a notice when not installed. `poe check` clean, `poe test` 403 passed, coverage 98.77 %. New gaps G11 to G13 | [Test] | PP-2, PP-4 applied |
-| 4 | | | |
-| 5 | | | |
+| 2 to 3 | PR 1 built and merged as #20. `requirements/validate.txt` and `dev.txt` exported from `uv.lock` with hashes (`poe export`; `export_requirements.py --check` is a `poe check` step); a clean venv from each with `--require-hashes` validates the bundle and passes `tests/library`. `poe licences`: 36 locked packages checked, 0 findings (allowlist, ADR-006/007 exceptions and metadata resolutions parsed from `constraints.md`). `poe audit`: 0 findings. gitleaks v8.30.1 and its `linux_x64` SHA-256, and lychee-v0.24.2, filled in `constraints.md` (PP-2). `scan.py` with `profile/scan.yaml` and its meta-schema (PP-4); hook refuses a planted marker (Git Bash) and a planted secret (PowerShell, redacted) and passes clean commits; gitleaks hook skips with a notice when not installed. `poe check` clean, `poe test` 403 passed, coverage 98.77 %. New gaps G11 to G13 | [Test] | PP-2, PP-4 applied |
+| 4 | PR 2 built, uncommitted on `tooling/p2-adapters-revision`. `okfprofile.platforms`: data model, `commits` (first-parent history, trailers, UTC dates), `github` (standard-library REST behind an injectable transport; lookup order closed list, `(#n)` subject, `commits/{sha}/pulls`; 30 s retry budget only for a commit whose subject names a PR) and `git_local` (maintainers map, `Approved-by`, `Full-Review`, `Agent-Drafted`). Replayed from responses recorded in the sandbox (`tests/template/fixtures/github/`, 48 KB). Found by the tests: a 404 on the closed list must not stop the lookup; bot logins need `[bot]` stripped to fit the grammar. `git-local` takes the author as the merger (G16) | [Test] | none |
+| 5 | `write_revision.py` (`poe revision`): catch-up since the last `Revision-Bot` commit or `--since`, W-05 inference per concept file (14 table rows), line insertion before footnotes with CRLF kept, indexes refreshed, optional `verified` (G15), `--commit` with the trailer, `--check-since` raising `OKF901` (PP-3: code, catalogue row, unit test). Scratch-repository tests: order, second run no-op, dropped run recovered, dry run, `validate_main` clean afterwards. A read-only dry run against the real template history resolved PR #16 live (four lines, `self-approved (non-owner)` because CODEOWNERS arrives in PR 3). 469 tests pass, coverage 98.3 %. New gaps G14 to G16; G4 and G9 narrowed | [Test] | PP-3 applied |
 | 6 to 7 | | | |
 | 8 | | | |
 | 9 to 11 | | | |
@@ -112,7 +112,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | --- | --- | --- |
 | PP-1 | Proposed | |
 | PP-2 | Decided 2026-11-03: fill, no ADR | Applied in PR 1: `constraints.md` table; DDR change-log row |
-| PP-3 | Proposed | |
+| PP-3 | Approved 2026-11-03 | Applied in PR 2: `OKF901` in `codes.py` and the catalogue |
 | PP-4 | Approved 2026-11-03 | Applied in PR 1: SDD §6 and C-04 wording; DDR change-log row |
 | PP-5 | Proposed | |
 | PP-6 | Conditional (step 1) | |

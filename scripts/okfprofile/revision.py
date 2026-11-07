@@ -181,6 +181,11 @@ def revision_tier(line: RevisionLine, require_non_author_approver: bool = False)
     return machine
 
 
+def window_start(lines: list[RevisionLine]) -> int:
+    """Index of the first revision that counts: the latest owner-approved full review, else the first."""
+    return max((i for i, line in enumerate(lines) if line.full_review and owner_approved(line)), default=0)
+
+
 def concept_tier(lines: list[RevisionLine], require_non_author_approver: bool = False) -> TierResult:
     """A concept's tier: the lowest revision tier since the latest owner-approved full review.
 
@@ -193,7 +198,6 @@ def concept_tier(lines: list[RevisionLine], require_non_author_approver: bool = 
     """
     if not lines:
         return TierResult(Tier.UNVERIFIED)
-    start = max((i for i, line in enumerate(lines) if line.full_review and owner_approved(line)), default=0)
-    results = [revision_tier(line, require_non_author_approver) for line in lines[start:]]
+    results = [revision_tier(line, require_non_author_approver) for line in lines[window_start(lines) :]]
     lowest = min((tier for tier, _ in results), key=_ORDER.__getitem__)
     return TierResult(lowest, lowest is Tier.HUMAN_REVIEWED and any(self for _, self in results))
