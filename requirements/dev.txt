@@ -659,7 +659,7 @@ typing-extensions==4.16.0 \
     # via
     #   mypy
     #   referencing
-virtualenv==21.15.2 \
-    --hash=sha256:dbd886e6e5689eb4dde6a9bbc478ad14b4fc8ed0852690d8273ccfb8c467f635 \
-    --hash=sha256:fb8c62c7c328e0238061c721068f06b7bc6bd10f7a0f5987195cef1008837ee6
+virtualenv==21.15.3 \
+    --hash=sha256:bac00a8f34f90c81e0dd933e5a848173a36b04d737a828c5496443a6fb0ea0d4 \
+    --hash=sha256:cb83a84cedda6509c93ea5b381c3b5ecec666f7b500d34566503f5bfdc87f498
     # via pre-commit
