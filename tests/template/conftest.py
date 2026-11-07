@@ -9,7 +9,7 @@ from okfprofile.bundle import load_bundle
 from okfprofile.config import Profile, load_profile
 from okfprofile.indexes import write_indexes
 from okfprofile.registry import Registry, RegistryEntry, save_registry
-from support import DEFAULT_REGISTRY, DEFAULT_VOCABS, ROOT, MakeRepo
+from support import DEFAULT_REGISTRY, DEFAULT_VOCABS, ROOT, MakeRepo, git
 
 
 @pytest.fixture
@@ -49,3 +49,26 @@ def make_repo(tmp_path: Path) -> MakeRepo:
         return profile
 
     return build
+
+
+@pytest.fixture
+def library(tmp_path: Path) -> Path:
+    """A git-local library: the template's profile and example bundle, owner alice, one base commit."""
+    root = tmp_path / "lib"
+    for name in ("profile", "knowledge"):
+        shutil.copytree(ROOT / name, root / name)
+    text = (root / "profile" / "profile.yaml").read_text(encoding="utf-8")
+    text = text.replace("platform: github", "platform: git-local").replace(
+        "maintainers: {}",
+        "maintainers:\n  alice:\n    emails: [alice@example.org]\n    role: maintainer\n"
+        "  bob:\n    emails: [bob@example.org]\n    role: contributor\n",
+    )
+    (root / "profile" / "profile.yaml").write_text(text, encoding="utf-8", newline="\n")
+    (root / ".github").mkdir()
+    (root / ".github" / "CODEOWNERS").write_text("/knowledge/ @alice\n", encoding="utf-8", newline="\n")
+    git(root, "init", "-q", "-b", "main")
+    git(root, "config", "user.email", "bot@example.org")
+    git(root, "config", "user.name", "Bot")
+    git(root, "add", "-A")
+    git(root, "commit", "-q", "-m", "base", when="2026-10-31T09:00:00+00:00")
+    return root

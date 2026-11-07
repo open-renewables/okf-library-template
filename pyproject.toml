@@ -40,7 +40,7 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py tests",
     "python scripts/validate_profile.py",
     "python scripts/build_indexes.py --check",
     "python scripts/export_requirements.py --check",
@@ -70,6 +70,16 @@ cmd = "python scripts/stale_report.py"
 [tool.poe.tasks.check-config]
 help = "Check workflows, issue forms and Dependabot configuration against their published schemas (needs uvx and network)"
 cmd = "python scripts/check_config.py"
+
+[tool.poe.tasks.bundle]
+help = "Build the release archive, checksum and manifest into dist/ from the files in git at HEAD"
+cmd = "python scripts/build_bundle.py --tag ${tag}"
+args = [{ name = "tag", positional = true, help = "release tag, for example v0.2.0" }]
+
+[tool.poe.tasks.release]
+help = "Cut a release: revision-line gate, validation, archive and (git-local) an annotated tag that records its digest"
+cmd = "python scripts/release.py ${tag}"
+args = [{ name = "tag", positional = true, help = "release tag, for example v0.2.0" }]
 
 [tool.poe.tasks.revision]
 help = "Record every change merged since the last revision commit in the concepts it touched, and commit the result"

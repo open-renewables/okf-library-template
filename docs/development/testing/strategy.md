@@ -56,6 +56,7 @@ Repeat for `3.12` and `3.14`. Hosted CI runs the 3.11 and 3.14 jobs in P2.
 | `scan.py`, gitleaks, pip-audit and licence-check jobs, and their tests | Plan OD-2, OD-3. The scan, licence, audit and export tasks and their tests landed in P2 PR 1 (`test_scanner.py`, `test_licences.py`, `test_supply.py`); the CI jobs that call them come with `template-tests.yml` |
 | Planted-secret test (NFR6) | Needs the scan jobs |
 | `stale_report.py`, intake files and `check-config` tests | Landed in P2 PR 3 (`test_stale.py`, `test_intake.py`); the schema check itself runs in CI only (known gap G17) |
+| `build_bundle.py`, `release.py` and reproducible archives | Landed in P2 PR 4 (`test_archive.py`, `test_release.py`). `test_the_tar_of_fixed_content_has_a_fixed_digest` pins a tar digest that every operating system and Python in the P2 matrix must reproduce (V-12) |
 
 The acceptance level above these tests (a library built from the template, every SRS criterion, both platform modes) is the [Master Test Plan](master-test-plan.md), run at P4; its cases run the tests above where they exist and cite this file instead of repeating it.
 

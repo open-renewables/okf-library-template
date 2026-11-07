@@ -352,13 +352,13 @@ def catch_up(
     return record_changes(profile, changes, owners, dry_run)
 
 
-def check_since(profile: Profile, adapter: PlatformAdapter, base: str, ref: str = "HEAD") -> list[Finding]:
+def check_since(profile: Profile, adapter: PlatformAdapter, base: str | None, ref: str = "HEAD") -> list[Finding]:
     """Report merged changes after ``base`` whose concepts lack a revision line (SRS FR7.4, ``OKF901``).
 
     Args:
         profile: The loaded profile.
         adapter: A ``PlatformAdapter``.
-        base: A tag or commit; changes after it are checked.
+        base: A tag or commit; changes after it are checked. None checks the whole history (a first release).
         ref: Tip of the history.
 
     Returns:
