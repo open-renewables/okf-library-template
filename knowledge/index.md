@@ -12,4 +12,4 @@ okf_version: "0.2"
 
 ## Concepts
 
-- [Glossary](glossary.md) — Common terms used in the library. · draft · unverified
+- [Glossary](glossary.md) — Common terms used in the library. · draft · human-reviewed (self)

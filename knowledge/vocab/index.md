@@ -3,5 +3,5 @@
 
 ## Concepts
 
-- [Category vocabulary](category.md) — Values of the category tag namespace. · draft · unverified
-- [Group vocabulary](group.md) — Values of the group tag namespace. · draft · unverified
+- [Category vocabulary](category.md) — Values of the category tag namespace. · draft · human-reviewed (self)
+- [Group vocabulary](group.md) — Values of the group tag namespace. · draft · human-reviewed (self)
