@@ -40,7 +40,7 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py tests",
     "python scripts/validate_profile.py",
     "python scripts/build_indexes.py --check",
     "python scripts/export_requirements.py --check",
@@ -80,6 +80,18 @@ args = [{ name = "tag", positional = true, help = "release tag, for example v0.2
 help = "Cut a release: revision-line gate, validation, archive and (git-local) an annotated tag that records its digest"
 cmd = "python scripts/release.py ${tag}"
 args = [{ name = "tag", positional = true, help = "release tag, for example v0.2.0" }]
+
+[tool.poe.tasks.init]
+help = "Turn a copy of the template into a library: asks the questions of W-01 step 3, or reads --answers FILE"
+cmd = "python scripts/init_library.py"
+
+[tool.poe.tasks.setup-repo]
+help = "Configure the GitHub repository (platform github): labels, merge methods, permissions, ruleset; --dry-run, --check, --promote"
+cmd = "python scripts/setup_repo.py"
+
+[tool.poe.tasks.selftest]
+help = "Instantiate the template for each platform in a scratch folder and check the result (W-10)"
+cmd = "pytest tests/template/test_instantiation.py --no-cov"
 
 [tool.poe.tasks.revision]
 help = "Record every change merged since the last revision commit in the concepts it touched, and commit the result"

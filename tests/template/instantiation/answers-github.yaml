@@ -1,0 +1,16 @@
+# Answers for the W-10 self-test, platform github. A non-default content licence and a proprietary code licence.
+platform: github
+name: sample-library
+title: Sample library
+description: A library created by the instantiation self-test.
+repository: https://github.com/example-org/sample-library
+maintainer:
+  login: sample-owner
+  name: Sam Owner
+  email: sam@example.org
+licence_holder: Example Org
+content_licence: CC-BY-SA-4.0
+code_licence: proprietary
+keep_examples: true
+keep_tests: false
+year: 2026

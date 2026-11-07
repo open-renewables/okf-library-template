@@ -200,6 +200,7 @@ Nothing below is written until the owner approves its text. IDs for ADRs are ass
 | PP-7 | Only if the 10 s speed gate fails on shared runners with no code change | `../constraints.md` Validation speed row (for example a runner-class note) | ADR; the limit is not relaxed silently |
 | PP-9 | OD-10 carries V-06 to P4 now; SDD §14 carries the platform steps to "End of P2" | SDD §14 carried-item table (V-06 row: platform steps move to P4 with the full timing) | SDD edit with a DDR change-log row |
 | PP-8 | OD-3 decided (default accepted): SDD C-05 says `validate.yml` and `template-tests.yml` run on 3.11 and 3.14 without naming systems | SDD C-05 wording (template tests run on three systems; library `validate.yml` on Linux) | SDD edit with a DDR change-log row |
+| PP-10 | Always: `init_library.py` needs behaviour SDD §6 and W-01 do not state: for `git-local` it also removes `.github/dependabot.yml` and `.github/labels.yml` (the section lists only the issue forms, the pull request template and the workflows); when `tests/template/` is removed it drops the coverage gate in `pyproject.toml` (otherwise `poe test` fails at under 85 % because the tests that cover `okfprofile` are gone); it generates the library `README.md`, `CITATION.cff` and `DECISIONS.md` and renames the project in `pyproject.toml` and `uv.lock`; and it does not rename the primary type (known gap G23) | SDD §6 "Template-only files" paragraph and W-01 step 3 (wording), with a DDR change-log row | SDD edit; the primary-type question is the owner's |
 
 ## Risks
 
