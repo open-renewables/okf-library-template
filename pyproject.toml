@@ -40,7 +40,7 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py tests",
     "python scripts/validate_profile.py",
     "python scripts/build_indexes.py --check",
     "python scripts/export_requirements.py --check",
@@ -92,6 +92,27 @@ cmd = "python scripts/setup_repo.py"
 [tool.poe.tasks.selftest]
 help = "Instantiate the template for each platform in a scratch folder and check the result (W-10)"
 cmd = "pytest tests/template/test_instantiation.py --no-cov"
+
+[tool.poe.tasks.ci-validate-event]
+help = "Validate as the CI event calls for: base-branch tooling for a pull request, a whole-tree check after a push"
+cmd = "python scripts/ci_validate.py"
+
+[tool.poe.tasks.report-issue]
+help = "Open, update or close the one tracking issue for a label (--label L --title T --body-file F, or --close)"
+cmd = "python scripts/report_issue.py"
+
+[tool.poe.tasks.perf]
+help = "Time the validation of a generated 600-concept bundle against the 10 s limit"
+cmd = "pytest tests/template/test_speed.py --no-cov"
+env = { OKF_PERF = "1" }
+
+[tool.poe.tasks.hooks]
+help = "Run every pre-commit hook on every file"
+cmd = "pre-commit run --all-files"
+
+[tool.poe.tasks.renumber]
+help = "Give a concept whose uid clashes with another the next free number (renumber <concept-id>)"
+cmd = "python scripts/renumber.py"
 
 [tool.poe.tasks.revision]
 help = "Record every change merged since the last revision commit in the concepts it touched, and commit the result"

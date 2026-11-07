@@ -198,8 +198,8 @@ def find_app(api: GitHubApi, org: str, slug: str) -> int | None:
     return None
 
 
-def desired_ruleset(app_id: int | None, require_validate: bool) -> dict[str, Any]:
-    """The ``main`` ruleset of SDD section 11."""
+def desired_ruleset(app_id: int | None, require_validate: bool, name: str = RULESET_NAME) -> dict[str, Any]:
+    """The ``main`` ruleset of SDD section 11, under the name ``name``."""
     bypass = [{"actor_id": ADMIN_ROLE_ID, "actor_type": "RepositoryRole", "bypass_mode": "pull_request"}]
     if app_id is not None:
         bypass.append({"actor_id": app_id, "actor_type": "Integration", "bypass_mode": "always"})
@@ -229,7 +229,7 @@ def desired_ruleset(app_id: int | None, require_validate: bool) -> dict[str, Any
             }
         )
     return {
-        "name": RULESET_NAME,
+        "name": name,
         "target": "branch",
         "enforcement": "active",
         "conditions": {"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}},
@@ -242,14 +242,14 @@ def _bypass_key(actor: dict[str, Any]) -> tuple[Any, Any, Any]:
     return actor.get("actor_id"), actor.get("actor_type"), actor.get("bypass_mode")
 
 
-def plan_ruleset(api: GitHubApi, repo: str, app_id: int | None, require_validate: bool, plan: Plan) -> None:
-    """Create or update the ``main`` ruleset so it matches the design."""
-    desired = desired_ruleset(app_id, require_validate)
-    found = next((r for r in api.paginate(f"repos/{repo}/rulesets") if r.get("name") == RULESET_NAME), None)
+def plan_ruleset(
+    api: GitHubApi, repo: str, app_id: int | None, require_validate: bool, plan: Plan, name: str = RULESET_NAME
+) -> None:
+    """Create or update the ruleset called ``name`` so it matches the design."""
+    desired = desired_ruleset(app_id, require_validate, name)
+    found = next((r for r in api.paginate(f"repos/{repo}/rulesets") if r.get("name") == name), None)
     if found is None:
-        plan.operations.append(
-            Operation("ruleset", f"create {RULESET_NAME}", "POST", f"repos/{repo}/rulesets", desired)
-        )
+        plan.operations.append(Operation("ruleset", f"create {name}", "POST", f"repos/{repo}/rulesets", desired))
         return
     current = api.request("GET", f"repos/{repo}/rulesets/{found['id']}")
     same = (
@@ -262,7 +262,7 @@ def plan_ruleset(api: GitHubApi, repo: str, app_id: int | None, require_validate
     )
     if not same:
         plan.operations.append(
-            Operation("ruleset", f"update {RULESET_NAME}", "PUT", f"repos/{repo}/rulesets/{found['id']}", desired)
+            Operation("ruleset", f"update {name}", "PUT", f"repos/{repo}/rulesets/{found['id']}", desired)
         )
 
 
@@ -321,6 +321,7 @@ def build_plan(
     app_slug: str | None = None,
     require_check: bool | None = None,
     promote: bool = False,
+    ruleset_name: str = RULESET_NAME,
 ) -> Plan:
     """Work out what has to change in ``repo``.
 
@@ -354,7 +355,7 @@ def build_plan(
     elif promote:
         plan.problems.append("--promote needs --app-slug: the revision App must be on the bypass list")
     use_check = (root / VALIDATE_WORKFLOW).is_file() if require_check is None else require_check
-    plan_ruleset(api, repo, app_id, use_check, plan)
+    plan_ruleset(api, repo, app_id, use_check, plan, ruleset_name)
     plan_security(info, repo, plan)
     if promote:
         plan_public_extras(api, repo, plan)
@@ -368,13 +369,14 @@ def apply_plan(api: GitHubApi, plan: Plan) -> None:
         api.request(op.method, op.path, op.body)
 
 
-def check_app(api: GitHubApi, repo: str, slug: str) -> list[str]:
+def check_app(api: GitHubApi, repo: str, slug: str, ruleset_name: str = RULESET_NAME) -> list[str]:
     """Check the revision App's set-up (C-06): installed, on the ruleset bypass list, variable and secret present.
 
     Args:
         api: GitHub.
         repo: ``owner/name``.
         slug: The App's slug.
+        ruleset_name: The ruleset that must list the App.
 
     Returns:
         Problems found; empty if everything is in place.
@@ -384,10 +386,10 @@ def check_app(api: GitHubApi, repo: str, slug: str) -> list[str]:
     app_id = find_app(api, org, slug)
     if app_id is None:
         return [f"the App '{slug}' is not installed in {org}"]
-    found = next((r for r in api.paginate(f"repos/{repo}/rulesets") if r.get("name") == RULESET_NAME), None)
+    found = next((r for r in api.paginate(f"repos/{repo}/rulesets") if r.get("name") == ruleset_name), None)
     bypass = api.request("GET", f"repos/{repo}/rulesets/{found['id']}").get("bypass_actors", []) if found else []
     if (app_id, "Integration", "always") not in {_bypass_key(a)[:3] for a in bypass}:
-        problems.append(f"the App is not on the {RULESET_NAME} ruleset bypass list with mode 'always'")
+        problems.append(f"the App is not on the {ruleset_name} ruleset bypass list with mode 'always'")
     expected = api.request("GET", f"apps/{slug}").get("client_id")
     try:
         value = (api.request("GET", f"repos/{repo}/actions/variables/{APP_CLIENT_VARIABLE}") or {}).get("value")

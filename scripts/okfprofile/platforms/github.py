@@ -96,6 +96,16 @@ class HttpTransport:
         raise PlatformError(msg)
 
 
+def paginate(transport: Transport, path: str) -> list[Any]:
+    """Every item of a list endpoint, following the ``Link`` header page by page."""
+    items: list[Any] = []
+    next_path: str | None = path
+    while next_path:
+        data, next_path = transport.get(next_path)
+        items.extend(data)
+    return items
+
+
 def subject_number(subject: str) -> int | None:
     """The pull request number a squash subject ends with (``Title (#12)``), if any."""
     match = SUBJECT_NUMBER.search(subject)
@@ -131,12 +141,7 @@ class GitHubAdapter:
         return f"repos/{self.repo}/{tail}"
 
     def _pages(self, tail: str) -> list[Any]:
-        items: list[Any] = []
-        path: str | None = self._path(tail)
-        while path:
-            data, path = self.transport.get(path)
-            items.extend(data)
-        return items
+        return paginate(self.transport, self._path(tail))
 
     def _pull(self, number: int) -> dict[str, Any] | None:
         try:

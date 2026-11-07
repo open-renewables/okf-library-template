@@ -15,6 +15,7 @@ from pathlib import Path
 
 from okfprofile.config import ProfileError, load_profile
 from okfprofile.ghsetup import (
+    RULESET_NAME,
     GhCli,
     GhError,
     GitHubApi,
@@ -58,6 +59,9 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--promote", action="store_true", help="also set up a public library (W-11): CodeQL, Pages, App token"
     )
+    parser.add_argument(
+        "--ruleset-name", default=RULESET_NAME, help="the ruleset to create or converge (default: main-protect)"
+    )
     parser.add_argument("--no-required-check", action="store_true", help="leave the validate check out of the ruleset")
     parser.add_argument("--json", action="store_true", help="write the result as JSON to standard output")
     return parser
@@ -79,13 +83,19 @@ def _run(args: argparse.Namespace, client: GitHubApi) -> Outcome:
         msg = "cannot tell the repository: pass --repo owner/name"
         raise UsageError(msg)
     plan = build_plan(
-        client, repo, root, args.app_slug, False if args.no_required_check else None, promote=args.promote
+        client,
+        repo,
+        root,
+        args.app_slug,
+        False if args.no_required_check else None,
+        promote=args.promote,
+        ruleset_name=args.ruleset_name,
     )
     outcome = Outcome(repo, plan, list(plan.problems))
     if args.check:
         outcome.problems += [f"drift: {op.area}: {op.detail}" for op in plan.operations]
         if args.app_slug:
-            outcome.problems += check_app(client, repo, args.app_slug)
+            outcome.problems += check_app(client, repo, args.app_slug, args.ruleset_name)
     elif not args.dry_run and not plan.problems:
         apply_plan(client, plan)
         outcome.profile_changed = args.promote and promote_profile(root)

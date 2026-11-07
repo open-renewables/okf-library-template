@@ -17,6 +17,8 @@ GITHUB_TOKEN = "ghp_" + "A1" * 18
 AWS_KEY = "AKIA" + "B2" * 8
 PEM = "-----BEGIN " + "RSA PRIVATE KEY" + "-----"
 SLACK = "xoxb-" + "1234567890" + "abcdef"
+MARKER = "CONFI" + "DENTIAL"
+MARKER_PHRASE = "INTERNAL " + "USE ONLY"
 
 
 @pytest.fixture
@@ -43,8 +45,8 @@ def test_the_shipped_rules_load() -> None:
 @pytest.mark.parametrize(
     ("text", "rule"),
     [
-        ("This is CONFIDENTIAL material", "confidentiality-marker"),
-        ("INTERNAL USE ONLY", "confidentiality-marker"),
+        (f"This is {MARKER} material", "confidentiality-marker"),
+        (MARKER_PHRASE, "confidentiality-marker"),
         (f"token = {GITHUB_TOKEN}", "github-token"),
         (f"key: {AWS_KEY}", "aws-access-key-id"),
         (PEM, "private-key-block"),
@@ -59,10 +61,10 @@ def test_each_rule_finds_its_planted_string(text: str, rule: str) -> None:
 def test_secrets_are_redacted_and_markers_are_not() -> None:
     config = load_scan_config(ROOT)
     secret = scan_text(config, GITHUB_TOKEN, "a.txt")[0]
-    marker = scan_text(config, "CONFIDENTIAL", "a.txt")[0]
+    marker = scan_text(config, MARKER, "a.txt")[0]
     assert secret.excerpt == "ghp_***"
     assert GITHUB_TOKEN not in secret.human()
-    assert marker.excerpt == "CONFIDENTIAL"
+    assert marker.excerpt == MARKER
 
 
 @pytest.mark.parametrize("text", ["confidential in lower case", "ghp_short", "AKIA too short", "plain text"])
@@ -72,10 +74,10 @@ def test_clean_text_has_no_finding(text: str) -> None:
 
 def test_scan_files_counts_what_it_skips(root: Path) -> None:
     config = load_scan_config(root)
-    write(root, "bad.md", "CONFIDENTIAL\n")
+    write(root, "bad.md", MARKER + "\n")
     write(root, "ok.md", "fine\n")
-    (root / "blob.bin").write_bytes(b"CONFIDENTIAL\0")
-    (root / "big.txt").write_text("CONFIDENTIAL" * 200_000, encoding="utf-8")
+    (root / "blob.bin").write_bytes(MARKER.encode() + b"\0")
+    (root / "big.txt").write_text(MARKER * 200_000, encoding="utf-8")
     result = scan_files(config, root, ["bad.md", "ok.md", "blob.bin", "big.txt", "profile/scan.yaml", "missing.md"])
     assert [(f.file, f.line) for f in result.findings] == [("bad.md", 1)]
     assert (result.scanned, result.excluded, result.skipped_binary, result.skipped_large) == (2, 1, 1, 1)
@@ -88,7 +90,7 @@ def test_scan_files_counts_what_it_skips(root: Path) -> None:
     [
         (lambda t: t.replace("kind: marker", "kind: other"), "kind"),
         (lambda t: t.replace("version: 1", "version: 2"), "version"),
-        (lambda t: t.replace(r"'\b(CONFIDENTIAL", "'(CONFIDENTIAL"), None),
+        (lambda t: t.replace(r"'\b(CONFI" + "DENTIAL", "'(CONFI" + "DENTIAL"), None),
         (lambda t: t.replace("id: private-key-block", "id: confidentiality-marker"), "unique"),
         (lambda t: t.replace("'-----BEGIN [A-Z ]*PRIVATE KEY-----'", "'[unclosed'"), "does not compile"),
         (lambda t: t + "extra: true\n", "extra"),
