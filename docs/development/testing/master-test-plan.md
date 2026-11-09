@@ -34,7 +34,7 @@ Out of scope:
 | Unit, fixture, golden, parity, catalogue | [strategy.md](strategy.md), [fixtures.md](fixtures.md) | Every change: `uv run poe check`, `uv run poe test` |
 | Template CI | `template-tests.yml` (P2 PR 6) | Every template PR: matrix, self-test (W-10), scans |
 | **Acceptance** | **This plan** | **P4; optionally after P4 during beta testing against real libraries (read-only subset); before each template release after v1.0.0** |
-| P2 rehearsals | `../plan/plan.md` steps 1, 12, 14, 15 | During P2, in the sandbox |
+| P2 rehearsals | `../plan/archive/2026-11-p2-ci-governance/plan.md` steps 1, 12, 14, 15 | During P2, in the sandbox |
 
 The acceptance level does not re-implement lower levels. Where a requirement already has a fixture or golden file, the case runs that test selection (`[T]` steps) and adds the end-to-end check on a library. Where a P2 rehearsal defines a scenario (S1, S2, step 15), the case adopts it by link and adds only the expected result and evidence.
 

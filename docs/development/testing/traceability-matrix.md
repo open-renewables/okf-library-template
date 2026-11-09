@@ -105,7 +105,7 @@ Most §13 verification phrases repeat the SRS criteria and are covered above. Th
 | V-13 | poe tasks and hooks on three systems | AT-FR2.11-01 |
 | V-03, V-04 | Site generator behaviour | AT-FR8.2-01 to -04 |
 
-## P2 "Done when" (`../plan/SPEC.md`)
+## P2 "Done when" (`../plan/archive/2026-11-p2-ci-governance/SPEC.md`)
 
 | # | Item | Cases |
 | --- | --- | --- |

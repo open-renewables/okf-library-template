@@ -6,11 +6,11 @@ Status: **Approved by the owner on 2026-11-03:** the plan, the Q&A answers, the 
 
 | Document | Role | Status |
 | --- | --- | --- |
-| [SRS](<../requirements/OKF Library Template - Software Requirements Spec.md>) | The requirement. Front matter `status: accepted` | Accepted |
-| [SDD](<../architecture/OKF Library Template - Software Design Document.md>) §14 (P2 row), §7 C-03 to C-06 and C-09, §8 I-02, I-08 to I-11, I-15, I-16, §9 W-01 to W-07, W-10 to W-12, §10, §11 | Defines the phase, the adapters, the workflows and the security baseline | Fixed for P2 |
-| [DDR](<../adr/OKF Library Template - Design Decision Record.md>) | QA-17, QA-32 to QA-34, QA-39, QA-43, QA-47, QA-52, QA-56 to QA-63, QA-65, QA-74 | Frozen series |
-| [ADR-001 to ADR-008](../adr/README.md) | Notably ADR-002 (provider-neutral), ADR-004 (archive content hash), ADR-005 (relative links), ADR-006 and ADR-007 (licences), ADR-008 (vendored code) | Accepted |
-| P0 outcomes (SDD §15) and P1 close-out ([archived plan](archive/2026-11-p1-core-tooling/todo.md)) | Inputs listed under "Carried into P2" below | Applied |
+| [SRS](<../../../requirements/OKF Library Template - Software Requirements Spec.md>) | The requirement. Front matter `status: accepted` | Accepted |
+| [SDD](<../../../architecture/OKF Library Template - Software Design Document.md>) §14 (P2 row), §7 C-03 to C-06 and C-09, §8 I-02, I-08 to I-11, I-15, I-16, §9 W-01 to W-07, W-10 to W-12, §10, §11 | Defines the phase, the adapters, the workflows and the security baseline | Fixed for P2 |
+| [DDR](<../../../adr/OKF Library Template - Design Decision Record.md>) | QA-17, QA-32 to QA-34, QA-39, QA-43, QA-47, QA-52, QA-56 to QA-63, QA-65, QA-74 | Frozen series |
+| [ADR-001 to ADR-008](../../../adr/README.md) | Notably ADR-002 (provider-neutral), ADR-004 (archive content hash), ADR-005 (relative links), ADR-006 and ADR-007 (licences), ADR-008 (vendored code) | Accepted |
+| P0 outcomes (SDD §15) and P1 close-out ([archived plan](../2026-11-p1-core-tooling/todo.md)) | Inputs listed under "Carried into P2" below | Applied |
 
 **Abbreviations.** P2: build phase 2, "CI and governance" (SDD §14). FR/NFR: SRS requirements. AD-, QA-, DR-, ADR-: decision IDs, cited as written. I-nn, C-nn, W-nn, V-nn: SDD interface, component, workflow and verification items. OKFnnn: finding codes (`../architecture/finding-codes.md`). G-n: known gap (`../testing/known-gaps.md`). PP-n: a proposed entry for the owner; OD-n: an open decision with a default (`plan.md`).
 
