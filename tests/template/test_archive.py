@@ -25,8 +25,11 @@ from okfprofile.archive import (
     verify_archive,
     write_archive,
 )
+from okfprofile.bundle import load_bundle
 from okfprofile.config import Profile, load_profile
+from okfprofile.indexes import write_indexes
 from okfprofile.release_cli import build_bundle_main
+from okfprofile.revision_writer import reset_history
 from support import ROOT
 
 pytestmark = pytest.mark.skipif(shutil.which("git") is None, reason="git is not installed")
@@ -56,6 +59,8 @@ def repo(tmp_path: Path) -> Path:
     root = tmp_path / "lib"
     for name in ("profile", "knowledge"):
         shutil.copytree(ROOT / name, root / name)
+    reset_history(load_profile(root), root)  # the template's own bot commits have written lines into the examples
+    write_indexes(load_profile(root), load_bundle(root / "knowledge", root))
     for name, text in {
         "README.md": "# Lib\n",
         "LICENSE": "licence\n",

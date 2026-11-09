@@ -132,10 +132,10 @@ def test_the_report_renders_every_form(profile: Profile) -> None:
 
 
 def test_the_command_line_reports_and_never_fails_on_findings(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+    tmp_path: Path, library: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     out = tmp_path / "issue.md"
-    assert stale_main(["--root", str(ROOT), "--now", "2030-01-01T00:00:00Z", "--json", "--markdown", str(out)]) == 0
+    assert stale_main(["--root", str(library), "--now", "2030-01-01T00:00:00Z", "--json", "--markdown", str(out)]) == 0
     assert len(json.loads(capsys.readouterr().out)["unrevised"]) >= 4
     assert out.read_text(encoding="utf-8").startswith("<!-- stale-report -->")
     assert stale_main(["--root", str(ROOT)]) == 0

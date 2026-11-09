@@ -37,7 +37,7 @@ def test_the_label_list_is_the_set_in_the_design() -> None:
         assert len(label["color"]) == 6
         assert int(label["color"], 16) >= 0
         assert label["description"]
-        assert len(label["description"]) <= 100  # noqa: PLR2004 - GitHub's limit; longer fails with HTTP 422
+        assert len(label["description"]) <= 100  # GitHub's limit; longer fails with HTTP 422
 
 
 def test_there_is_a_form_for_each_kind_of_contribution() -> None:
