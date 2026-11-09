@@ -273,6 +273,32 @@ def test_a_revision_line_removed_from_main_fails_the_push_run(
     assert "OKF315" in capsys.readouterr().err
 
 
+def _append_line_and_commit(library: Path, message: str) -> tuple[str, str]:
+    concept = library / PATH
+    marker = "<!-- Maintained by CI. Do not edit. -->\n"
+    line = "- 2026-11-02 · author @bob · self-approved (non-owner) · PR #4\n"
+    before = git(library, "rev-parse", "HEAD")
+    text = concept.read_text(encoding="utf-8")
+    concept.write_text(text.replace(marker, marker + "\n" + line, 1), encoding="utf-8", newline="\n")
+    assert build_indexes_main(["--root", str(library)]) == 0  # the writer regenerates the indexes in the same commit
+    git(library, "add", "-A")
+    git(library, "commit", "-q", "-m", message, when="2026-11-02T09:00:00+00:00")
+    return before, git(library, "rev-parse", "HEAD")
+
+
+def test_a_revision_writer_commit_may_append_lines_on_main(library: Path) -> None:
+    message = "Record revision history\n\nRevision-Bot: true"
+    before, after = _append_line_and_commit(library, message)
+    assert run_event(library, "push", {"before": before, "after": after, "head_commit": {"message": message}}) == 0
+
+
+def test_the_same_lines_written_by_hand_fail_on_main(library: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    before, after = _append_line_and_commit(library, "Add a line by hand")
+    event = {"before": before, "after": after, "head_commit": {"message": "Add a line by hand"}}
+    assert run_event(library, "push", event) == 1
+    assert "OKF315" in capsys.readouterr().err
+
+
 def test_a_push_without_a_before_commit_and_a_manual_run_validate_the_whole_tree(library: Path) -> None:
     assert run_event(library, "push", {"before": "0" * 40, "after": "a" * 40}) == 0
     assert run_event(library, "workflow_dispatch", {}) == 0

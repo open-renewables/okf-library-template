@@ -50,6 +50,7 @@ class ChangeContext:
         agent_markers: True if commit trailers or the description indicate agent assistance.
         revision_bot: True if this is a revision-writer commit, which may append revision lines.
         reviews_known: True if ``reviews`` holds real review data; the approval pre-check is skipped otherwise.
+        merged: True if the change is already merged: the change rules and the pre-check are skipped.
     """
 
     paths: list[str] = field(default_factory=list)
@@ -60,6 +61,7 @@ class ChangeContext:
     agent_markers: bool = False
     revision_bot: bool = False
     reviews_known: bool = False
+    merged: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         """The JSON form read back by ``from_dict``."""

@@ -19,6 +19,7 @@ from okfprofile.ci import (
     base_ref,
     before_sha,
     change_from_pull_request,
+    change_from_push,
     pull_request_number,
 )
 from okfprofile.cli import validate_main
@@ -83,7 +84,8 @@ def validate_event(
             change_file.write_text(json.dumps(change.to_dict()), encoding="utf-8")
             arguments = ["--tooling-from", base, "--base", base, "--change", str(change_file)]
         elif event_name == "push" and before_sha(event):
-            arguments = ["--base", str(before_sha(event)), "--merged"]
+            change_file.write_text(json.dumps(change_from_push(event).to_dict()), encoding="utf-8")
+            arguments = ["--base", str(before_sha(event)), "--change", str(change_file), "--merged"]
         else:
             arguments = []
         return validate_main(["--root", str(root), *arguments, *flags])

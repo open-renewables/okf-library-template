@@ -72,20 +72,20 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 7: rehearsals and exit (`tooling/p2-exit`)
 
-- [ ] **NEEDS YOU (account):** three synthetic repositories in `open-renewables-sandbox` (OD-11)
-- [ ] 15. GitHub scratch library: each approval case live, dropped run, duplicate `uid`
-- [ ] 15. `git-local` scratch library: same cases from local commits and trailers; `poe release`
-- [ ] 15. W-12 rehearsal and `runbook-move-git-local-to-platform.md`; `runbook-leak-removal.md`; `runbook-instantiate-library.md` run sheet
-- [ ] V-06 carry to P4 recorded (OD-10 decided, PP-9); run sheet for the P4 timing written
-- [ ] 15. Check: golden line per case; commit identifiers and lines unchanged after W-12 and archives match; runbooks name only existing commands
-- [ ] 16. Full gate locally and in CI; `testing/` updated; P3 and P4 estimate proposed from actuals; `v0.2.0` tag message drafted
+- [x] **NEEDS YOU (account):** three synthetic repositories in `open-renewables-sandbox` (OD-11) (done 2026-11-09; the App is installed on all three)
+- [x] 15. GitHub scratch library: each approval case live, dropped run, duplicate `uid` (sandbox `p2-scratch-github`; the two cases that need a second account are fixtures, G35)
+- [x] 15. `git-local` scratch library: same cases from local commits and trailers; `poe release`
+- [x] 15. W-12 rehearsal and `runbook-move-git-local-to-platform.md`; `runbook-remove-leaked-content.md` (was named `runbook-leak-removal.md`; the promote runbook already linked the longer name); `runbook-instantiate-library.md` run sheet
+- [x] V-06 carry to P4 recorded (OD-10 decided, PP-9); run sheet for the P4 timing written (the timing table is in `runbook-instantiate-library.md`)
+- [x] 15. Check: golden line per case; commit identifiers and lines unchanged after W-12 and archives match; runbooks name only existing commands (`test_runbooks.py`)
+- [x] 16. Full gate locally and in CI; `testing/` updated; P3 and P4 estimate proposed from actuals; `v0.2.0` tag message drafted (below)
 - [ ] Sandbox repositories and Apps cleaned up or archived (OD-11)
 
 ## Exit
 
 - [ ] SPEC "Done when" items 1 to 11 met, evidence in the Outcomes table
 - [ ] **NEEDS YOU (person):** owner pushes annotated tag `v0.2.0` (alpha) on `main` (OD-9)
-- [ ] Proposed entries PP-1 to PP-9 decided and, where approved, applied
+- [ ] Proposed entries PP-1 to PP-11 decided and, where approved, applied
 - [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-11-p2-ci-governance/` and re-point relative links; the SRS status is not changed
 
 ## Outcomes
@@ -103,8 +103,8 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 9 to 11 | PR 5 built, uncommitted on `tooling/p2-instantiate`. `init_library.py` (`poe init`): answers file or questionnaire; rewrites profile (name, platform, maintainers, `revision_token: github-token`), project name and licence in `pyproject.toml` and `uv.lock` (the lock still passes `uv lock --locked`), `LICENSE` (Apache kept, MIT written, or a proprietary notice), `LICENSE-template`, `LICENSE-content`, README, CITATION.cff, `DECISIONS.md` DR-01, CODEOWNERS, the issue-chooser link; removes `CLAUDE.md`, `docs/`, `tests/template/` (and the coverage gate with it) and, for `git-local`, the platform files; indexes regenerated; rerun changes nothing; leftover template names are reported. `setup_repo.py` (`poe setup-repo`): merge methods, read-only workflow token, dependency alerts, labels from `labels.yml`, `main-protect` ruleset (App bypass, `validate` check once the workflow exists), secret scanning, `--dry-run`, `--check` (including the client-ID capital `I` from S1), `--promote`; compares with the live state first, so a rerun restores deletions; tested against an in-memory GitHub. W-10 self-test: both platforms, 17 checks, library tests pass without the template tests, `git-local` release with every platform call forbidden. `runbook-promote-to-public.md` written. Found by the tests: the root index carries the library title, so indexes must be rebuilt at instantiation. New gaps G23 to G26; live `setup_repo` run on the sandbox repositories still to do | [Test] | PP-10 |
 | 12 to 13 | PR 6 built, uncommitted on `tooling/p2-ci`; checks 12 and 13 wait for the sandbox rehearsal and the owner's setting. `ci_validate.py` (`poe ci-validate-event`): a pull request is validated with the base branch's tooling plus its labels (`approved-move`, `profile-migration`), the latest review of each reviewer with its commit, and agent markers from trailers and the description; a push to `main` is validated whole and compared with the commit before it with the change rules off (new `--merged` flag), so a removed revision line fails with `OKF315` (G4); a manual run is a plain validation. `report_issue.py` (`poe report-issue`) keeps one issue per label. `validate.yml`: jobs `validate` (the required check), `check` (3.11 and 3.14), `scan` (`scan.py` and pinned gitleaks), `audit` (when `uv.lock` changes), `report` (opens or closes the `validation-failure` issue). `template-tests.yml`: tests on three systems and two Pythons, hooks on three systems, licences, the speed job, `check-config`. 604 concepts validate in 1.5 s here (limit 10 s). `setup_repo.py --ruleset-name main` converges the template's existing ruleset. Tests prove: FR1.5, FR2.5, FR2.6 through the CI entry point, pinned SHAs, least privilege, tasks only. All four workflows pass `check-config` (it caught two YAML errors). New gaps G27 to G29 | [Test] | none |
 | 14 | `revision.yml`: a `mode` job reads `rules.revision_token`; `revision-app` (contents read, App token) or `revision-token` (contents write) records, then pushes with three rebase retries; checkout does not persist credentials (S1 finding); runs skip `Revision-Bot: true` commits; one run at a time. `stale-report.yml`: weekly, stale concepts, `--check-since` against the latest tag, pip-audit appended, one issue labelled `stale`. `runbook-revision-writer-recovery.md`. Live proof pending | [Test] | none |
-| 15 to 16 | | | |
-| Actual effort | agent h / owner h per PR | [Inf] | P3 and P4 re-estimate |
+| 15 to 16 | S2 live in the sandbox (details: shared notes `p2-s2-result.md`). `p2-scratch-github`: self-approved, approved by the App (non-owner), stale approval, `agent-drafted`, `full-review` (index shows `human-reviewed (self)`), a dropped run recovered by the next one (both lines written), a duplicate `uid` (the second PR conflicted; `renumber.py` gave ITM-0003); a deliberate mixed PR failed with `OKF001`; a failing commit on `main` opened one issue and the next green run closed it; `setup_repo.py` restored a deleted label and a merge setting. `p2-scratch-local` content: trailer cases correct, `poe release v0.0.1` ran; moved to `p2-w12-target`: HEAD and the annotated tag object unchanged, platform switched in one tooling PR, archive rebuilt in a fresh clone with both digests equal to the tag message, uploaded as a Release, earlier lines still `commit <sha7>`. Template: the App, `APP_CLIENT_ID` and `APP_PRIVATE_KEY` set; `revision` pushes through the App; `validate` is a required check on ruleset `main`. **Two defects found and fixed:** a revision commit failed `validate` with `OKF315` because the push path never passed the `Revision-Bot` flag, so every bot commit opened and closed a `validation-failure` issue (PR 7: `change_from_push` is now used, `ChangeContext.merged` replaces dropping the context); and the template's example concepts carried the template's history into libraries (PR #33, `reset_history`). Also: full Creative Commons texts vendored (G24 closed); runbooks for W-12, W-01 with the V-06 timing table and leak removal (not rehearsed, G33); `test_runbooks.py` checks every task, script, flag and runbook name they cite. New gaps G32 to G36 | [Test] | none |
+| Actual effort | Agent hours per PR, from session length (not measured): PR 1 about 6, PR 2 about 9, PR 3 about 5, PR 4 about 6, PR 5 about 9, PR 6 about 10, PR 7 about 9 (with fixes #33); about 54 in total against 53 to 83 planned. Owner hours: about 8 (App and sandbox set-up, 7 merges, answers), against 14 to 20 planned. Calendar: 2026-11-03 to 2026-11-09, 7 days against 7 to 12 | [Inf] | P3 and P4 re-estimate below |
 
 ### Status of proposed entries
 
@@ -120,3 +120,44 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | PP-8 | Proposed (OD-3 decided) | |
 | PP-9 | Proposed (OD-10 decided) | |
 | PP-10 | Proposed (raised in step 9) | |
+| PP-11 | Proposed (raised in step 15: `licences/`, G24) | |
+
+## P3 and P4 estimate, proposed from P2 actuals [Inf]
+
+P2 landed at the low end of its range (about 54 agent hours against 53 to 83; owner about 8 against 14 to 20), because the platform behaviour had been settled in S1 and the owner's steps were few and well guided. Two things cost more than planned: the first live runs found two defects that the unit tests could not (the `OKF315` push path, the example history), and every owner step needed a guided run sheet. Proposal, for the owner to decide (an SDD §14 edit, so a proposed entry, not applied):
+
+| Phase | SDD §14 | Proposed | Why |
+| --- | --- | --- | --- |
+| P3 Site, release, skills | 5 to 7 days | 5 to 7 days, owner about 2 hours | `site.yml` and `release.yml` repeat the pattern of P2 (workflow, task, static check, sandbox run); the skills and the site generator are new; leak-removal rehearsal (G33) and the first scheduled `stale-report.yml` run are added |
+| P4 Pilot and hardening | 5 to 8 days | 5 to 8 days, owner about 6 hours | Unchanged. Adds: V-06 timing by a second person with `runbook-instantiate-library.md`, the primary-type rename (G23), a second sandbox account for the two approval cases that are fixtures (G35), W-12 with several tags (G32) |
+
+Risks to the estimate: the Zensical and MkDocs decision (ADR-001) and the skills' behaviour on a second runtime have no spike behind them; GitHub dropped events twice in the sandbox (G34), which can cost an hour each time in a live rehearsal.
+
+## Draft: message of the annotated tag `v0.2.0`
+
+The owner pushes the tag after the exit checks: `git tag -a v0.2.0 -F <file with this text> <commit on main>` then `git push origin v0.2.0`.
+
+```text
+OKF library template v0.2.0 (alpha)
+
+Build phase P2: CI and governance.
+
+- Platform adapters (github, git-local) and the revision writer with catch-up,
+  approval inference, trust tiers and the optional verified field.
+- Stale report, release archive (reproducible, tar digest canonical) and the
+  release command for git-local libraries.
+- init_library and setup_repo, the instantiation self-test for both platforms,
+  full Creative Commons legal texts, and a clean revision history for each
+  new library.
+- Workflows: validate (required check), template-tests, revision, stale-report;
+  scans, licence and vulnerability checks, speed gate.
+- Runbooks: create the template repository, promote to public, move a
+  git-local library to a platform, instantiate a library, recover the revision
+  history, remove leaked content.
+
+Verified live in the sandbox: each approval case that one owner and an App can
+produce, a dropped run recovered, a duplicate uid, W-12 with archives rebuilt
+from the tag. Known gaps: docs/development/testing/known-gaps.md (G1 to G36).
+Not yet: site build, release workflow, skills (P3); pilot library and timing
+by a second person (P4).
+```
