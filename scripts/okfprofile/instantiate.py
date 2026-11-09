@@ -40,7 +40,8 @@ CONTENT_URLS = {
     "CC-BY-SA-4.0": "https://creativecommons.org/licenses/by-sa/4.0/legalcode",
     "CC0-1.0": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
 }
-TEMPLATE_ONLY = ("CLAUDE.md", "docs")
+LICENCE_FOLDER = "licences"
+TEMPLATE_ONLY = ("CLAUDE.md", "docs", LICENCE_FOLDER)
 TEMPLATE_TESTS = ("tests/template", ".github/workflows/template-tests.yml")
 PLATFORM_ONLY = (
     ".github/ISSUE_TEMPLATE",
@@ -250,6 +251,26 @@ def rewrite_lock(text: str, a: Answers) -> str:
     return re.sub(rf'^name = "{re.escape(TEMPLATE_NAME)}"$', f'name = "{a.name}"', text, count=1, flags=re.MULTILINE)
 
 
+SEPARATOR = "=" * 71
+
+
+def _legal_code(root: Path, licence: str) -> str:
+    """The legal code of a content licence: from the template's folder, or kept from an earlier run.
+
+    ``licences/`` is removed after the first run, so a rerun keeps the code already in ``LICENSE-content`` when it is
+    for the same licence.
+    """
+    source = root / LICENCE_FOLDER / f"{licence}.txt"
+    if source.is_file():
+        return _read(source)
+    existing = root / "LICENSE-content"
+    if existing.is_file():
+        head, found, body = _read(existing).partition(f"\n{SEPARATOR}\n\n")
+        if found and f"licensed under {licence}." in head:
+            return body
+    return ""
+
+
 def code_licence_text(a: Answers, apache: str) -> str:
     """The text of ``LICENSE``: the Apache 2.0 text, the MIT text, or a proprietary notice."""
     if a.code_licence == "Apache-2.0":
@@ -264,15 +285,16 @@ def code_licence_text(a: Answers, apache: str) -> str:
     )
 
 
-def content_licence_text(a: Answers) -> str:
-    """The text of ``LICENSE-content``: a notice that names the licence and where to read it."""
+def content_licence_text(a: Answers, legal_code: str = "") -> str:
+    """The text of ``LICENSE-content``: a notice that names the licence, then its full legal code when known."""
     if a.content_licence == "proprietary":
         return f"Copyright (c) {a.year} {a.holder}. All rights reserved.\n\nThe knowledge bundle is proprietary.\n"
-    return (
+    notice = (
         f"Copyright (c) {a.year} {a.holder}\n\n"
         f"The knowledge bundle (the files under knowledge/) is licensed under {a.content_licence}.\n"
         f"Read the licence at {CONTENT_URLS[a.content_licence]}\n"
     )
+    return f"{notice}\n{SEPARATOR}\n\n{legal_code}" if legal_code else notice
 
 
 def readme_text(a: Answers) -> str:
@@ -398,7 +420,7 @@ def _rewrite_files(root: Path, a: Answers, result: Result, profile_text: str, te
         _update(root, "LICENSE-template", apache, result)
     elif template_licence.exists():
         _remove(root, "LICENSE-template", result)
-    _update(root, "LICENSE-content", content_licence_text(a), result)
+    _update(root, "LICENSE-content", content_licence_text(a, _legal_code(root, a.content_licence)), result)
     _update(root, "README.md", readme_text(a), result)
     _update(root, "CITATION.cff", citation_text(a), result)
     _update(root, "DECISIONS.md", decisions_text(a, template_version), result)

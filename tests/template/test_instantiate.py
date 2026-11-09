@@ -166,6 +166,8 @@ def test_licence_files_follow_the_choices(template: Path) -> None:
     assert not (template / "LICENSE-template").exists()
     content = (template / "LICENSE-content").read_text(encoding="utf-8")
     assert "CC-BY-4.0" in content and "creativecommons.org/licenses/by/4.0" in content
+    assert "Attribution 4.0 International" in content and "Section 1 -- Definitions." in content
+    assert not (template / "licences").exists()
     run(template, code_licence="MIT", licence_holder="Example Org")
     mit = (template / "LICENSE").read_text(encoding="utf-8")
     assert mit.startswith("MIT License\n\nCopyright (c) 2026 Example Org")
@@ -173,10 +175,12 @@ def test_licence_files_follow_the_choices(template: Path) -> None:
     run(template, code_licence="proprietary", content_licence="proprietary")
     assert "All rights reserved" in (template / "LICENSE").read_text(encoding="utf-8")
     assert "proprietary" in (template / "LICENSE-content").read_text(encoding="utf-8")
+    shutil.copytree(ROOT / "licences", template / "licences")  # a rerun with a new choice needs the folder back
     run(template, code_licence="Apache-2.0", content_licence="CC0-1.0")
     assert (template / "LICENSE").read_text(encoding="utf-8") == apache
     assert not (template / "LICENSE-template").exists()
-    assert "CC0-1.0" in (template / "LICENSE-content").read_text(encoding="utf-8")
+    cc0 = (template / "LICENSE-content").read_text(encoding="utf-8")
+    assert "CC0-1.0" in cc0 and "CC0 1.0 Universal" in cc0
 
 
 def test_the_readme_citation_and_decision_record_name_the_library(template: Path) -> None:

@@ -48,7 +48,7 @@ def validate_bundle(profile: Profile, base: BaseState | None = None, change: Cha
     """
     report = Report()
     owners = load_codeowners(profile.root)
-    if change is not None:
+    if change is not None and not change.merged:
         report.extend(check_change_rules(profile, change, owners))
     if not profile.bundle_root.is_dir():
         return report
@@ -68,7 +68,7 @@ def validate_bundle(profile: Profile, base: BaseState | None = None, change: Cha
     report.extend(check_identifiers(profile, concepts, load_registry(profile.root), base, approved_move))
     report.extend(check_citations(profile, concepts))
     report.extend(check_history_appends(profile, concepts, base.concepts if base else None, change))
-    if change is not None:
+    if change is not None and not change.merged:
         report.extend(publishing_precheck(profile, concepts, change, owners))
     report.extend(check_profile_warnings(profile, concepts, change))
     return report

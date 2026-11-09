@@ -123,8 +123,8 @@ def _context(
         change = ChangeContext.from_file(Path(args.change))
     elif args.base or args.label:
         change = ChangeContext(paths=paths)
-    if args.merged and not args.change:
-        change = None
+    if args.merged and change is not None:
+        change.merged = True
     if change is not None:
         change.labels |= set(args.label)
         if not change.paths:
