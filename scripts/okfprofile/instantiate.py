@@ -21,6 +21,7 @@ from okfprofile.config import load_profile
 from okfprofile.document import parse_yaml
 from okfprofile.indexes import expected_indexes
 from okfprofile.registry import Registry, load_registry, save_registry
+from okfprofile.revision_writer import reset_history
 
 PLATFORMS = ("github", "git-local")
 CODE_LICENCES = ("Apache-2.0", "MIT", "proprietary")
@@ -443,6 +444,7 @@ def instantiate(root: Path, a: Answers) -> Result:
             _remove(root, relative, result)
     if not a.keep_examples:
         _drop_examples(root, result)
+    result.changed.extend(reset_history(load_profile(root), root))
     _regenerate_indexes(root, result)
     return result
 

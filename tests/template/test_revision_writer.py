@@ -23,9 +23,11 @@ from okfprofile.revision_writer import (
     build_line,
     catch_up,
     check_since,
+    clear_history,
     commit_revision,
     infer_approval,
     insert_line,
+    reset_history,
     set_verified,
     verified_entries,
 )
@@ -430,3 +432,26 @@ def test_the_github_adapter_needs_a_token_and_a_repository(library: Path, monkey
 )
 def test_repository_from_remote(url: str, repo: str | None) -> None:
     assert repository_from_remote(url) == repo
+
+
+def test_clearing_the_history_keeps_the_heading_and_the_comment() -> None:
+    text = (
+        "---\ntype: Item\n---\n\n# T\n\n## Revision history\n\n<!-- Maintained by CI. Do not edit. -->\n\n"
+        "- 2026-11-01 · author @a · self-approved (owner) · PR #1\n- 2026-11-02 · author @b · PR #2\n\n[^1]: Source.\n"
+    )
+    cleared = clear_history(text, "Revision history")
+    assert "PR #" not in cleared
+    assert "## Revision history" in cleared
+    assert "Maintained by CI" in cleared
+    assert "[^1]: Source." in cleared
+    assert clear_history(cleared, "Revision history") == cleared
+
+
+def test_resetting_a_library_clears_every_concept_and_reports_the_files(library: Path) -> None:
+    profile = load_profile(library)
+    concept_file = library / "knowledge" / "example-group" / "example-category" / "example-item.md"
+    text = concept_file.read_text(encoding="utf-8")
+    concept_file.write_text(insert_line(text, "Revision history", "2026-11-01 · author @a · PR #1"), encoding="utf-8")
+    assert reset_history(profile, library) == ["knowledge/example-group/example-category/example-item.md"]
+    assert history_lines(profile, parse_concept(concept_file.read_text(encoding="utf-8"))) == []
+    assert reset_history(profile, library) == []

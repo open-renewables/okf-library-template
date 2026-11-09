@@ -404,3 +404,48 @@ def commit_revision(root: Path, paths: list[str]) -> bool:
         return False
     git(root, "commit", "-q", "-m", COMMIT_MESSAGE)
     return True
+
+
+def clear_history(text: str, heading: str) -> str:
+    """Remove every revision line of the managed section, keeping the heading and the CI comment.
+
+    Args:
+        text: The concept file.
+        heading: Heading of the managed section.
+
+    Returns:
+        The new text; unchanged if the section holds no lines.
+    """
+    section = parse_concept(text).section(heading)
+    if section is None or not section.items:
+        return text
+    drop = {item.line for item in section.items}
+    rows = text.split("\n")
+    return "\n".join(row for number, row in enumerate(rows, start=1) if number not in drop)
+
+
+def reset_history(profile: Profile, root: Path) -> list[str]:
+    """Clear the revision history of every concept in the bundle.
+
+    A library created from the template starts its own history: the example concepts must not carry the template's
+    lines, which name the template's authors and pull requests.
+
+    Args:
+        profile: The loaded profile.
+        root: Repository root.
+
+    Returns:
+        The repository-relative files that changed.
+    """
+    changed: list[str] = []
+    for path in sorted(profile.bundle_root.rglob("*.md")):
+        relative = path.relative_to(root).as_posix()
+        found = _eligible(profile, root, relative)
+        if found is None:
+            continue
+        text, heading = found
+        new = clear_history(text, heading)
+        if new != text:
+            path.write_bytes(new.encode("utf-8"))
+            changed.append(relative)
+    return changed

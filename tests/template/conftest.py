@@ -9,6 +9,7 @@ from okfprofile.bundle import load_bundle
 from okfprofile.config import Profile, load_profile
 from okfprofile.indexes import write_indexes
 from okfprofile.registry import Registry, RegistryEntry, save_registry
+from okfprofile.revision_writer import reset_history
 from support import DEFAULT_REGISTRY, DEFAULT_VOCABS, ROOT, MakeRepo, git
 
 
@@ -64,6 +65,8 @@ def library(tmp_path: Path) -> Path:
         "  bob:\n    emails: [bob@example.org]\n    role: contributor\n",
     )
     (root / "profile" / "profile.yaml").write_text(text, encoding="utf-8", newline="\n")
+    reset_history(load_profile(root), root)  # the template's own bot commits have written lines into the examples
+    write_indexes(load_profile(root), load_bundle(root / "knowledge", root))
     (root / ".github").mkdir()
     (root / ".github" / "CODEOWNERS").write_text("/knowledge/ @alice\n", encoding="utf-8", newline="\n")
     git(root, "init", "-q", "-b", "main")
