@@ -85,7 +85,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 - [ ] SPEC "Done when" items 1 to 11 met, evidence in the Outcomes table
 - [ ] **NEEDS YOU (person):** owner pushes annotated tag `v0.2.0` (alpha) on `main` (OD-9)
-- [ ] Proposed entries PP-1 to PP-11 decided and, where approved, applied
+- [x] Proposed entries PP-1 to PP-11 decided and, where approved, applied (2026-11-09)
 - [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-11-p2-ci-governance/` and re-point relative links; the SRS status is not changed
 
 ## Outcomes
@@ -110,17 +110,17 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 
 | # | Status | Evidence |
 | --- | --- | --- |
-| PP-1 | Proposed | |
+| PP-1 | Approved 2026-11-03; applied 2026-11-09 with the P2 actuals | SDD §1 and §14; DDR change-log row 2026-11-09 |
 | PP-2 | Decided 2026-11-03: fill, no ADR | Applied in PR 1: `constraints.md` table; DDR change-log row |
 | PP-3 | Approved 2026-11-03 | Applied in PR 2: `OKF901` in `codes.py` and the catalogue |
 | PP-4 | Approved 2026-11-03 | Applied in PR 1: SDD §6 and C-04 wording; DDR change-log row |
-| PP-5 | Proposed | |
-| PP-6 | Conditional (step 1) | |
-| PP-7 | Conditional (step 12) | |
-| PP-8 | Proposed (OD-3 decided) | |
-| PP-9 | Proposed (OD-10 decided) | |
-| PP-10 | Proposed (raised in step 9) | |
-| PP-11 | Proposed (raised in step 15: `licences/`, G24) | |
+| PP-5 | Approved 2026-11-03; applied 2026-11-09 | SDD §14 P2 and P3 rows |
+| PP-6 | Not needed: S1 confirmed AD-11, AD-12, W-05 and SDD §11 | `p2-s1-result.md`; closed 2026-11-09 |
+| PP-7 | Not needed: 604 concepts validate in 1.5 s and the CI speed job passed | Closed 2026-11-09 |
+| PP-8 | Approved 2026-11-03; applied 2026-11-09 | SDD C-05 |
+| PP-9 | Approved 2026-11-03; applied 2026-11-09 | SDD §14 and §15 V-06 |
+| PP-10 | Approved and applied 2026-11-09 | SDD §6 template-only paragraph and W-01 step 3 |
+| PP-11 | Approved and applied 2026-11-09 | SDD §6 layout tree and template-only paragraph, W-01 step 3 |
 
 ## P3 and P4 estimate, proposed from P2 actuals [Inf]
 
