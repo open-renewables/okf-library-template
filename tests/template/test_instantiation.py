@@ -24,6 +24,7 @@ from okfprofile.instantiate import leftover_markers
 from okfprofile.release import tag_digest
 from okfprofile.release_cli import release_main
 from okfprofile.revision_cli import write_revision_main
+from okfprofile.skills_cli import check_skills_main
 from support import ROOT, git
 from test_instantiate import copy_template
 
@@ -93,6 +94,13 @@ def test_the_library_validates_and_its_indexes_are_current(instantiated: tuple[s
     _platform, root = instantiated
     assert validate_main(["--root", str(root)]) == 0
     assert build_indexes_main(["--root", str(root), "--check"]) == 0
+
+
+def test_the_librarys_skills_and_entry_point_pass_the_skill_checks(instantiated: tuple[str, Path]) -> None:
+    _platform, root = instantiated
+    assert (root / ".agents" / "skills" / "use-bundle" / "SKILL.md").is_file()
+    assert check_skills_main(["--root", str(root)]) == 0
+    assert "docs/development" not in (root / "AGENTS.md").read_text(encoding="utf-8")
 
 
 def test_the_lock_still_matches_the_renamed_project(instantiated: tuple[str, Path]) -> None:
