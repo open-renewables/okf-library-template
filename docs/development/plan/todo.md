@@ -12,12 +12,12 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 ## PR 1: skills and `AGENTS.md` (`tooling/p3-skills`)
 
 - [x] PP-5 approved 2026-11-11 (text shown when written)
-- [ ] 1. `scripts/check_skills.py`, `poe check-skills` in `poe check`; `use-bundle` skill
-- [ ] 1. Check: passes on the real skill and fails on four planted faults; archive lists the skill; no provider file
-- [ ] 2. `author-concept` skill; `scripts/link_skills.py`, `poe link-skills`; `../testing/skill-evals.md`
-- [ ] 2. Check: every command in both skills exists; scratch library follows the author sequence and validates; adapter idempotent, refuses a foreign folder, `git status` clean
-- [ ] 3. `AGENTS.md` library-facing below the template-only markers
-- [ ] 3. Check: instantiated `AGENTS.md` has no template text or placeholder; its commands exist; `CLAUDE.md` still loads it
+- [x] 1. `scripts/check_skills.py`, `poe check-skills` in `poe check`; `use-bundle` skill
+- [x] 1. Check: passes on the real skill and fails on four planted faults; archive lists the skill; no provider file
+- [x] 2. `author-concept` skill; `scripts/link_skills.py`, `poe link-skills`; `../testing/skill-evals.md`
+- [x] 2. Check: every command in both skills exists; scratch library follows the author sequence and validates; adapter idempotent, refuses a foreign folder, `git status` clean
+- [x] 3. `AGENTS.md` library-facing below the template-only markers
+- [x] 3. Check: instantiated `AGENTS.md` has no template text or placeholder; its commands exist; `CLAUDE.md` still loads it
 - [ ] PR 1 closed: agent h ___, owner h ___
 
 ## PR 2: site (`tooling/p3-site`)
@@ -89,7 +89,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | PP-2 | Approved 2026-11-11 as drafted; applied when its step lands | |
 | PP-3 | Approved 2026-11-11 as drafted; applied when its step lands | |
 | PP-4 | Approved 2026-11-11 as drafted; applied when its step lands | |
-| PP-5 | Approved 2026-11-11 as drafted; applied when its step lands | |
+| PP-5 | Approved 2026-11-11 as drafted; applied in PR 1 | SDD §6, C-04, C-08; DDR change-log row 2026-11-12 |
 | PP-6 | Approved 2026-11-11 as drafted; applied when its step lands | |
 | PP-7 to PP-11 | Conditional: open until the step that could trigger them closes | |
 

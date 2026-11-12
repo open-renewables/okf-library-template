@@ -191,6 +191,8 @@ okf-library-template/
 │   ├── stale_report.py
 │   ├── build_bundle.py
 │   ├── scan.py                  # confidentiality and pattern scanner; rules in profile/scan.yaml
+│   ├── check_skills.py          # static checks of .agents/skills and AGENTS.md (C-08)
+│   ├── link_skills.py           # optional provider adapter for the skills, run in the user's checkout (ADR-002)
 │   ├── release.py               # release gate, bundle and annotated tag (W-07)
 │   ├── init_library.py
 │   └── setup_repo.py            # platform: github only
@@ -281,6 +283,8 @@ Each script is a thin entry point over C-03, runs with `uv run scripts/<name>.py
 | `stale_report.py` | List concepts past their staleness date | W-06 |
 | `build_bundle.py` | Build the release archive and its checksum and manifest (I-12) | W-07 |
 | `scan.py` | Scan changed or all files for confidentiality markers and the patterns in `profile/scan.yaml`; gitleaks is run alongside where installed (section 10) | pre-commit, W-04 |
+| `check_skills.py` | Check each `.agents/skills/<name>/SKILL.md` against the Agent Skills format (the six frontmatter fields, name equal to folder, size, links) and that no skill or `AGENTS.md` names a concept type, `uid` prefix or tag namespace the profile declares; own output and exit code, no `OKF` code | `poe check`, CI |
+| `link_skills.py` | Optional adapter (ADR-002): copy (or link) `.agents/skills/<name>` into a provider's folder, for Claude Code `.claude/skills/<name>`, in the user's own checkout; the copy carries a marker so a rerun replaces only what it made; the folder is git-ignored and never committed | Users, on demand (`poe link-skills`) |
 | `release.py` | Release gate (`write_revision --check-since`), full validation, `build_bundle`, then in `git-local` mode an annotated tag recording the SHA-256; in `github` mode it checks only and the tag push triggers `release.yml` | Maintainer, W-07 |
 | `init_library.py` | Personalise a new repository from the questionnaire (including `platform`), interactively or from an answers file (`--answers answers.yaml`, used by W-10); write licence files; remove template-only files | Library owner, once; W-10 |
 | `setup_repo.py` | `platform: github` only. Configure the GitHub repository: labels, squash-only merges, workflow permissions, ruleset and App checks when public (W-01); `--promote` performs W-11; `--dry-run` reports without changing anything | Library owner; rerunnable |
@@ -339,7 +343,7 @@ Two skills ship in `.agents/skills/`, a location read by several agent runtimes 
 - `author-concept`: drafts a concept of a declared type by running `new_concept.py`, filling the declared sections in the declared formats, citing sources as footnotes, and labelling its pull request `agent-drafted`. It needs a clone of the repository, because it runs `scripts/`.
 - `use-bundle`: navigates `index.md` files one level at a time, reads declared sections by heading, reports each concept's `uid`, status, trust tier (including the `(self)` qualifier) and the release tag, and never treats unverified concepts as reviewed. It is shipped in the release archive (I-12) and needs no script.
 
-`AGENTS.md` names them; no provider-specific folder is committed (ADR-002). Claude Code's own discovery is an optional adapter that the user creates in their checkout. Both read `profile.yaml` and the vocabulary concepts rather than hard-coding a library's structure. Frontmatter is limited to the six Agent Skills specification fields (I-14). Bundled scripts are Python and call C-04.
+`AGENTS.md` names them; no provider-specific folder is committed (ADR-002). Claude Code's own discovery is an optional adapter, `link_skills.py` (`poe link-skills`), that the user runs in their checkout; it copies the skills into the git-ignored `.claude/skills/`. Both read `profile.yaml` and the vocabulary concepts rather than hard-coding a library's structure. Frontmatter is limited to the six Agent Skills specification fields (I-14). Bundled scripts are Python and call C-04.
 
 ### C-09 Contribution intake
 

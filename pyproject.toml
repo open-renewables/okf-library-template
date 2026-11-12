@@ -40,16 +40,25 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py scripts/check_skills.py scripts/link_skills.py tests",
     "python scripts/validate_profile.py",
     "python scripts/build_indexes.py --check",
     "python scripts/export_requirements.py --check",
+    "python scripts/check_skills.py",
 ]
 default_item_type = "cmd"
 
 [tool.poe.tasks.export]
 help = "Write requirements/validate.txt and requirements/dev.txt, hash-locked, from uv.lock"
 cmd = "python scripts/export_requirements.py"
+
+[tool.poe.tasks.check-skills]
+help = "Check .agents/skills against the Agent Skills format and the profile (no concept type, prefix or tag named)"
+cmd = "python scripts/check_skills.py"
+
+[tool.poe.tasks.link-skills]
+help = "Optional adapter: copy .agents/skills into .claude/skills in your own checkout (git-ignored)"
+cmd = "python scripts/link_skills.py"
 
 [tool.poe.tasks.scan]
 help = "Scan files changed since HEAD for confidentiality markers and secret-shaped strings (add --all for every tracked file)"
