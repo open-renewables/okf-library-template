@@ -26,6 +26,14 @@ dev = [
     "ruff>=0.8",
 ]
 
+site-mkdocs = [
+    "mkdocs==1.6.1",
+    "mkdocs-material==9.7.7",
+]
+site-zensical = [
+    "zensical==0.1.1",
+]
+
 [tool.uv]
 package = false
 default-groups = ["validate", "dev"]
@@ -40,7 +48,7 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py scripts/check_skills.py scripts/link_skills.py tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py scripts/check_skills.py scripts/link_skills.py scripts/build_site.py scripts/check_site.py tests",
     "python scripts/validate_profile.py",
     "python scripts/build_indexes.py --check",
     "python scripts/export_requirements.py --check",
@@ -49,7 +57,7 @@ sequence = [
 default_item_type = "cmd"
 
 [tool.poe.tasks.export]
-help = "Write requirements/validate.txt and requirements/dev.txt, hash-locked, from uv.lock"
+help = "Write the hash-locked requirements/*.txt (validate, dev, site-mkdocs, site-zensical) from uv.lock"
 cmd = "python scripts/export_requirements.py"
 
 [tool.poe.tasks.check-skills]
@@ -59,6 +67,38 @@ cmd = "python scripts/check_skills.py"
 [tool.poe.tasks.link-skills]
 help = "Optional adapter: copy .agents/skills into .claude/skills in your own checkout (git-ignored)"
 cmd = "python scripts/link_skills.py"
+
+[tool.poe.tasks.docs]
+help = "Serve the site with live reload (MkDocs; needs the site-mkdocs group)"
+cmd = "python -m mkdocs serve"
+env = { NO_MKDOCS_2_WARNING = "true" }
+
+[tool.poe.tasks.docs-build]
+help = "Build the site with MkDocs, strict (blocking build) into site/"
+cmd = "python scripts/build_site.py mkdocs"
+
+[tool.poe.tasks.docs-zensical]
+help = "Build the site with Zensical (non-blocking build) into site-zensical/, then compare its pages with the MkDocs build"
+sequence = [
+    "python scripts/build_site.py zensical",
+    "python scripts/check_site.py --site site-zensical --against site",
+]
+default_item_type = "cmd"
+
+[tool.poe.tasks.docs-linkcheck]
+help = "Check the built site's links and fragments offline with lychee, if installed"
+cmd = "python scripts/check_site.py --site ${site} --linkcheck"
+args = [{ name = "site", options = ["--site"], default = "site" }]
+
+[tool.poe.tasks.docs-manifest]
+help = "Write release.json (tag and commit) into the built site (FR8.3)"
+cmd = "python scripts/check_site.py --site site --manifest ${tag} --commit ${commit}"
+args = [{ name = "tag", positional = true, required = true }, { name = "commit", positional = true, required = true }]
+
+[tool.poe.tasks.site-deploy-check]
+help = "Print true if a run on this tag publishes the site (stable v1.0.0 or later and library.site_url set), else false"
+cmd = "python scripts/check_site.py --deploy-ref ${ref}"
+args = [{ name = "ref", positional = true, required = true }]
 
 [tool.poe.tasks.scan]
 help = "Scan files changed since HEAD for confidentiality markers and secret-shaped strings (add --all for every tracked file)"

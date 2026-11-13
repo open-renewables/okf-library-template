@@ -246,6 +246,27 @@ def rewrite_pyproject(text: str, a: Answers, drop_coverage_gate: bool) -> str:
     return out
 
 
+def rewrite_mkdocs(text: str, a: Answers) -> str:
+    """Name the library's site and point its edit and issue links at the library's repository.
+
+    Without a repository (``git-local``, or none given) the repository-based settings are dropped, so a local site
+    shows no dead "Suggest an edit" or "Raise an issue" link.
+
+    Args:
+        text: The template's ``mkdocs.yml``.
+        a: The answers.
+
+    Returns:
+        The library's ``mkdocs.yml``, comments kept.
+    """
+    out = _sub_once(text, r"^site_name: .*$", f"site_name: {quote(a.title)}", "site_name")
+    if a.platform == "github" and a.repository:
+        return out.replace(TEMPLATE_REPOSITORY, a.repository)
+    out = re.sub(r"^(?:repo_url|edit_uri): .*\n", "", out, flags=re.MULTILINE)
+    out = re.sub(r"^ {4}- content\.action\.edit\n", "", out, flags=re.MULTILINE)
+    return re.sub(r"^ {2}social:\n(?: {4,}.*\n)+", "", out, flags=re.MULTILINE)
+
+
 def rewrite_lock(text: str, a: Answers) -> str:
     """Rename the project's own entry in ``uv.lock`` so the lock still matches ``pyproject.toml``."""
     return re.sub(rf'^name = "{re.escape(TEMPLATE_NAME)}"$', f'name = "{a.name}"', text, count=1, flags=re.MULTILINE)
@@ -413,6 +434,8 @@ def _rewrite_files(root: Path, a: Answers, result: Result, profile_text: str, te
     _update(root, "pyproject.toml", rewrite_pyproject(_read(root / "pyproject.toml"), a, not a.keep_tests), result)
     if (root / "uv.lock").is_file():
         _update(root, "uv.lock", rewrite_lock(_read(root / "uv.lock"), a), result)
+    if (root / "mkdocs.yml").is_file():
+        _update(root, "mkdocs.yml", rewrite_mkdocs(_read(root / "mkdocs.yml"), a), result)
     template_licence = root / "LICENSE-template"
     apache = _read(template_licence if template_licence.exists() else root / "LICENSE")
     _update(root, "LICENSE", code_licence_text(a, apache), result)

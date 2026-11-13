@@ -11,3 +11,4 @@ dist/
 .DS_Store
 /.claude/skills/
 /skills-lock.json
+site-zensical/

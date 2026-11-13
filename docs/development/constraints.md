@@ -73,6 +73,9 @@ Packages whose metadata is not an allowlisted SPDX identifier, resolved by readi
 | --- | --- | --- | --- | --- | --- |
 | ADR-007 | `colorama` | 0.4.6 | classifier "BSD License" | `BSD-3-Clause` | Licence text is the standard BSD-3-Clause |
 | ADR-007 | `nodeenv` | 1.11.1 | `License: BSD` | `BSD-3-Clause` | Three BSD conditions; endorsement clause worded differently from the SPDX text; accepted by the owner |
+| ADR-009 | `ghp-import` | 2.1.0 | `License: Apache Software License` | `Apache-2.0` | Licence text is Apache License 2.0 |
+| ADR-009 | `jinja2` | 3.1.6 | classifier "BSD License" | `BSD-3-Clause` | Licence text is the standard BSD-3-Clause |
+| ADR-009 | `mergedeep` | 1.3.4 | `License: UNKNOWN`; classifier "MIT License" | `MIT` | Licence text is the standard MIT licence |
 
 ### pip-audit exceptions
 
@@ -87,4 +90,4 @@ Filled at the start of P2 as the owner decided on 25 October 2026 (recorded in t
 | Tool | Version | Asset | SHA-256 | Used by |
 | --- | --- | --- | --- | --- |
 | gitleaks | v8.30.1 | `gitleaks_8.30.1_linux_x64.tar.gz` | `551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb` | CI secret scan on Linux; the pre-commit hook runs whichever gitleaks is installed |
-| lychee | lychee-v0.24.2 | — | — | Optional local link check of generated site output (P3); not used by CI before then |
+| lychee | lychee-v0.24.2 | `lychee-x86_64-unknown-linux-gnu.tar.gz` | `1f4e0ef7f6554a6ed33dd7ac144fb2e1bbed98598e7af973042fc5cd43951c9a` | CI offline link check of the generated site (`site.yml`, non-blocking Zensical job); optional locally |

@@ -24,6 +24,7 @@ from okfprofile.instantiate import leftover_markers
 from okfprofile.release import tag_digest
 from okfprofile.release_cli import release_main
 from okfprofile.revision_cli import write_revision_main
+from okfprofile.site import build, compare_pages, docs_dir, installed
 from okfprofile.skills_cli import check_skills_main
 from support import ROOT, git
 from test_instantiate import copy_template
@@ -181,3 +182,41 @@ def test_a_git_local_library_makes_a_release_without_calling_a_platform(
     assert digest == manifest["archive"]["tar_sha256"]
     assert hashlib.sha256(build_archive(load_profile(work), "v0.0.1", "v0.0.1").tar).hexdigest() == digest
     assert rebuild_problems(load_profile(work), manifest, "v0.0.1") == []
+
+
+def test_the_librarys_site_config_names_the_library_and_links_only_where_there_is_a_repository(
+    instantiated: tuple[str, Path],
+) -> None:
+    platform, root = instantiated
+    config = (root / "mkdocs.yml").read_text(encoding="utf-8")
+    title = "Sample library" if platform == "github" else "Local library"
+    assert f'site_name: "{title}"' in config
+    if platform == "github":
+        assert "repo_url: https://github.com/example-org/sample-library" in config
+        assert "https://github.com/example-org/sample-library/issues/new/choose" in config
+        assert "edit_uri: edit/main/knowledge/" in config
+    else:
+        for dead in ("repo_url", "edit_uri", "social", "content.action.edit", "issues/new"):
+            assert dead not in config, dead
+        assert "extra:" in config
+
+
+def test_the_librarys_site_builds_strict_from_the_bundle_in_place(
+    instantiated: tuple[str, Path], tmp_path: Path
+) -> None:
+    """W-10 step 4 (known gap G25). Skipped where the site group is not installed; CI installs it."""
+    if not installed("mkdocs"):
+        pytest.skip("mkdocs is not installed (uv sync --group site-mkdocs)")
+    _platform, root = instantiated
+    before = sorted(p.relative_to(root).as_posix() for p in (root / "knowledge").rglob("*"))
+    out = build(root, "mkdocs", tmp_path / "site")
+    assert compare_pages(docs_dir(root), out).ok
+    assert sorted(p.relative_to(root).as_posix() for p in (root / "knowledge").rglob("*")) == before
+
+
+def test_a_template_name_left_in_the_site_config_is_reported(instantiated: tuple[str, Path], tmp_path: Path) -> None:
+    _platform, root = instantiated
+    work = copy_of(root, tmp_path)
+    config = work / "mkdocs.yml"
+    config.write_text(config.read_text(encoding="utf-8") + "# see okf-library-template\n", encoding="utf-8")
+    assert leftover_markers(work) == ["mkdocs.yml: okf-library-template"]

@@ -50,6 +50,7 @@ class FakeGitHub:
             "rulesets": {},
             "codeql": {"state": "not-configured"},
             "pages": None,
+            "environment": None,
             "variables": {},
             "secrets": set(),
         }
@@ -126,6 +127,18 @@ class FakeGitHub:
                 msg = "HTTP 404"
                 raise NotFoundError(msg)
             return state["pages"]
+        if tail == "environments/github-pages":
+            state["environment"] = {"policies": []}
+            return None
+        if tail == "environments/github-pages/deployment-branch-policies":
+            if method == "POST":
+                assert body is not None
+                assert state["environment"] is not None, "the environment must exist before a policy is added"
+                state["environment"]["policies"].append(dict(body))
+            elif state["environment"] is None:
+                msg = "HTTP 404"
+                raise NotFoundError(msg)
+            return {"branch_policies": list(state["environment"]["policies"])}
         for kind in ("variables", "secrets"):
             if tail.startswith(f"actions/{kind}/"):
                 name = tail.rsplit("/", 1)[1]
@@ -291,12 +304,22 @@ def test_promote_reaches_the_end_state_of_w11(library: Path, capsys: pytest.Capt
     state = api.state
     assert state["codeql"]["state"] == "configured" and state["codeql"]["languages"] == ["actions", "python"]
     assert state["pages"] == {"build_type": "workflow"}
+    assert state["environment"]["policies"] == [{"name": "main", "type": "branch"}, {"name": "v*", "type": "tag"}]
     assert state["repo"]["security_and_analysis"]["secret_scanning_push_protection"] == {"status": "enabled"}
     assert "revision_token: github-app" in (library / "profile" / "profile.yaml").read_text(encoding="utf-8")
     assert "immutable releases" in capsys.readouterr().err
     api.calls.clear()
     assert run(library, api, "--promote", "--app-slug", "rev-bot") == 0
     assert {method for method, _ in api.calls} == {"GET"}
+
+
+def test_promote_adds_only_the_missing_tag_policy_to_an_environment_that_allows_main(library: Path) -> None:
+    api = FakeGitHub()
+    api.state["pages"] = {"build_type": "workflow"}
+    api.state["environment"] = {"policies": [{"name": "main", "type": "branch"}]}
+    assert run(library, api, "--promote", "--app-slug", "rev-bot") == 0
+    assert api.state["environment"]["policies"] == [{"name": "main", "type": "branch"}, {"name": "v*", "type": "tag"}]
+    assert ("PUT", f"repos/{REPO}/environments/github-pages") not in api.calls
 
 
 def test_promote_changes_the_profile_once(library: Path) -> None:

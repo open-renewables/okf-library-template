@@ -26,6 +26,8 @@ GITLEAKS_ARGS = ("git", "--pre-commit", "--redact", "--staged", "--verbose")
 EXPORTS = {
     "requirements/validate.txt": ("--only-group", "validate"),
     "requirements/dev.txt": ("--all-groups",),
+    "requirements/site-mkdocs.txt": ("--only-group", "site-mkdocs"),
+    "requirements/site-zensical.txt": ("--only-group", "site-zensical"),
 }
 EXPORT_BASE = ("--frozen", "--format", "requirements-txt", "--no-emit-project")
 
