@@ -6,9 +6,9 @@ coverage.xml
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-site/
+/site/
 dist/
 .DS_Store
 /.claude/skills/
 /skills-lock.json
-site-zensical/
+/site-zensical/
