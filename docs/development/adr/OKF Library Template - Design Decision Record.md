@@ -221,6 +221,7 @@ Tooling references TQ1–TQ15 (QA-52 to QA-65) are to the owner Q&A of 25 Octobe
 | 2026-11-12 | SDD | §6 layout; C-04 (rows for `check_skills.py` and `link_skills.py`); C-08 adapter sentence | Owner approved P3 plan entry PP-5 on 2026-11-11: the optional provider adapter that ADR-002 requires, and the static skill check, are listed. No decision changes | ADR-002 |
 | 2026-11-12 | SDD; `constraints.md` | W-01 step 3 (`mkdocs.yml` wording); `constraints.md` Pinned tool versions (lychee asset) | Owner approved P3 plan entries PP-2 and PP-6 on 2026-11-11: the lychee release asset and its SHA-256 are filled, and `init_library.py`'s handling of `mkdocs.yml` is stated (the `GOVERNANCE.md` part of PP-6 follows with that file). No decision changes | QA-74 |
 | 2026-11-13 | SDD; runbook | W-11 step 3; `runbook-promote-to-public.md` §4 | Owner approved P3 plan entry PP-12 on 2026-11-13, found in the S3a rehearsal: enabling Pages leaves the `github-pages` environment open to `main` only, so `setup_repo.py --promote` now also allows `v*` tags and W-11 says so. No decision changes | AD-13, AD-19 |
+| 2026-11-13 | SDD | W-01 step 3 (`GOVERNANCE.md` wording) | Owner approved P3 plan entry PP-6 on 2026-11-11; its `GOVERNANCE.md` part is applied with the file: `init_library.py` fills the maintainer and the security contact in `GOVERNANCE.md`. No decision changes | QA-47 |
 
 ## 4. Related documents
 

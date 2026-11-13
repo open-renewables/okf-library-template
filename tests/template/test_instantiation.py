@@ -64,6 +64,39 @@ def test_no_placeholder_remains(instantiated: tuple[str, Path]) -> None:
     assert leftover_markers(root) == []
 
 
+def test_governance_and_readme_have_no_template_text_or_unresolved_placeholder(
+    instantiated: tuple[str, Path],
+) -> None:
+    platform, root = instantiated
+    governance = (root / "GOVERNANCE.md").read_text(encoding="utf-8")
+    assert "{maintainer}" not in governance and "{contact}" not in governance
+    assert ("Sam Owner (@sample-owner)" if platform == "github" else "Lou Owner") in governance
+    assert ("sam@example.org" if platform == "github" else "lou@example.org") in governance
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    assert "{" not in readme and "okf-library-template" not in readme
+
+
+def test_the_issue_chooser_governance_link_resolves_in_the_library(instantiated: tuple[str, Path]) -> None:
+    platform, root = instantiated
+    config = root / ".github" / "ISSUE_TEMPLATE" / "config.yml"
+    if platform == "git-local":
+        assert not config.exists()
+        return
+    text = config.read_text(encoding="utf-8")
+    assert "https://github.com/example-org/sample-library/blob/main/GOVERNANCE.md" in text
+    assert (root / "GOVERNANCE.md").is_file()
+
+
+def test_the_licence_map_matches_the_licence_files_present(instantiated: tuple[str, Path]) -> None:
+    _platform, root = instantiated
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    present = {name for name in ("LICENSE", "LICENSE-content", "LICENSE-template", "NOTICE") if (root / name).exists()}
+    mentioned = {n for n in ("LICENSE-content", "LICENSE-template", "NOTICE") if f"`{n}`" in readme or n in readme}
+    assert {"LICENSE", "LICENSE-content", "NOTICE"} <= present
+    assert mentioned <= present
+    assert ("LICENSE-template" in present) == ("proprietary" in readme or "MIT" in readme)
+
+
 def test_the_answers_are_carried_into_the_files(instantiated: tuple[str, Path]) -> None:
     platform, root = instantiated
     answers = (ANSWERS / f"answers-{platform}.yaml").read_text(encoding="utf-8")
