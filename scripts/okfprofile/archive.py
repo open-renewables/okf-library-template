@@ -31,6 +31,7 @@ from okfprofile.gitutil import commit_info, read_blobs, tree_entries
 from okfprofile.history import history_lines
 from okfprofile.revision import concept_tier
 
+RELEASE_FILE = "RELEASE"
 ARCHIVE_FOLDERS = ("knowledge", "profile", ".agents/skills/use-bundle")
 ARCHIVE_FILES = ("AGENTS.md", "README.md", "CITATION.cff", "LICENSE", "LICENSE-content", "LICENSE-template", "NOTICE")
 SEMVER_TAG = re.compile(r"^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-[0-9A-Za-z][0-9A-Za-z.-]*)?$")
@@ -118,6 +119,16 @@ def select_members(root: Path, ref: str) -> list[Member]:
     return sorted(members, key=lambda m: m.path.encode("utf-8"))
 
 
+def release_file(library: str, tag: str, sha: str, stamp: int) -> Member:
+    """The release-identity file ``RELEASE``: the tag, commit and commit date an agent cites (FR7.2).
+
+    It is made from the commit's own data, never from the clock, so a rebuild from the tag is identical (ADR-004).
+    """
+    date = datetime.fromtimestamp(stamp, UTC).isoformat().replace("+00:00", "Z")
+    text = f"library: {library}\ntag: {tag}\ncommit: {sha}\ndate: {date}\n"
+    return Member(RELEASE_FILE, MODE_FILE, text.encode("utf-8"))
+
+
 def build_tar(top: str, members: list[Member], mtime: int) -> bytes:
     """A deterministic tar of ``members`` under the folder ``top``.
 
@@ -193,6 +204,7 @@ def build_archive(profile: Profile, tag: str, ref: str = "HEAD") -> Archive:
     if not members:
         msg = f"nothing to archive at {ref}"
         raise ArchiveError(msg)
+    members = sorted([*members, release_file(profile.library_name, tag, sha, stamp)], key=lambda m: m.path.encode())
     name = f"{profile.library_name}-{tag}"
     tar = build_tar(name, members, stamp)
     tar_gz = gzip_bytes(tar)

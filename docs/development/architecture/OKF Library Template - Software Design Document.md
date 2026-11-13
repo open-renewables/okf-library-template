@@ -351,7 +351,7 @@ Issue forms (I-10) for new concepts, corrections and feedback; a pull request te
 
 ### C-10 Release and delivery
 
-A release is cut by pushing a semver tag `vX.Y.Z` on `main`. `release.yml` first checks that every pull request merged since the previous tag has its revision line (`write_revision.py --check-since`), then validates the tagged tree, builds the bundle archive (I-12) and publishes a GitHub Release with the archive, checksum, manifest and generated notes. Immutable releases are enabled on the repository where the plan allows (V-07), so a cited tag and its assets cannot change. Agents clone at the tag or download the archive and verify the checksum. Downstream citations cite `uid` plus release tag (SRS FR1.3, Governance).
+A release is cut by pushing a semver tag `vX.Y.Z` on `main`. `release.yml` first checks that every pull request merged since the previous tag has its revision line (`write_revision.py --check-since`), then validates the tagged tree, builds the bundle archive (I-12), rebuilds it from the tag in a clean checkout to compare digests, and publishes a GitHub Release (as a draft, then published, and marked pre-release while the major version is 0) with the archive, checksum, manifest and generated notes; the jobs and their permissions are in W-07. Immutable releases are enabled on the repository where the plan allows (V-07), so a cited tag and its assets cannot change. Agents clone at the tag or download the archive and verify the checksum. Downstream citations cite `uid` plus release tag (SRS FR1.3, Governance).
 
 ## 8. Interfaces and data formats
 
@@ -594,7 +594,8 @@ Checklist: concept type and folder; sources cited; own words; whether an AI tool
 
 ### I-12 Release archive
 
-- `<library>-<tag>.tar.gz`: `knowledge/`, `profile/`, `.agents/skills/use-bundle/`, `AGENTS.md`, `README.md`, `CITATION.cff`, the licence files and `NOTICE`.
+- `<library>-<tag>.tar.gz`: `knowledge/`, `profile/`, `.agents/skills/use-bundle/`, `AGENTS.md`, `README.md`, `CITATION.cff` where the library has one (the template has none; `init_library` writes it), the licence files, `NOTICE` and `RELEASE`.
+- `RELEASE`: four lines, `library`, `tag`, `commit` and `date`, written at build time and not committed. The date is the commit's own timestamp, never the clock, so a rebuild from the tag is identical (ADR-004). It lets an agent that has only the archive cite `<uid>@<tag>` (FR7.2).
 - `<library>-<tag>.tar.gz.sha256`: checksum.
 - `<library>-<tag>.manifest.json`: tag, commit, profile version, OKF version and spec commit, template version, concept count by type, status and tier.
 
@@ -768,13 +769,13 @@ Concurrency group `revision` serialises runs. On a non-fast-forward push the job
 
 ### W-07 Release
 
-A maintainer pushes `vX.Y.Z`. `release.yml` runs `write_revision.py --check-since <previous tag>` and fails if any merged pull request lacks its revision line; then runs the full validation at the tag, runs `build_bundle.py`, and creates the release with `gh release create --generate-notes`, attaching the archive, checksum and manifest. In `git-local` mode the maintainer runs `uv run poe release vX.Y.Z`: the same gate and validation, `build_bundle.py` into `dist/`, and an annotated tag (optionally signed) whose message records the archive SHA-256; the archive is not committed (QA-60). Minor versions add or revise concepts; major versions change the profile in a breaking way, including any `profile-migration` pull request since the previous tag.
+A maintainer pushes `vX.Y.Z`. `release.yml` has four jobs, each with its own permissions, and only the last can write. `gate` runs `poe release-gate <tag>` (`release.py --from-tag`): `write_revision.py --check-since <previous tag>`, which fails if any merged pull request lacks its revision line (the previous tag is the latest one before the release itself), then the full validation at the tag. `build` runs `build_bundle.py` and checks the archive against its manifest and its `.sha256` file. `rebuild` rebuilds the archive from the tag in a second clean checkout and compares the tar digest with the manifest's (ADR-004); it runs on Linux only, so private libraries stay inside the free minutes. `publish` creates the Release as a draft with `gh release create --generate-notes`, attaches the archive, checksum and manifest, and only then publishes it, so an immutable Release is complete when it becomes final. A Release is marked pre-release while the major version is 0 or the tag has a pre-release suffix. In `git-local` mode the maintainer runs `uv run poe release vX.Y.Z`: the same gate and validation, `build_bundle.py` into `dist/`, and an annotated tag (optionally signed) whose message records the archive SHA-256; the archive is not committed (QA-60). Minor versions add or revise concepts; major versions change the profile in a breaking way, including any `profile-migration` pull request since the previous tag.
 
 ### W-08 Site build
 
 `site.yml` runs on pull requests touching `knowledge/`, `profile/` or `mkdocs.yml`, and on tags. Two jobs on separate runners, each calling the tasks in I-16:
 
-- `mkdocs`: `mkdocs build --strict`; blocking; uploads the site as a preview artifact.
+- `mkdocs`: `mkdocs build --strict`; blocking; uploads the site as a preview artifact. On a tag run it also writes `release.json` (tag and commit) into the site root, so the deployed site names the release it shows (FR8.3).
 - `zensical`: `zensical build`; `continue-on-error`; then lychee offline over the generated HTML with fragment checks, and a comparison of the generated page list with the bundle's concept list.
 
 From a public library's v1.0.0, the tag run deploys the blocking build to GitHub Pages. A private library keeps preview artifacts only, or publishes elsewhere at the owner's discretion.

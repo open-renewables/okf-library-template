@@ -45,10 +45,16 @@ class ReleaseResult:
     archive: Archive | None = None
 
 
-def previous_tag(profile: Profile, ref: str = "HEAD") -> str | None:
-    """The latest semantic-version tag reachable from ``ref``, or None before the first release."""
+def previous_tag(profile: Profile, ref: str = "HEAD", exclude: str | None = None) -> str | None:
+    """The latest semantic-version tag reachable from ``ref``, or None before the first release.
+
+    Args:
+        profile: The loaded profile.
+        ref: Where to look from.
+        exclude: A tag to skip: the release being cut, which on a tag run is itself reachable from HEAD.
+    """
     out = git(profile.root, "tag", "--merged", ref, "--list", "v*", "--sort=-v:refname")
-    return next((t for t in out.split() if SEMVER_TAG.match(t)), None)
+    return next((t for t in out.split() if SEMVER_TAG.match(t) and t != exclude), None)
 
 
 def tag_message(profile: Profile, tag: str, archive: Archive) -> str:
@@ -73,17 +79,28 @@ def tag_digest(root: Path, tag: str) -> str | None:
     return None
 
 
-def prepare(profile: Profile, tag: str) -> None:
+def prepare(profile: Profile, tag: str, from_tag: bool = False) -> None:
     """Refuse to release from a dirty tree or over an existing tag.
 
+    Args:
+        profile: The loaded profile.
+        tag: The release tag.
+        from_tag: The run is the tag run itself (``release.yml``): the tag must already exist and point at HEAD.
+
     Raises:
-        ReleaseError: If the tag is malformed, exists, or the working tree has uncommitted changes.
+        ReleaseError: If the tag is malformed, exists (or, with ``from_tag``, does not point at HEAD), or the
+            working tree has uncommitted changes.
     """
     try:
         check_tag(tag)
     except ArchiveError as exc:
         raise ReleaseError(str(exc)) from exc
-    if git(profile.root, "tag", "--list", tag).strip():
+    exists = bool(git(profile.root, "tag", "--list", tag).strip())
+    if from_tag:
+        if not exists or git(profile.root, "rev-list", "-n", "1", tag) != git(profile.root, "rev-parse", "HEAD"):
+            msg = f"tag {tag} does not exist or does not point at the commit checked out"
+            raise ReleaseError(msg)
+    elif exists:
         msg = f"tag {tag} already exists"
         raise ReleaseError(msg)
     if git(profile.root, "status", "--porcelain").strip():
@@ -103,7 +120,7 @@ def run_gate(profile: Profile, adapter: PlatformAdapter, tag: str, previous: str
     Returns:
         A result whose ``gaps`` lists each missing line.
     """
-    result = ReleaseResult(tag, previous or previous_tag(profile))
+    result = ReleaseResult(tag, previous or previous_tag(profile, exclude=tag))
     result.gaps = check_since(profile, adapter, result.previous)
     return result
 

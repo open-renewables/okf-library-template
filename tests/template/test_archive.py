@@ -5,6 +5,7 @@ import hashlib
 import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import tarfile
@@ -21,6 +22,7 @@ from okfprofile.archive import (
     check_tag,
     gzip_bytes,
     rebuild_problems,
+    release_file,
     select_members,
     verify_archive,
     write_archive,
@@ -164,7 +166,7 @@ def test_an_archive_is_built_from_the_tag_with_a_manifest(repo: Path, profile: P
     assert manifest["archive"]["name"] == "okf-library-template-v0.1.0.tar.gz"
     assert manifest["archive"]["tar_sha256"] == archive.tar_sha256
     assert {"python", "zlib", "tar_gz_sha256"} <= set(manifest["archive"])
-    assert manifest["files"] == len(select_members(repo, "HEAD"))
+    assert manifest["files"] == len(select_members(repo, "HEAD")) + 1  # the RELEASE file
     with tarfile.open(fileobj=io.BytesIO(archive.tar)) as tar:
         assert tar.getnames()[0].startswith("okf-library-template-v0.1.0/")
         assert {m.mtime for m in tar.getmembers()} == {int(datetime.fromisoformat(STAMP).timestamp())}
@@ -247,6 +249,85 @@ def test_an_empty_commit_has_nothing_to_archive(tmp_path: Path) -> None:
     git(root, "commit", "-q", "-m", "x", when=STAMP)
     with pytest.raises(ArchiveError, match="nothing to archive"):
         build_archive(load_profile(root), "v0.1.0")
+
+
+def test_the_archive_carries_a_release_file_naming_the_tag_the_commit_and_the_date(
+    repo: Path, profile: Profile
+) -> None:
+    git(repo, "tag", "v0.1.0")
+    archive = build_archive(profile, "v0.1.0", "v0.1.0")
+    with tarfile.open(fileobj=io.BytesIO(archive.tar)) as tar:
+        names = [m.name.split("/", 1)[1] for m in tar.getmembers()]
+        member = tar.getmember("okf-library-template-v0.1.0/RELEASE")
+        text = tar.extractfile(member).read().decode("utf-8")  # type: ignore[union-attr]  # a regular file
+    assert names == sorted(names, key=lambda n: n.encode())
+    assert "RELEASE" in names
+    assert member.mode == 0o644
+    sha = git(repo, "rev-parse", "HEAD")
+    assert text == f"library: okf-library-template\ntag: v0.1.0\ncommit: {sha}\ndate: 2026-11-01T10:00:00Z\n"
+
+
+def test_the_release_file_does_not_depend_on_the_clock(repo: Path, profile: Profile) -> None:
+    first = release_file("lib", "v1.0.0", "a" * 40, 1_700_000_000)
+    assert first == release_file("lib", "v1.0.0", "a" * 40, 1_700_000_000)
+    assert first.data == b"library: lib\ntag: v1.0.0\ncommit: " + b"a" * 40 + b"\ndate: 2023-11-14T22:13:20Z\n"
+
+
+def test_the_archive_has_use_bundle_but_not_author_concept_and_tolerates_a_missing_citation_file(
+    repo: Path, profile: Profile
+) -> None:
+    for skill in ("use-bundle", "author-concept"):
+        folder = repo / ".agents" / "skills" / skill
+        folder.mkdir(parents=True)
+        (folder / "SKILL.md").write_text(f"---\nname: {skill}\ndescription: x\n---\n", encoding="utf-8", newline="\n")
+    git(repo, "add", "-A")
+    git(repo, "commit", "-qm", "skills", when=STAMP)
+    paths = [m.path for m in select_members(repo, "HEAD")]
+    assert ".agents/skills/use-bundle/SKILL.md" in paths
+    assert not any("author-concept" in p for p in paths)
+    assert "CITATION.cff" not in paths  # the template has none; `init_library` writes one
+    assert build_archive(profile, "v0.1.0").manifest["files"] == len(paths) + 1
+
+
+def test_an_agent_with_file_tools_only_reaches_a_concept_and_reads_its_sections_from_the_archive(
+    repo: Path, profile: Profile, tmp_path: Path
+) -> None:
+    """AT-NFR1-01: unpack the archive and navigate it with plain file reads, no tooling from this repository."""
+    git(repo, "tag", "v0.1.0")
+    gz = write_archive(build_archive(profile, "v0.1.0", "v0.1.0"), tmp_path / "dist")[0]
+    with tarfile.open(gz) as tar:
+        tar.extractall(tmp_path / "unpacked", filter="data")
+    top = tmp_path / "unpacked" / "okf-library-template-v0.1.0"
+    release = dict(line.split(": ", 1) for line in (top / "RELEASE").read_text(encoding="utf-8").splitlines())
+    assert release["tag"] == "v0.1.0"  # the agent can cite `<uid>@<tag>` from the archive alone
+    here = top / "knowledge"
+    for _ in range(3):  # root index, group index, category index: one level at a time
+        links = re.findall(r"^- \[[^\]]+\]\(([^)]+/index\.md)\)", (here / "index.md").read_text(encoding="utf-8"), re.M)
+        if not links:
+            break
+        here = (here / links[0]).parent
+    concept_links = re.findall(r"^- \[[^\]]+\]\(([^)]+\.md)\)", (here / "index.md").read_text(encoding="utf-8"), re.M)
+    concept = (here / concept_links[0]).read_text(encoding="utf-8")
+    assert re.search(r"^uid: ITM-\d{4}$", concept, re.M)
+    assert re.search(r"^## Description$", concept, re.M)
+    assert (top / "AGENTS.md").is_file() and (top / "profile" / "profile.yaml").is_file()
+
+
+def test_the_command_line_checks_a_folder_of_archives_and_rebuilds_them_from_their_tags(
+    repo: Path, tmp_path: Path
+) -> None:
+    git(repo, "tag", "v0.1.0")
+    out = tmp_path / "dist"
+    assert build_bundle_main(["--root", str(repo), "--tag", "v0.1.0", "--out", str(out), "--ref", "v0.1.0"]) == 0
+    assert build_bundle_main(["--root", str(repo), "--verify-dir", str(out)]) == 0
+    assert build_bundle_main(["--root", str(repo), "--rebuild-dir", str(out)]) == 0
+    (out / "okf-library-template-v0.1.0.tar.gz.sha256").write_text("0" * 64 + "  x\n", encoding="utf-8")
+    assert build_bundle_main(["--root", str(repo), "--verify-dir", str(out)]) == 1
+    (repo / "README.md").write_text("after the tag\n", encoding="utf-8")
+    git(repo, "commit", "-qam", "later", when="2026-11-05T10:00:00+00:00")
+    git(repo, "tag", "-f", "v0.1.0")  # the tag now names other content than the manifest records
+    assert build_bundle_main(["--root", str(repo), "--rebuild-dir", str(out)]) == 1
+    assert build_bundle_main(["--root", str(repo), "--verify-dir", str(tmp_path / "empty")]) == 2
 
 
 def test_the_command_line_builds_verifies_and_rebuild_checks(

@@ -154,6 +154,50 @@ def test_a_github_release_only_checks(
     assert git(library, "tag", "--list") == ""
 
 
+def test_the_tag_run_gates_against_the_tag_before_it_and_not_against_itself(library: Path) -> None:
+    profile = load_profile(library)
+    git(library, "tag", "v0.0.1")
+    edit(library, "alice", "Edit one", "2026-11-01T10:00:00+00:00", tag="one")
+    git(library, "tag", "v0.1.0")
+    assert previous_tag(profile) == "v0.1.0"
+    assert previous_tag(profile, exclude="v0.1.0") == "v0.0.1"
+    result = run_gate(profile, GitLocalAdapter(profile), "v0.1.0")
+    assert result.previous == "v0.0.1"
+    assert [f.code for f in result.gaps] == ["OKF901"]
+
+
+def test_a_tag_run_needs_the_tag_to_exist_and_point_at_the_checked_out_commit(library: Path) -> None:
+    profile = load_profile(library)
+    with pytest.raises(ReleaseError, match="does not exist or does not point"):
+        prepare(profile, "v0.1.0", from_tag=True)
+    git(library, "tag", "v0.1.0")
+    prepare(profile, "v0.1.0", from_tag=True)
+    edit(library, "alice", "Edit one", "2026-11-01T10:00:00+00:00")
+    with pytest.raises(ReleaseError, match="does not exist or does not point"):
+        prepare(profile, "v0.1.0", from_tag=True)
+    with pytest.raises(ReleaseError, match="semantic-version"):
+        prepare(profile, "latest", from_tag=True)
+
+
+def test_a_deleted_revision_line_fails_the_tag_run_and_the_restored_line_passes(
+    library: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
+    """AT-FR7.4-01 on the command line the release workflow calls (`--from-tag`)."""
+    edit(library, "alice", "Edit one", "2026-11-01T10:00:00+00:00")
+    record(library)
+    git(library, "tag", "v0.0.1")
+    edit(library, "alice", "Edit two", "2026-11-02T10:00:00+00:00", tag="two")  # merged; its line is missing
+    git(library, "tag", "v0.0.2")
+    monkeypatch.setattr(release_cli, "make_adapter", lambda profile, _repo=None: GitLocalAdapter(profile))
+    args = ["v0.0.2", "--root", str(library), "--out", str(tmp_path / "dist"), "--from-tag"]
+    assert release_main(args) == 1
+    assert "OKF901" in capsys.readouterr().err
+    record(library)
+    git(library, "tag", "-d", "v0.0.2")
+    git(library, "tag", "v0.0.2")
+    assert release_main(args) == 0
+
+
 def test_the_command_line_reports_what_it_cannot_do(library: Path, tmp_path: Path) -> None:
     assert release_main(["latest", "--root", str(library)]) == 2
     (library / "README.md").write_text("dirty\n", encoding="utf-8")

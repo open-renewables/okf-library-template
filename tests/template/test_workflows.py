@@ -40,6 +40,7 @@ def pins() -> dict[str, str]:
 
 def test_the_expected_workflows_exist() -> None:
     assert [p.name for p in FILES] == [
+        "release.yml",
         "revision.yml",
         "site.yml",
         "stale-report.yml",
@@ -77,7 +78,7 @@ def test_a_job_that_pushes_is_the_only_one_with_write_access_to_contents() -> No
         for name, job in load(path)["jobs"].items()
         if job["permissions"].get("contents") == "write"
     }
-    assert writers == {("revision.yml", "revision-token")}
+    assert writers == {("revision.yml", "revision-token"), ("release.yml", "publish")}
 
 
 @pytest.mark.parametrize("path", FILES, ids=lambda p: p.name)
@@ -173,6 +174,46 @@ def test_the_site_workflow_blocks_on_mkdocs_only_and_publishes_pages_only_from_t
     for name in ("mkdocs", "zensical"):
         assert jobs[name]["permissions"] == {"contents": "read"}
     assert any("site-deploy-check" in block for block in run_blocks({"jobs": {"mkdocs": jobs["mkdocs"]}}))
+
+
+def test_the_release_workflow_runs_on_version_tags_and_only_publish_can_write() -> None:
+    workflow = load(WORKFLOWS / "release.yml")
+    assert workflow["on"]["push"]["tags"] == ["v[0-9]+.[0-9]+.[0-9]+*"]
+    assert set(workflow["on"]) == {"push"}
+    jobs = workflow["jobs"]
+    assert list(jobs) == ["gate", "build", "rebuild", "publish"]
+    assert jobs["publish"]["permissions"] == {"contents": "write"}
+    for name in ("gate", "build", "rebuild"):
+        assert jobs[name]["permissions"].get("contents") == "read", name
+    assert jobs["gate"]["permissions"] == {"contents": "read", "pull-requests": "read"}
+    assert jobs["build"]["needs"] == "gate"
+    assert jobs["rebuild"]["needs"] == "build"
+    assert jobs["publish"]["needs"] == ["build", "rebuild"]
+    assert workflow["concurrency"]["cancel-in-progress"] is False
+
+
+def test_the_release_gate_and_rebuild_call_the_tasks_that_check_the_archive() -> None:
+    jobs = load(WORKFLOWS / "release.yml")["jobs"]
+    gate = "\n".join(run_blocks({"jobs": {"gate": jobs["gate"]}}))
+    assert 'poe release-gate "${{ github.ref_name }}"' in gate
+    assert jobs["gate"]["steps"][0]["with"]["fetch-depth"] == 0  # the gate reads history back to the previous tag
+    build = "\n".join(run_blocks({"jobs": {"build": jobs["build"]}}))
+    assert 'poe bundle "${{ github.ref_name }}"' in build and "poe bundle-verify" in build
+    rebuild = jobs["rebuild"]
+    assert "poe bundle-rebuild" in "\n".join(run_blocks({"jobs": {"rebuild": rebuild}}))
+    downloads = [s for s in rebuild["steps"] if s.get("uses", "").startswith("actions/download-artifact@")]
+    assert downloads and downloads[0]["with"]["name"] == "release-files"
+
+
+def test_the_release_is_created_as_a_draft_then_published_and_v0_is_a_pre_release() -> None:
+    publish = load(WORKFLOWS / "release.yml")["jobs"]["publish"]
+    script = "\n".join(run_blocks({"jobs": {"publish": publish}}))
+    assert script.index("gh release create") < script.index("--draft=false")
+    create = next(line for line in script.splitlines() if "gh release create" in line)
+    for flag in ("--draft", "--generate-notes", "--verify-tag", "dist/*"):
+        assert flag in create, flag
+    assert "v0.*|*-*" in script and "--prerelease" in script
+    assert all("checkout" not in s.get("uses", "") for s in publish["steps"])  # nothing from the tag is executed here
 
 
 def test_the_lychee_pin_matches_constraints() -> None:
