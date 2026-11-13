@@ -21,6 +21,8 @@ LABELS_FILE = ".github/labels.yml"
 VALIDATE_WORKFLOW = ".github/workflows/validate.yml"
 PROFILE = "profile/profile.yaml"
 RULESET_NAME = "main-protect"
+PAGES_ENVIRONMENT = "github-pages"
+PAGES_REFS = (("main", "branch"), ("v*", "tag"))
 ADMIN_ROLE_ID = 5
 APP_CLIENT_VARIABLE = "APP_CLIENT_ID"
 APP_KEY_SECRET = "APP_PRIVATE_KEY"  # noqa: S105 - the name of a secret, not its value
@@ -301,6 +303,43 @@ def plan_public_extras(api: GitHubApi, repo: str, plan: Plan) -> None:
         plan.operations.append(
             Operation("pages", "enable, built by workflow", "POST", f"repos/{repo}/pages", {"build_type": "workflow"})
         )
+    _pages_environment(api, repo, plan)
+
+
+def _pages_environment(api: GitHubApi, repo: str, plan: Plan) -> None:
+    """Let the ``github-pages`` environment take a deployment from ``main`` and from a release tag (``site.yml``).
+
+    Enabling Pages leaves the environment open to the ``main`` branch only, so the tag run that publishes the
+    site would be refused before any step ran (seen in the P3 rehearsal).
+    """
+    base = f"repos/{repo}/environments/{PAGES_ENVIRONMENT}"
+    try:
+        found = api.request("GET", f"{base}/deployment-branch-policies") or {}
+        have = {(p["name"], p["type"]) for p in found.get("branch_policies", [])}
+    except NotFoundError:
+        have = set()
+    if not have:
+        policy = {"protected_branches": False, "custom_branch_policies": True}
+        plan.operations.append(
+            Operation(
+                "pages environment",
+                "limit deployments to listed refs",
+                "PUT",
+                base,
+                {"deployment_branch_policy": policy},
+            )
+        )
+    for name, kind in PAGES_REFS:
+        if (name, kind) not in have:
+            plan.operations.append(
+                Operation(
+                    "pages environment",
+                    f"allow {kind} {name}",
+                    "POST",
+                    f"{base}/deployment-branch-policies",
+                    {"name": name, "type": kind},
+                )
+            )
 
 
 def promote_profile(root: Path) -> bool:

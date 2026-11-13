@@ -180,6 +180,7 @@ PP-1 to PP-6 approved as drafted on 2026-11-11 (text shown for review when each 
 | PP-9 | Only if a Python-Markdown divergence (G2) makes a construct the profile allows render differently from GitHub | SDD I-01 authoring rule or the profile | RFC or ADR |
 | PP-10 | Only if S3b shows the draft-then-publish flow or `gh release create` conflicts with immutable releases | SDD W-07, C-10, AD-15 | ADR |
 | PP-11 | Only if a 600-concept site build exceeds 2 minutes per builder on the Linux runner (SDD §12 **[Inf]**) | SDD §12 row | ADR; the limit is not relaxed silently |
+| PP-12 | Fired by the S3a rehearsal (2026-11-13): enabling Pages leaves the `github-pages` environment open to `main` only, so the tag run of `site.yml` that publishes a site was refused. `setup_repo.py --promote` now allows `main` and the tag pattern `v*` (code and test done in PR 2) | SDD W-11 step 3 (one clause: "and lets the `github-pages` environment deploy from `main` and from `v*` tags") and `../operations/runbook-promote-to-public.md` §4 (same clause) | SDD edit with a DDR change-log row; **approved and applied 2026-11-13** |
 
 ## Risks
 

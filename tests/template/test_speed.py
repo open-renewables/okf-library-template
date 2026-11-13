@@ -17,6 +17,7 @@ from okfprofile.config import Profile, load_profile
 from okfprofile.indexes import write_indexes
 from okfprofile.registry import Registry, RegistryEntry, load_registry, save_registry
 from okfprofile.scaffold import concept_text
+from okfprofile.site import build, installed
 from support import ROOT
 
 LIMIT_SECONDS = 10.0
@@ -58,3 +59,23 @@ def test_six_hundred_concepts_validate_in_under_ten_seconds(tmp_path: Path, caps
         print(f"\nvalidate_profile: {FULL_SIZE + 4} concepts in {elapsed:.2f} s (limit {LIMIT_SECONDS:.0f} s)")
     assert status == 0
     assert elapsed < LIMIT_SECONDS
+
+
+@pytest.mark.skipif(os.environ.get("OKF_PERF") != "1", reason="timing runs only with OKF_PERF=1 (poe perf)")
+def test_site_build_time_for_six_hundred_concepts_is_recorded(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """SDD section 12: under 2 minutes per builder. Recorded, not gated (P3 plan OD-8); a breach is a proposed entry."""
+    root = tmp_path / "lib"
+    generate(root, FULL_SIZE)
+    shutil.copy2(ROOT / "mkdocs.yml", root / "mkdocs.yml")
+    for name in ("mkdocs", "zensical"):
+        if not installed(name):
+            continue
+        started = time.perf_counter()
+        build(root, name, tmp_path / f"out-{name}")
+        elapsed = time.perf_counter() - started
+        with capsys.disabled():
+            print(
+                f"\n{name}: {FULL_SIZE + 4} concepts built in {elapsed:.2f} s (SDD section 12 target 120 s, not gated)"
+            )

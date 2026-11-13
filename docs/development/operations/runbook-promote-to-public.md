@@ -39,7 +39,7 @@ uv run python scripts/setup_repo.py --promote --app-slug <app-slug> --dry-run
 uv run python scripts/setup_repo.py --promote --app-slug <app-slug>
 ```
 
-`--promote` sets what a private library does not have: the `main-protect` ruleset (pull request with one code-owner approval, the `validate` check once `validate.yml` exists, squash merges, repository admin bypass "for pull requests only", the App bypass "always"), native secret scanning with push protection, CodeQL default setup and GitHub Pages built by workflow. It also changes `rules.revision_token` to `github-app` in `profile/profile.yaml` in your working tree. It then prints one manual step: enable **immutable releases** in **Settings → General**.
+`--promote` sets what a private library does not have: the `main-protect` ruleset (pull request with one code-owner approval, the `validate` check once `validate.yml` exists, squash merges, repository admin bypass "for pull requests only", the App bypass "always"), native secret scanning with push protection, CodeQL default setup and GitHub Pages built by workflow, with the `github-pages` environment allowed to deploy from `main` and from `v*` tags (without that, the tag run that publishes the site is refused). It also changes `rules.revision_token` to `github-app` in `profile/profile.yaml` in your working tree. It then prints one manual step: enable **immutable releases** in **Settings → General**.
 
 Every call names the repository, and the run is safe to repeat.
 

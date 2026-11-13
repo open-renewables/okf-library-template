@@ -39,7 +39,13 @@ def pins() -> dict[str, str]:
 
 
 def test_the_expected_workflows_exist() -> None:
-    assert [p.name for p in FILES] == ["revision.yml", "stale-report.yml", "template-tests.yml", "validate.yml"]
+    assert [p.name for p in FILES] == [
+        "revision.yml",
+        "site.yml",
+        "stale-report.yml",
+        "template-tests.yml",
+        "validate.yml",
+    ]
 
 
 @pytest.mark.parametrize("path", FILES, ids=lambda p: p.name)
@@ -155,3 +161,25 @@ def test_the_template_only_workflow_is_removed_at_instantiation() -> None:
     from okfprofile.instantiate import TEMPLATE_TESTS
 
     assert ".github/workflows/template-tests.yml" in TEMPLATE_TESTS
+
+
+def test_the_site_workflow_blocks_on_mkdocs_only_and_publishes_pages_only_from_the_deploy_job() -> None:
+    jobs = load(WORKFLOWS / "site.yml")["jobs"]
+    assert set(jobs) == {"mkdocs", "zensical", "deploy"}
+    assert jobs["zensical"]["continue-on-error"] is True
+    assert "continue-on-error" not in jobs["mkdocs"]
+    assert jobs["deploy"]["needs"] == "mkdocs"
+    assert jobs["deploy"]["permissions"] == {"contents": "read", "pages": "write", "id-token": "write"}
+    for name in ("mkdocs", "zensical"):
+        assert jobs[name]["permissions"] == {"contents": "read"}
+    assert any("site-deploy-check" in block for block in run_blocks({"jobs": {"mkdocs": jobs["mkdocs"]}}))
+
+
+def test_the_lychee_pin_matches_constraints() -> None:
+    text = (ROOT / "docs" / "development" / "constraints.md").read_text(encoding="utf-8")
+    row = next(line for line in text.splitlines() if line.startswith("| lychee |"))
+    cells = [c.strip().strip("`") for c in row.strip("|").split("|")]
+    env = load(WORKFLOWS / "site.yml")["jobs"]["zensical"]["env"]
+    assert env["LYCHEE_VERSION"] == cells[1]
+    assert env["LYCHEE_SHA256"] == cells[3]
+    assert len(cells[3]) == 64

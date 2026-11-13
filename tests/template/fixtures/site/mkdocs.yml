@@ -1,0 +1,33 @@
+# Fixture for the FR8.2 compatibility tests: the template baseline with a synthetic name.
+site_name: Site fixture
+repo_url: https://github.com/example/site-fixture
+edit_uri: edit/main/knowledge/
+docs_dir: knowledge
+strict: true
+use_directory_urls: true
+validation:
+  links:
+    absolute_links: warn
+    anchors: warn
+theme:
+  name: material
+  features:
+    - navigation.indexes
+    - content.action.edit
+plugins:
+  - search
+  - tags
+markdown_extensions:
+  - footnotes
+  - attr_list
+  - toc:
+      permalink: true
+extra:
+  social:
+    - icon: material/message-alert-outline
+      link: https://github.com/example/site-fixture/issues/new/choose
+      name: Raise an issue
+  status:
+    draft: Draft
+    stable: Stable
+    deprecated: Deprecated
