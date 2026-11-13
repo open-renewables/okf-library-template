@@ -130,6 +130,19 @@ help = "Cut a release: revision-line gate, validation, archive and (git-local) a
 cmd = "python scripts/release.py ${tag}"
 args = [{ name = "tag", positional = true, help = "release tag, for example v0.2.0" }]
 
+[tool.poe.tasks.release-gate]
+help = "Release workflow: the tag is already pushed and checked out; revision-line gate against the tag before it, and validation"
+cmd = "python scripts/release.py ${tag} --from-tag"
+args = [{ name = "tag", positional = true, help = "release tag, for example v0.2.0" }]
+
+[tool.poe.tasks.bundle-verify]
+help = "Check every archive in dist/ against its manifest and its .sha256 file"
+cmd = "python scripts/build_bundle.py --verify-dir dist"
+
+[tool.poe.tasks.bundle-rebuild]
+help = "Rebuild each archive in dist/ from its tag in this checkout and compare the tar digest (a second, clean build)"
+cmd = "python scripts/build_bundle.py --rebuild-dir dist"
+
 [tool.poe.tasks.init]
 help = "Turn a copy of the template into a library: asks the questions of W-01 step 3, or reads --answers FILE"
 cmd = "python scripts/init_library.py"
