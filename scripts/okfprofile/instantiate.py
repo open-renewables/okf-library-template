@@ -341,6 +341,12 @@ def readme_text(a: Answers) -> str:
     )
 
 
+def governance_text(text: str, a: Answers) -> str:
+    """Fill the two placeholders of ``GOVERNANCE.md``: the maintainer and the contact for security reports."""
+    who = f"{a.maintainer_name or a.login} (@{a.login})" if a.platform == "github" else a.maintainer_name or a.login
+    return text.replace("{maintainer}", who).replace("{contact}", a.email)
+
+
 def citation_text(a: Answers) -> str:
     """The library's ``CITATION.cff``."""
     lines = [
@@ -447,6 +453,9 @@ def _rewrite_files(root: Path, a: Answers, result: Result, profile_text: str, te
     _update(root, "README.md", readme_text(a), result)
     _update(root, "CITATION.cff", citation_text(a), result)
     _update(root, "DECISIONS.md", decisions_text(a, template_version), result)
+    governance = root / "GOVERNANCE.md"
+    if governance.is_file():
+        _update(root, "GOVERNANCE.md", governance_text(_read(governance), a), result)
     agents = root / "AGENTS.md"
     if agents.is_file():
         _update(root, "AGENTS.md", strip_template_block(_read(agents)), result)
@@ -505,7 +514,7 @@ def leftover_markers(root: Path) -> list[str]:
     """Template identifiers that remain in an instantiated library, outside the places that may name the template.
 
     The search covers text files only and skips ``NOTICE``, ``LICENSE-template``, ``DECISIONS.md``, ``scripts/``,
-    ``tests/``, ``.git/`` and virtual environments.
+    ``tests/``, ``.git/``, ``.idea/`` (an IDE's own files, never committed) and virtual environments.
 
     Args:
         root: The library's root folder.
@@ -517,7 +526,7 @@ def leftover_markers(root: Path) -> list[str]:
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root).as_posix()
         skip = (
-            relative.startswith((".git/", ".venv"))
+            relative.startswith((".git/", ".idea/", ".venv"))
             or "/.venv" in relative
             or any(relative == a or relative.startswith(a) for a in MARKER_ALLOWED)
         )
