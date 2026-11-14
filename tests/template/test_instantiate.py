@@ -94,6 +94,7 @@ def test_valid_answers_get_their_defaults() -> None:
         ({"code_licence": "GPL-3.0"}, "code_licence must be one of"),
         ({"keep_examples": "yes"}, "keep_examples"),
         ({"keep_tests": 1}, "keep_tests"),
+        ({"site_generator": "hugo"}, "site_generator must be one of mkdocs, zensical"),
         ({"year": "soon"}, "year must be a number"),
         ({"surprise": 1}, "unknown answer 'surprise'"),
     ],
@@ -293,6 +294,7 @@ def test_the_questionnaire_asks_for_each_answer() -> None:
             "",
             "CC0-1.0",
             "MIT",
+            "zensical",
             "no",
             "yes",
         ]
@@ -311,13 +313,14 @@ def test_the_questionnaire_asks_for_each_answer() -> None:
         False,
         True,
     )
-    assert answers.repository == ""
+    assert answers.repository == "" and answers.site_generator == "zensical"
+    assert any("Site generator" in p for p in prompts)
     assert any("Platform" in p for p in prompts) and not any("Repository URL" in p for p in prompts)
 
 
 def test_the_questionnaire_asks_for_the_repository_on_github() -> None:
     replies = iter(
-        ["", "my-lib", "", "", "owner", "", "owner@example.org", "", "", "", "https://github.com/o/my-lib", "", ""]
+        ["", "my-lib", "", "", "owner", "", "owner@example.org", "", "", "", "https://github.com/o/my-lib", "", "", ""]
     )
     answers = questionnaire(lambda _prompt: next(replies))
     assert (answers.platform, answers.repository, answers.keep_examples, answers.keep_tests) == (
@@ -326,6 +329,7 @@ def test_the_questionnaire_asks_for_the_repository_on_github() -> None:
         True,
         False,
     )
+    assert answers.site_generator == "mkdocs"  # the default
 
 
 def test_the_command_line_can_ask(template: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -342,6 +346,7 @@ def test_the_command_line_can_ask(template: Path, monkeypatch: pytest.MonkeyPatc
             "",
             "",
             "https://github.com/o/ask-lib",
+            "",
             "",
             "",
         ]

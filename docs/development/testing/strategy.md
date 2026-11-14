@@ -63,4 +63,14 @@ Repeat for `3.12` and `3.14`. Hosted CI runs the 3.11 and 3.14 jobs in P2.
 
 The acceptance level above these tests (a library built from the template, every SRS criterion, both platform modes) is the [Master Test Plan](master-test-plan.md), run at P4; its cases run the tests above where they exist and cite this file instead of repeating it.
 
-P3 adds the six site compatibility checks on the pilot bundle (FR8.2) and a skills run from the release archive; P4 adds the second-person timing (FR6.1) and the traced agent run (FR7.2).
+**What P3 adds.**
+
+| Piece | How it is tested |
+| --- | --- |
+| The skills and `AGENTS.md` | `test_skills.py`: the Agent Skills format (six frontmatter fields, name equals folder, size, links) and that no skill or `AGENTS.md` names a type, prefix or tag the profile declares. The two smoke runs from the release archive and a clone are recorded in the plan and listed as one-provider results (G38) |
+| The site (FR8.1, FR8.2) | `test_site.py` builds a fixture bundle that holds each of the six compatibility constructs with MkDocs and, when installed, Zensical, and compares pages and HTML; recorded Zensical results; a planted broken link fails the strict build. A 604-concept build is timed in `performance.md` (`poe perf`, not a gate) |
+| `site.yml`, `release.yml` | `test_workflows.py`: pinned SHAs, least privilege, tasks only, `contents: write` only in `publish`, Pages only in `deploy`, the lychee pin matches `constraints.md`. Live in the sandbox (S3a, S3b) |
+| The release archive | `test_archive.py` and `test_release.py`: the `RELEASE` file, `use-bundle` included and `author-concept` not, equal digests twice and from a clone at the tag, a folder of archives verified and rebuilt, the gate failing on a missing revision line on the tag run (AT-FR7.4-01), and NFR1 navigation with plain file reads |
+| `GOVERNANCE.md`, `README.md`, `NOTICE` | `test_governance.py` (every task, script and link the README names exists; `NOTICE` names real paths and every vendored folder; the two `GOVERNANCE.md` placeholders) and instantiated-library tests (no placeholder, chooser link, licence map) |
+
+P4 adds the second-person timing (FR6.1) and the traced agent run (FR7.2).

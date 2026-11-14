@@ -1,6 +1,6 @@
 # ADR-001: Site generator
 
-**Status:** Accepted (owner, 2026-10-30). **Supersedes:** none; confirms AD-13 and settles the review item in QA-38. **RFC:** none.
+**Status:** Accepted (owner, 2026-10-30). **Supersedes:** none; confirms AD-13 and settles the review item in QA-38. **RFC:** none. **Amended by:** ADR-011 (2026-11-14): the blocking builder is the library's choice, MkDocs the default.
 
 ## Context
 

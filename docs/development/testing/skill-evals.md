@@ -60,3 +60,11 @@ Setup: a clone of a library (or scratch library) with Python 3.11 or later and `
 - Nothing is marked `stable` or reviewed; no `verified` field added.
 - No check, schema or profile rule is weakened to make the draft pass.
 - `uv run poe check` passes before hand-over.
+
+## Smoke runs in P3 (2026-11-14)
+
+One provider (a Claude model run as a fresh subagent per skill), the scratch library `p3-scratch-github`; labelled **[Test]**, not the traced P4 check (G38).
+
+**`use-bundle`** (AT-FR7.1-03 on the scratch library). Given only the unpacked `v0.0.5` archive and `AGENTS.md`, the agent answered five questions chosen by the owner: where the example item lives and its description; what it says under its Description heading; which values `group:` and `category:` may take; its status and trust tier and whether it can be relied on; and what the library says about solar panel degradation. Every answer matched the files. It reached the concept from the root index one level at a time, read the section by heading, took the tag values from `knowledge/vocab/`, reported `draft` and `machine-confirmed` as written and said it was not reviewed guidance, answered the out-of-scope question with "not covered", and cited each concept as `<uid>@v0.0.5` with the tag from `RELEASE`. It opened eleven files and did not read the whole bundle. One `Glob` of file names preceded the reading. No change to the skill.
+
+**`author-concept`** (AT-FR7.1-02 on the scratch library). In a clone, the agent followed `AGENTS.md` and the skill to draft an Item `ITM-0002` (draft, tags from the vocabularies, a source footnote), rebuilt the indexes, ran `validate_profile.py` (0 errors, 0 warnings) and `poe check` and `poe test` (pass), and committed it on a branch. The pull request opened from it carries the `agent-drafted` label. The agent found four unclear points and the skill was corrected: the script also changes `profile/uid-registry.yaml`, which belongs in the same commit; an optional section with no content keeps the placeholder; with a commit and no pull request the description goes in the commit body; and the trailer is the `git-local` mechanism, so a `github` library labels the pull request. Rerun not needed: none stopped the run.

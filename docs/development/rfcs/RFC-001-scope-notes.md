@@ -1,6 +1,6 @@
-Status: Draft
+Status: Accepted (owner, 2026-11-14; option D below)
 
-ADRs produced: none yet.
+ADRs produced: ADR-010.
 
 # RFC-001: Folder scope notes
 
@@ -45,3 +45,12 @@ This is a recommendation only. Nothing is built in P3 (plan OD-4).
 - The owner chooses A, B or C before P4.
 - If A: an ADR records it, SDD I-02 (the profile key) and I-07 (the folder line) are edited, the template ships the type's schema and one example scope note, and `build_indexes.py`, `new_concept.py` and the validator are changed with tests. The effort is about 2 to 3 agent hours and is added to the P4 plan.
 - If C: close known gap G6 as "decided: none" and amend I-07's example line.
+
+## Decision (owner, 2026-11-14)
+
+The owner chose none of A, B or C as written, but "C combined with a YAML header in the `index.md` file". Recorded here as option D and in ADR-010:
+
+- **No scope-note concept type** (C): no new type, no `uid`, no per-folder concept file.
+- **A YAML header on each folder's `index.md`** carries the scope as a `description` key. The generator keeps that header when it regenerates the index, writes the body as before, and shows the description on the folder's line in its parent's index. A folder without a header keeps today's behaviour (title only).
+
+What this costs, set against option A: the scope text is not a concept, so it has no `uid`, no revision history and no trust tier, and it is the one hand-written part of a generated file. That narrows FR4.3 ("index files are never edited by hand"), which the owner words. Nothing is built in P3: the generator, the freshness check and the SDD I-07 text change in P4, before the pilot authors scope notes.

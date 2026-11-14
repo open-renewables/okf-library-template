@@ -1,6 +1,6 @@
 """Command-line entry points for the site tasks (SDD C-04, C-07, W-08; AD-20).
 
-``build_site.py`` builds with one builder. ``check_site.py`` compares a build with the bundle, writes the release
+``build_site.py`` builds with one builder (``primary``, the profile's ``site.generator``, or ``alt``, the other). ``check_site.py`` compares a build with the bundle, writes the release
 manifest, runs the offline link check and answers whether a tag run deploys. Exit codes follow ``okfprofile.cli``:
 0 success, 1 findings, 2 cannot run.
 """
@@ -17,12 +17,15 @@ from pathlib import Path
 
 from okfprofile.site import (
     BUILDERS,
-    DEFAULT_OUT,
+    PRIMARY_OUT,
     PageComparison,
     SiteError,
     build,
     compare_pages,
     docs_dir,
+    generator,
+    resolve,
+    serve,
     should_deploy,
     write_manifest,
 )
@@ -41,13 +44,28 @@ def _fail(message: str) -> int:
 def build_site_main(argv: Sequence[str] | None = None) -> int:
     """``build_site.py``: build the static site with MkDocs or Zensical, from the bundle in place."""
     parser = argparse.ArgumentParser(prog="build_site.py", description="Build the static site.")
-    parser.add_argument("builder", choices=BUILDERS, help="mkdocs (blocking, strict) or zensical (non-blocking)")
+    parser.add_argument(
+        "builder",
+        nargs="?",
+        default="primary",
+        choices=("primary", "alt", *BUILDERS),
+        help="primary (the profile's site.generator, the default), alt (the other one), mkdocs or zensical",
+    )
     parser.add_argument("--root", default=".", help="repository root (default: the current folder)")
-    parser.add_argument("--out", help="output folder (default: site, or site-zensical)")
+    parser.add_argument(
+        "--out", help="output folder (default: site for the profile's generator, site-alt for the other)"
+    )
+    parser.add_argument("--serve", action="store_true", help="serve the primary builder's site with live reload")
+    parser.add_argument("--print-generator", action="store_true", help="print the profile's site.generator and exit")
     args = parser.parse_args(argv)
     root = Path(args.root).resolve()
     try:
-        out = build(root, args.builder, Path(args.out) if args.out else None)
+        if args.print_generator:
+            print(generator(root))
+            return EXIT_OK
+        if args.serve:
+            return serve(root)
+        out = build(root, resolve(root, args.builder), Path(args.out) if args.out else None)
     except SiteError as exc:
         return _fail(str(exc))
     print(f"built {out.relative_to(root) if out.is_relative_to(root) else out}", file=sys.stderr)
@@ -86,7 +104,7 @@ def check_site_main(argv: Sequence[str] | None = None) -> int:
     if args.deploy_ref is not None:
         print("true" if should_deploy(root, args.deploy_ref) else "false")
         return EXIT_OK
-    site = Path(args.site).resolve() if args.site else (root / DEFAULT_OUT["mkdocs"]).resolve()
+    site = Path(args.site).resolve() if args.site else (root / PRIMARY_OUT).resolve()
     try:
         folder = docs_dir(root)
         if not site.is_dir():

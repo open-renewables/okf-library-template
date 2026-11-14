@@ -24,7 +24,7 @@ from okfprofile.instantiate import leftover_markers
 from okfprofile.release import tag_digest
 from okfprofile.release_cli import release_main
 from okfprofile.revision_cli import write_revision_main
-from okfprofile.site import build, compare_pages, docs_dir, installed
+from okfprofile.site import build, compare_pages, docs_dir, generator, installed
 from okfprofile.skills_cli import check_skills_main
 from support import ROOT, git
 from test_instantiate import copy_template
@@ -234,15 +234,26 @@ def test_the_librarys_site_config_names_the_library_and_links_only_where_there_i
         assert "extra:" in config
 
 
+def test_the_chosen_site_generator_is_in_the_profile_and_the_readme(instantiated: tuple[str, Path]) -> None:
+    platform, root = instantiated
+    chosen = "mkdocs" if platform == "github" else "zensical"  # the answers files choose one each
+    assert generator(root) == chosen == load_profile(root).site_generator
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    assert f"The site is built with {chosen.title()}" in readme and f"uv sync --group site-{chosen}" in readme
+    pyproject = (root / "pyproject.toml").read_text(encoding="utf-8")
+    assert "site-mkdocs" in pyproject and "site-zensical" in pyproject  # both groups stay, so the lock still matches
+
+
 def test_the_librarys_site_builds_strict_from_the_bundle_in_place(
     instantiated: tuple[str, Path], tmp_path: Path
 ) -> None:
-    """W-10 step 4 (known gap G25). Skipped where the site group is not installed; CI installs it."""
-    if not installed("mkdocs"):
-        pytest.skip("mkdocs is not installed (uv sync --group site-mkdocs)")
+    """W-10 step 4 (known gap G25), with the generator the answers chose. Skipped where its group is not installed."""
     _platform, root = instantiated
+    chosen = generator(root)
+    if not installed(chosen):
+        pytest.skip(f"{chosen} is not installed (uv sync --group site-{chosen})")
     before = sorted(p.relative_to(root).as_posix() for p in (root / "knowledge").rglob("*"))
-    out = build(root, "mkdocs", tmp_path / "site")
+    out = build(root, chosen, tmp_path / "site")
     assert compare_pages(docs_dir(root), out).ok
     assert sorted(p.relative_to(root).as_posix() for p in (root / "knowledge").rglob("*")) == before
 

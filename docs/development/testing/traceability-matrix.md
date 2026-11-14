@@ -130,6 +130,7 @@ Most §13 verification phrases repeat the SRS criteria and are covered above. Th
 | G3 | AT-FR2.10-02 |
 | G4 | AT-FR3.4-02 (narrowed; stays open by design) |
 | G5, G6 | Not acceptance work: G5 needs a library declaring such a type, G6 an RFC before P3 |
+| G37 to G40 | Not acceptance work yet: G37 needs a design decision (where a library keeps audit exceptions), G38 a second agent runtime, G39 is platform behaviour, G40 closes on the `v0.5.0` tag run |
 | G7 | AT-NFR6-01, AT-NFR6-02 |
 | G8 | AT-SDD12-01, AT-SDD12-02 |
 | G9 | AT-FR3.1-01 to -03, AT-FR3.5-01 to -03, AT-FR3.6-01 |

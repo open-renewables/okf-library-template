@@ -69,21 +69,24 @@ help = "Optional adapter: copy .agents/skills into .claude/skills in your own ch
 cmd = "python scripts/link_skills.py"
 
 [tool.poe.tasks.docs]
-help = "Serve the site with live reload (MkDocs; needs the site-mkdocs group)"
-cmd = "python -m mkdocs serve"
-env = { NO_MKDOCS_2_WARNING = "true" }
+help = "Serve the site with live reload, using the profile's site.generator (needs its site group: uv sync --group site-<generator>)"
+cmd = "python scripts/build_site.py --serve"
 
 [tool.poe.tasks.docs-build]
-help = "Build the site with MkDocs, strict (blocking build) into site/"
-cmd = "python scripts/build_site.py mkdocs"
+help = "Build the site with the profile's site.generator (mkdocs by default), strict (blocking build) into site/"
+cmd = "python scripts/build_site.py primary"
 
-[tool.poe.tasks.docs-zensical]
-help = "Build the site with Zensical (non-blocking build) into site-zensical/, then compare its pages with the MkDocs build"
+[tool.poe.tasks.docs-alt]
+help = "Build the site with the other generator (non-blocking) into site-alt/, then compare its pages with the primary build"
 sequence = [
-    "python scripts/build_site.py zensical",
-    "python scripts/check_site.py --site site-zensical --against site",
+    "python scripts/build_site.py alt",
+    "python scripts/check_site.py --site site-alt --against site",
 ]
 default_item_type = "cmd"
+
+[tool.poe.tasks.site-generator]
+help = "Print the profile's site.generator (mkdocs or zensical)"
+cmd = "python scripts/build_site.py --print-generator"
 
 [tool.poe.tasks.docs-linkcheck]
 help = "Check the built site's links and fragments offline with lychee, if installed"

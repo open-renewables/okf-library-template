@@ -1,7 +1,8 @@
 """Build and check the static site (SDD C-07, W-08, I-13; ADR-001).
 
-One ``mkdocs.yml`` is read by two builders: MkDocs with Material (blocking) and Zensical (non-blocking). The site is
-built from ``knowledge/`` in place. Zensical skips settings it does not support without a warning, so its output is
+One ``mkdocs.yml`` is read by two builders, MkDocs with Material and Zensical. The profile's ``site.generator`` names the
+primary (blocking, default ``mkdocs``); the other builds as a non-blocking comparison. The site is built from
+``knowledge/`` in place. Zensical skips settings it does not support without a warning, so its output is
 judged by page lists and link checks, not by its exit code.
 """
 
@@ -21,7 +22,9 @@ from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
 BUILDERS = ("mkdocs", "zensical")
-DEFAULT_OUT = {"mkdocs": "site", "zensical": "site-zensical"}
+DEFAULT_GENERATOR = "mkdocs"
+PRIMARY_OUT = "site"
+ALT_OUT = "site-alt"
 CONFIG = "mkdocs.yml"
 SEMVER = re.compile(r"^v(?P<major>0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?P<pre>-[0-9A-Za-z][0-9A-Za-z.-]*)?$")
 NOT_PAGES = ("assets", "search", "tags", "css", "javascripts")
@@ -48,6 +51,53 @@ class PageComparison:
     def ok(self) -> bool:
         """True when the build holds exactly the expected pages."""
         return not self.missing and not self.extra
+
+
+def generator(root: Path) -> str:
+    """The blocking site builder, ``site.generator`` from the profile (``mkdocs`` if the key is absent).
+
+    Args:
+        root: Repository root.
+
+    Returns:
+        ``mkdocs`` or ``zensical``.
+
+    Raises:
+        SiteError: If the profile names another generator.
+    """
+    path = root / "profile" / "profile.yaml"
+    try:
+        data = YAML(typ="safe").load(path.read_text(encoding="utf-8"))
+    except (OSError, YAMLError):
+        return DEFAULT_GENERATOR
+    section = data.get("site") if isinstance(data, dict) else None
+    value = str(section.get("generator", DEFAULT_GENERATOR)) if isinstance(section, dict) else DEFAULT_GENERATOR
+    if value not in BUILDERS:
+        msg = f"site.generator '{value}' is not one of {', '.join(BUILDERS)}"
+        raise SiteError(msg)
+    return value
+
+
+def resolve(root: Path, name: str) -> str:
+    """Turn ``primary`` or ``alt`` into the builder it means for this library; a builder name stays as it is.
+
+    Raises:
+        SiteError: If ``name`` is none of ``primary``, ``alt``, ``mkdocs`` or ``zensical``.
+    """
+    chosen = generator(root)
+    if name == "primary":
+        return chosen
+    if name == "alt":
+        return next(b for b in BUILDERS if b != chosen)
+    if name not in BUILDERS:
+        msg = f"unknown builder '{name}'; use primary, alt or one of {', '.join(BUILDERS)}"
+        raise SiteError(msg)
+    return name
+
+
+def default_out(root: Path, builder: str) -> Path:
+    """Where a builder writes by default: ``site/`` for the library's generator, ``site-alt/`` for the other."""
+    return root / (PRIMARY_OUT if builder == generator(root) else ALT_OUT)
 
 
 def docs_dir(root: Path) -> Path:
@@ -150,8 +200,8 @@ def build(root: Path, builder: str, out: Path | None = None) -> Path:
 
     Args:
         root: Repository root.
-        builder: ``mkdocs`` or ``zensical``.
-        out: Output folder; the builder's default under the root if omitted.
+        builder: ``mkdocs`` or ``zensical`` (``primary`` and ``alt`` are resolved by the caller with ``resolve``).
+        out: Output folder; ``site`` for the profile's generator and ``site-alt`` for the other if omitted.
 
     Returns:
         The output folder.
@@ -165,7 +215,7 @@ def build(root: Path, builder: str, out: Path | None = None) -> Path:
     if not installed(builder):
         msg = f"{builder} is not installed; run: uv sync --group site-{builder}"
         raise SiteError(msg)
-    target = (out or root / DEFAULT_OUT[builder]).resolve()
+    target = (out or default_out(root, builder)).resolve()
     config = root / CONFIG
     if not config.is_file():
         msg = f"no {CONFIG} under {root}"
@@ -259,3 +309,19 @@ def should_deploy(root: Path, ref: str) -> bool:
     if match is None or match["pre"] or int(match["major"]) < 1:
         return False
     return bool(site_url(root))
+
+
+def serve(root: Path) -> int:
+    """Serve the site with live reload using the profile's generator; returns the builder's exit code.
+
+    Raises:
+        SiteError: If the generator is not installed.
+    """
+    builder = generator(root)
+    if not installed(builder):
+        msg = f"{builder} is not installed; run: uv sync --group site-{builder}"
+        raise SiteError(msg)
+    env = {**os.environ, "NO_MKDOCS_2_WARNING": "true", "PYTHONUTF8": "1"}
+    return subprocess.run(  # noqa: S603 - fixed arguments
+        [sys.executable, "-m", builder, "serve", "-f", str(root / CONFIG)], cwd=root, env=env, check=False
+    ).returncode

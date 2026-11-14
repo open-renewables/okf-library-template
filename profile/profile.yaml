@@ -11,6 +11,8 @@ library:
   repository: https://github.com/open-renewables/okf-library-template
   site_url: ""
 platform: github
+site:
+  generator: mkdocs   # the blocking site builder: mkdocs or zensical; the other builds as a non-blocking comparison
 maintainers: {}
 bundle_root: knowledge
 

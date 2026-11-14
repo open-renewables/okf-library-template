@@ -24,6 +24,7 @@ from okfprofile.registry import Registry, load_registry, save_registry
 from okfprofile.revision_writer import reset_history
 
 PLATFORMS = ("github", "git-local")
+SITE_GENERATORS = ("mkdocs", "zensical")
 CODE_LICENCES = ("Apache-2.0", "MIT", "proprietary")
 CONTENT_LICENCES = ("CC-BY-4.0", "CC-BY-SA-4.0", "CC0-1.0", "proprietary")
 TEMPLATE_LOGIN = "richard-gledhill"
@@ -100,6 +101,7 @@ class Answers:
         repository: Repository URL (``github``); empty if there is none.
         keep_examples: Keep the example concept.
         keep_tests: Keep ``tests/template`` and the template's own workflow.
+        site_generator: ``mkdocs`` (default) or ``zensical``: the blocking site builder.
         year: Copyright year.
     """
 
@@ -116,6 +118,7 @@ class Answers:
     repository: str = ""
     keep_examples: bool = True
     keep_tests: bool = False
+    site_generator: str = "mkdocs"
     year: int = field(default_factory=lambda: date.today().year)
 
     @property
@@ -162,6 +165,10 @@ def parse_answers(data: Any) -> Answers:
         (code in CODE_LICENCES, f"code_licence must be one of {', '.join(CODE_LICENCES)}"),
         (isinstance(data.get("keep_examples", True), bool), "keep_examples must be true or false"),
         (isinstance(data.get("keep_tests", False), bool), "keep_tests must be true or false"),
+        (
+            str(data.get("site_generator", "mkdocs")) in SITE_GENERATORS,
+            f"site_generator must be one of {', '.join(SITE_GENERATORS)}",
+        ),
         (isinstance(data.get("year", 2000), int), "year must be a number"),
     ]
     problems += [message for ok, message in checks if not ok]
@@ -181,6 +188,7 @@ def parse_answers(data: Any) -> Answers:
         repository=text["repository"].rstrip("/"),
         keep_examples=bool(data.get("keep_examples", True)),
         keep_tests=bool(data.get("keep_tests", False)),
+        site_generator=str(data.get("site_generator", "mkdocs")),
         year=int(data.get("year", date.today().year)),
     )
 
@@ -231,7 +239,8 @@ def rewrite_profile(text: str, a: Answers) -> str:
     site = _sub_once(site, r"^platform: .*$", f"platform: {a.platform}", "platform")
     maintainers = f"maintainers:\n  {a.login}:\n    emails: [{quote(a.email)}]\n    role: maintainer"
     site = _sub_once(site, r"^maintainers:.*(?:\n[ \t]+\S.*)*", maintainers, "maintainers")
-    return _sub_once(site, r"^  revision_token: \S+", "  revision_token: github-token", "rules.revision_token")
+    site = _sub_once(site, r"^  revision_token: \S+", "  revision_token: github-token", "rules.revision_token")
+    return _sub_once(site, r"^  generator: \S+", f"  generator: {a.site_generator}", "site.generator")
 
 
 def rewrite_pyproject(text: str, a: Answers, drop_coverage_gate: bool) -> str:
@@ -333,6 +342,9 @@ def readme_text(a: Answers) -> str:
         "## Working on the library\n\n"
         "```bash\nuv sync --all-groups\nuv run poe check\nuv run poe test\n```\n\n"
         "Create a concept with `uv run python scripts/new_concept.py <Type> <path>`.\n\n"
+        f"The site is built with {a.site_generator.title()} (`site.generator` in `profile/profile.yaml`): "
+        f"`uv sync --group site-{a.site_generator}`, then `uv run poe docs-build`, or `uv run poe docs` to serve it. "
+        "The other generator builds alongside it in CI as a non-blocking comparison.\n\n"
         "## Licences\n\n"
         "| Path | Licence |\n| --- | --- |\n"
         f"| `knowledge/` | {a.content_licence}: see `LICENSE-content` |\n"

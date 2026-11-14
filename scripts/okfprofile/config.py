@@ -210,6 +210,7 @@ class Profile:
         formats: Section formats by name.
         index: Index settings.
         registry: JSON Schema resources of ``profile/types/``.
+        site_generator: ``mkdocs`` or ``zensical``: the blocking site builder (default ``mkdocs``).
     """
 
     root: Path
@@ -235,6 +236,7 @@ class Profile:
     formats: dict[str, FormatDecl]
     index: IndexDecl
     registry: Registry[Any] = field(repr=False)
+    site_generator: str = "mkdocs"
 
     def type_named(self, name: str) -> TypeDecl | None:
         """The declared type called ``name``, if any."""
@@ -561,4 +563,5 @@ def load_profile(root: Path) -> Profile:
         formats=formats,
         index=IndexDecl(**data["index"]),
         registry=registry,
+        site_generator=data.get("site", {}).get("generator", "mkdocs"),
     )

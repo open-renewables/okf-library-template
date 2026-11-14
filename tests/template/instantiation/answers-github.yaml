@@ -14,3 +14,4 @@ code_licence: proprietary
 keep_examples: true
 keep_tests: false
 year: 2026
+site_generator: mkdocs
