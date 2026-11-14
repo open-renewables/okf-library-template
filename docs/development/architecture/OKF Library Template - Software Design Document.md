@@ -334,7 +334,7 @@ One `mkdocs.yml` drives two builders, and the profile's `site.generator` (I-02; 
 
 Material for MkDocs reached end of life on 5 November 2026, so a library whose generator is MkDocs depends on software that receives no fixes; the template keeps MkDocs as the default because it is the build proven in CI on every change, and revisits the default before v1.0.0. A library that chooses Zensical takes on its pre-1.0 risk for the build that gates its pull requests. Only settings documented for both builders are used, because Zensical ignores unsupported settings without warning **[Doc]**: strict MkDocs rejects Zensical-only keys and Zensical reads MkDocs' own keys, so one `mkdocs.yml` works without a second file (ADR-001's carried issue, answered in P3). The baseline configuration is in I-13. No public site exists before a library's v1.0.0; previews are workflow artifacts. A library may have no public site.
 
-Locally, `poe docs` serves the site with live reload and `poe docs-build` runs the blocking strict build, both with the library's generator and needing its dependency group (`uv sync --group site-<generator>`); `poe docs-alt` builds with the other generator and compares its pages, `poe docs-linkcheck` checks a built site with lychee (optional), and `poe site-generator` prints the choice. Each concept page offers "Suggest an edit" through `repo_url` and `edit_uri`, and the site footer links to the issue forms. Pre-filled per-page issue links need a theme override and are deferred until after template v1.0.0 (DDR QA-37).
+Locally, `poe docs` serves the site with live reload and `poe docs-build` runs the blocking strict build, both with the library's generator and needing its dependency group (`uv sync --group site-<generator>`); `poe docs-alt` builds with the other generator and compares its pages, `poe docs-linkcheck` checks a built site with lychee (optional), and `poe site-generator` prints the choice and `poe site-switch <generator>` changes it (it builds the site with the new generator first, then rewrites `site.generator` and the README sentence, and puts both files back if the build fails). Each concept page offers "Suggest an edit" through `repo_url` and `edit_uri`, and the site footer links to the issue forms. Pre-filled per-page issue links need a theme override and are deferred until after template v1.0.0 (DDR QA-37).
 
 ### C-08 Agent skills
 
@@ -662,7 +662,7 @@ Run as `uv run poe <task>`; `uv run poe` lists them. CI calls the same tasks (AD
 | `ci-validate` | The W-04 change rules with base-branch tooling (`validate_profile.py --tooling-from <base>`), checks 1–6 and the publishing pre-check |
 | `scan` | `scan.py`; gitleaks where installed |
 | `audit` | `uvx pip-audit` on the exported lock |
-| `docs`, `docs-build`, `docs-alt`, `docs-linkcheck`, `site-generator` | Local serve and strict build with the profile's generator; build with the other generator and compare pages; lychee check of a built site (skipped with a notice if lychee is absent); print the generator |
+| `docs`, `docs-build`, `docs-alt`, `docs-linkcheck`, `site-generator`, `site-switch` | Local serve and strict build with the profile's generator; build with the other generator and compare pages; lychee check of a built site (skipped with a notice if lychee is absent); print the generator; switch it after a verifying build |
 | `revision` | `write_revision.py` (`git-local`; in `github` mode CI runs it) |
 | `stale` | `stale_report.py` |
 | `bundle` | `build_bundle.py` |

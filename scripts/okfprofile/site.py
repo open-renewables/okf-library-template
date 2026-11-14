@@ -325,3 +325,77 @@ def serve(root: Path) -> int:
     return subprocess.run(  # noqa: S603 - fixed arguments
         [sys.executable, "-m", builder, "serve", "-f", str(root / CONFIG)], cwd=root, env=env, check=False
     ).returncode
+
+
+_GENERATOR_LINE = re.compile(r"^(  generator: )\S+", re.MULTILINE)
+_PLATFORM_LINE = re.compile(r"^platform: .*$", re.MULTILINE)
+_README_SENTENCE = re.compile(r"^The site is built with .*$", re.MULTILINE)
+
+
+def _profile_with(text: str, new: str) -> str:
+    """The profile text with ``site.generator`` set to ``new``: the existing line, or a new ``site`` block."""
+    if _GENERATOR_LINE.search(text):
+        return _GENERATOR_LINE.sub(rf"\g<1>{new}", text, count=1)
+    block = f"site:\n  generator: {new}"
+    if "\nsite:" in text or text.startswith("site:") or not _PLATFORM_LINE.search(text):
+        msg = "profile.yaml has a site key without site.generator, or no platform line to place one after"
+        raise SiteError(msg)
+    return _PLATFORM_LINE.sub(lambda m: f"{m.group(0)}\n{block}", text, count=1)
+
+
+def _readme_with(text: str, new: str) -> str:
+    """The README's generated sentence about the site, pointing at ``new``; unchanged if the README has none."""
+
+    def fix(match: re.Match[str]) -> str:
+        line = re.sub(r"built with \w+ ", f"built with {new.title()} ", match.group(0), count=1)
+        return re.sub(r"site-(?:mkdocs|zensical)", f"site-{new}", line, count=1)
+
+    return _README_SENTENCE.sub(fix, text, count=1)
+
+
+def _verify_build(root: Path, builder: str) -> None:
+    """Build the site with ``builder`` into a scratch folder and require exactly the bundle's pages."""
+    with tempfile.TemporaryDirectory() as scratch:
+        result = compare_pages(docs_dir(root), build(root, builder, Path(scratch) / "site"))
+    if not result.ok:
+        msg = f"the {builder} build lacks pages {list(result.missing)} or has extra pages {list(result.extra)}"
+        raise SiteError(msg)
+
+
+def switch_generator(root: Path, new: str, verify: bool = True) -> list[str]:
+    """Make ``new`` the library's blocking site generator (ADR-011).
+
+    Rewrites ``site.generator`` in ``profile/profile.yaml`` and the generated sentence in ``README.md``. With
+    ``verify`` it then builds the site with ``new`` (strict) and compares the pages with the bundle; if that fails
+    both files are put back as they were.
+
+    Args:
+        root: Repository root.
+        new: ``mkdocs`` or ``zensical``.
+        verify: Build the site with ``new`` after the switch and check its pages.
+
+    Returns:
+        The files changed, relative to the root; empty if ``new`` is already the generator.
+
+    Raises:
+        SiteError: If ``new`` is unknown, the profile cannot be edited, or the verifying build fails.
+    """
+    if new not in BUILDERS:
+        msg = f"unknown generator '{new}'; use one of {', '.join(BUILDERS)}"
+        raise SiteError(msg)
+    if generator(root) == new:
+        return []
+    profile = root / "profile" / "profile.yaml"
+    readme = root / "README.md"
+    before = {path: path.read_bytes() for path in (profile, readme) if path.is_file()}
+    try:
+        profile.write_text(_profile_with(profile.read_text(encoding="utf-8"), new), encoding="utf-8", newline="\n")
+        if readme.is_file():
+            readme.write_text(_readme_with(readme.read_text(encoding="utf-8"), new), encoding="utf-8", newline="\n")
+        if verify:
+            _verify_build(root, new)
+    except (SiteError, OSError):
+        for path, data in before.items():
+            path.write_bytes(data)
+        raise
+    return [path.relative_to(root).as_posix() for path, data in before.items() if path.read_bytes() != data]

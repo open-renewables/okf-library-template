@@ -27,6 +27,7 @@ from okfprofile.site import (
     resolve,
     serve,
     should_deploy,
+    switch_generator,
     write_manifest,
 )
 
@@ -127,3 +128,24 @@ def check_site_main(argv: Sequence[str] | None = None) -> int:
         report = {"ok": not failed, "missing": list(result.missing), "extra": list(result.extra)}
         print(json.dumps(report, indent=2))
     return EXIT_FINDINGS if failed else EXIT_OK
+
+
+def site_switch_main(argv: Sequence[str] | None = None) -> int:
+    """``site_switch.py``: make MkDocs or Zensical the blocking site generator, checking the build first."""
+    parser = argparse.ArgumentParser(prog="site_switch.py", description="Switch the site generator (ADR-011).")
+    parser.add_argument("generator", choices=BUILDERS, help="the generator that should block from now on")
+    parser.add_argument("--root", default=".", help="repository root (default: the current folder)")
+    parser.add_argument("--no-build", action="store_true", help="change the files without building the site first")
+    args = parser.parse_args(argv)
+    root = Path(args.root).resolve()
+    try:
+        changed = switch_generator(root, args.generator, verify=not args.no_build)
+    except SiteError as exc:
+        return _fail(f"{exc}; nothing was changed")
+    if not changed:
+        print(f"{args.generator} is already the site generator; nothing to do", file=sys.stderr)
+        return EXIT_OK
+    for name in changed:
+        print(f"changed {name}", file=sys.stderr)
+    print(f"next: uv sync --group site-{args.generator}, then uv run poe docs-build", file=sys.stderr)
+    return EXIT_OK
