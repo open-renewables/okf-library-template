@@ -23,7 +23,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 ## PR 2: site (`tooling/p3-site`)
 
 - [x] PP-2 (lychee SHA-256) and PP-6 approved 2026-11-11 (text shown when written)
-- [ ] **NEEDS YOU (decision):** confirm the Zensical 0.1.1 and Material 9.7.7 pins in review (OD-3)
+- [x] **NEEDS YOU (decision):** confirm the Zensical 0.1.1 and Material 9.7.7 pins in review (OD-3) (confirmed 2026-11-14; Zensical stays exact-pinned and moves only through a reviewed pull request)
 - [x] 4. `site-mkdocs` and `site-zensical` groups, lock, hashed exports, licence check on site groups, audit, lychee SHA-256
 - [x] 4. Check: clean venv from each export installs with hashes; licences zero findings or each decided (PP-8 if not); export no-op; audit clean or decided; `validate` export unchanged
 - [x] 5. `mkdocs.yml`, `build_site.py`, `check_site.py`, tasks, fixture bundle, six-check tests, Zensical expectations, divergence study, build-time record
@@ -62,7 +62,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] **NEEDS YOU (setting):** confirm `p2-w12-target` may be rewritten; disable and re-enable its ruleset during the rehearsal
 - [x] 12. Leak-removal rehearsal on `p2-w12-target`: synthetic secret merged, detected, history rewritten, force-pushed, ruleset restored (`setup_repo.py --check`); effects on `validate`, revision lines, tag and Release recorded; runbook corrected (G33)
 - [ ] 13. `testing/` updated (acceptance statuses, matrix, strategy, master test plan line, known gaps: G2, G11, G18, G21, G25, G27, G30, G33 closed or narrowed; new gaps listed)
-- [ ] **NEEDS YOU (account):** sandbox repositories and Apps from P2 and P3 archived or deleted
+- [ ] **NEEDS YOU (account):** sandbox repositories and Apps from P2 and P3 archived or deleted (decided 2026-11-14: after `v0.5.0` is verified, archive `p3-scratch-github` and `p0-spikes`, delete the App's private key and uninstall it; the P2 repositories are already gone)
 - [x] 13. Full gate locally on 3.11 and 3.14 and in CI on three systems; coverage figure; P4 estimate proposed from actuals; `v0.5.0` tag message drafted (gate: 799 passed on each Python before the generator work, 808 after; estimate and tag message below)
 - [x] 14. Site generator choice: profile key `site.generator`; `init_library` question and answers key; tasks and `site.yml` follow the profile (MkDocs default); ADR-011; README; SDD wording (PP-14)
 - [x] 14. Check: key tests (default, both values, invalid refused); self-test builds the site strict for each generator on both platforms; workflow tests; `poe check` and `poe test` pass; live sandbox run with `zensical` chosen
@@ -110,9 +110,9 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | PP-10 | Not needed: the draft-then-publish flow and `gh release create` work with immutable releases | S3b |
 | PP-11 | Not needed: 604 concepts build in 7.7 s (MkDocs) and 4.3 s (Zensical) | `performance.md` |
 | PP-12 | Approved and applied 2026-11-13 | SDD W-11 step 3; runbook; DDR row |
-| PP-15 | **Proposed** 2026-11-14: the P4 estimate above (agent 26–37 h, owner 9–10 h, 6–9 days) into the SDD §14 P4 row | Awaiting the owner |
+| PP-15 | Approved 2026-11-14 and applied in PR 5: the P4 estimate (agent 26–37 h, owner 9–10 h, 6–9 days) | SDD §14 P4 row; DDR change-log row 2026-11-14 |
 | PP-14 | Added 2026-11-14 at the owner's request; approved with it and applied in PR 5 | ADR-011; SDD §1, C-07, I-02, I-16, W-01, W-08; DDR change-log row |
-| PP-13 | **Proposed**, from the RFC-001 decision (ADR-010): SRS FR4.3 wording (the index header is the one hand-written part), SDD I-07 and I-02 text, `author-concept` guidance; applied when P4 builds it | Awaiting the owner |
+| PP-13 | Approved 2026-11-14, **applied when P4 builds the index header** (ADR-010): SRS FR4.3 wording (yours), SDD I-07 and I-02 text, `author-concept` guidance | P4 |
 
 ## Draft: message of the annotated tag `v0.5.0`
 
