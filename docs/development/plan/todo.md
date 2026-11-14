@@ -63,7 +63,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] 12. Leak-removal rehearsal on `p2-w12-target`: synthetic secret merged, detected, history rewritten, force-pushed, ruleset restored (`setup_repo.py --check`); effects on `validate`, revision lines, tag and Release recorded; runbook corrected (G33)
 - [ ] 13. `testing/` updated (acceptance statuses, matrix, strategy, master test plan line, known gaps: G2, G11, G18, G21, G25, G27, G30, G33 closed or narrowed; new gaps listed)
 - [ ] **NEEDS YOU (account):** sandbox repositories and Apps from P2 and P3 archived or deleted
-- [ ] 13. Full gate locally on 3.11 and 3.14 and in CI on three systems; coverage figure; P4 estimate proposed from actuals; `v0.5.0` tag message drafted
+- [x] 13. Full gate locally on 3.11 and 3.14 and in CI on three systems; coverage figure; P4 estimate proposed from actuals; `v0.5.0` tag message drafted (gate: 799 passed on each Python before the generator work, 808 after; estimate and tag message below)
 - [x] 14. Site generator choice: profile key `site.generator`; `init_library` question and answers key; tasks and `site.yml` follow the profile (MkDocs default); ADR-011; README; SDD wording (PP-14)
 - [x] 14. Check: key tests (default, both values, invalid refused); self-test builds the site strict for each generator on both platforms; workflow tests; `poe check` and `poe test` pass; live sandbox run with `zensical` chosen
 - [ ] PR 5 closed: agent h ___, owner h ___
@@ -98,7 +98,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 
 | # | Status | Evidence |
 | --- | --- | --- |
-| PP-1 | Approved 2026-11-11 as drafted; applied when its step lands | |
+| PP-1 | Approved 2026-11-11 as drafted; applied in PR 5 | SDD §1 and §14 (P3 actuals); DDR change-log row 2026-11-14 |
 | PP-2 | Approved 2026-11-11 as drafted; applied when its step lands | |
 | PP-3 | Approved 2026-11-11 as drafted; applied in PR 4 | SDD I-12, W-07, C-10, W-08; DDR change-log row 2026-11-13 |
 | PP-4 | Approved 2026-11-11 as drafted; applied in PR 4 | SDD W-07, C-10; DDR change-log row 2026-11-13 |
@@ -110,9 +110,66 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | PP-10 | Not needed: the draft-then-publish flow and `gh release create` work with immutable releases | S3b |
 | PP-11 | Not needed: 604 concepts build in 7.7 s (MkDocs) and 4.3 s (Zensical) | `performance.md` |
 | PP-12 | Approved and applied 2026-11-13 | SDD W-11 step 3; runbook; DDR row |
+| PP-15 | **Proposed** 2026-11-14: the P4 estimate above (agent 26–37 h, owner 9–10 h, 6–9 days) into the SDD §14 P4 row | Awaiting the owner |
 | PP-14 | Added 2026-11-14 at the owner's request; approved with it and applied in PR 5 | ADR-011; SDD §1, C-07, I-02, I-16, W-01, W-08; DDR change-log row |
 | PP-13 | **Proposed**, from the RFC-001 decision (ADR-010): SRS FR4.3 wording (the index header is the one hand-written part), SDD I-07 and I-02 text, `author-concept` guidance; applied when P4 builds it | Awaiting the owner |
 
 ## Draft: message of the annotated tag `v0.5.0`
 
-To be drafted at step 13 from what shipped.
+## Proposed P4 estimate (from P3 actuals, 2026-11-14)
+
+**P3 actuals [Inf]** (not time-logged; reconstructed from pull requests and sessions): agent about 36 hours (plan 0 about 4, PR 1 about 5, PR 2 about 9, PR 3 about 3, PR 4 about 5, PR 5 about 10 including both rehearsals, the smoke runs and the generator choice added on 2026-11-14), owner about 7 hours (the Q&As, the sandbox repository, App and immutability settings, the merges and reviews), and 4 calendar days from the plan merge (2026-11-11) to the last pull request. Plan was 32–50 agent hours, 7–11 owner hours and 5–8 days, so P3 landed inside it, as P2 did (54 against 53–83).
+
+**P4 estimate [Inf]**, same units and the same assumptions as the P3 plan (one pull request per sitting, review within a working day, no second runtime):
+
+| Item | Agent (h) | Owner (h) | Owner content |
+| --- | --- | --- | --- |
+| Instantiate the pilot, run the W-01 sheet, platform steps | 2 | 1.5 | Create the repository, App and settings; brief a second person |
+| Index scope-note header (ADR-010): `build_indexes.py`, check 5, fixtures, golden files; SRS FR4.3 and SDD I-07, I-02 wording (PP-13) | 3 | 0.5 | Approve PP-13 |
+| About 20 concepts with scope notes, vocabulary values and glossary entries, drafted with `author-concept` | 8–12 | 3–4 | Review each concept; mark the whole-concept reviews `full-review` |
+| Traced agent run from the archive (FR7.2) and the Master Test Plan run (AT cases) | 6–9 | 1.5 | Choose questions; read the trace |
+| G37 (`audit` in instantiated libraries) and the PP-9 warning decision, built if chosen | 2–4 | 0.5 | Decide |
+| W-12 rehearsal on the pilot (carried) | 2–3 | 0.5 | Confirm the move |
+| Hardening for v1.0.0: default generator, immutable releases on, release notes, the v1.0.0 gate, tag | 3–4 | 1.5 | Decide, tag |
+| **Total** | **26–37** | **9–10** | |
+
+Calendar time 6–9 days. Against the SDD §14 P4 row (5–8 person-days, owner about 6 hours) the agent effort is in range; the owner figure is higher because 20 concepts need a human review for the tier to mean anything. The largest uncertainty is the concept authoring (volume and review rounds), as the P1 core build was in P1. Proposed as PP-15 for the SDD §14 P4 row; not applied until the owner approves.
+
+## Draft: message of the annotated tag `v0.5.0`
+
+To be pushed by the owner as an annotated tag on `main` after the last P3 pull request merges. Edit the counts to the final run before tagging.
+
+```
+okf-library-template v0.5.0 (beta)
+
+A template for building validated, agent-ready knowledge libraries on the
+Open Knowledge Format (OKF) v0.2. Beta: build phases P0 to P3 are done and
+rehearsed; the pilot library (P4) and v1.0.0 follow. Not for citing as stable.
+
+What is in it
+- Profile tooling (okfprofile): six validation checks, generated indexes,
+  uid registry, revision history and trust tiers, base-branch validation
+- init_library for platform github and git-local; setup_repo; an instantiation
+  self-test that builds each library and its site
+- CI: validate, revision writer, stale report, site (MkDocs or Zensical, chosen
+  at init; MkDocs is the default), release (gate, build, rebuild, publish)
+- Agent skills use-bundle and author-concept, AGENTS.md, GOVERNANCE.md, runbooks
+
+How it was checked
+- uv run poe check and poe test on Python 3.11 and 3.14: about 800 tests,
+  coverage about 98 %; CI on Linux, macOS and Windows
+- Live rehearsals in sandbox libraries: release from a tag (immutable
+  pre-release, gate refuses a missing revision line), Pages deploy from v1.0.0
+  with a site URL, a Zensical-primary site build, a leak removal up to the
+  force-push, two agent smoke runs (one provider)
+
+Known gaps (docs/development/testing/known-gaps.md)
+- G37 the audit job fails in instantiated libraries; G38 skills tried on one
+  provider; G40 this is the template's first release.workflow run
+- Scope notes (ADR-010), a warning for the two Python-Markdown divergences
+  (PP-9) and the pilot are P4
+
+Verify a download: sha256sum -c <archive>.sha256; the RELEASE file inside the
+archive names this tag and its commit. This release is a pre-release; its
+assets are not yet immutable (immutable releases are switched on before v1.0.0).
+```
