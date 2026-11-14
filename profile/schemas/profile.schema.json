@@ -41,6 +41,12 @@
       }
     },
     "platform": { "enum": ["github", "git-local"] },
+    "site": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generator"],
+      "properties": { "generator": { "enum": ["mkdocs", "zensical"] } }
+    },
     "maintainers": {
       "type": "object",
       "additionalProperties": {

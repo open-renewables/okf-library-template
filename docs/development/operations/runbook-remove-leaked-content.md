@@ -1,6 +1,6 @@
 # Runbook: remove leaked content
 
-For a secret, personal data or confidential text that reached a library's history, found by `uv run poe scan --all`, by gitleaks, by GitHub secret scanning or by a person. **Not rehearsed.** Removing it from history rewrites commits, which the design otherwise forbids (W-12: history and revision lines are never rewritten), so this is an exception that you record. Known gap G33 lists what is untested.
+For a secret, personal data or confidential text that reached a library's history, found by `uv run poe scan --all`, by gitleaks, by GitHub secret scanning or by a person. **Partly rehearsed (2026-11-14, in the sandbox library `p3-scratch-github`):** the leak, its detection, the Release and the rewrite ran; the force-push to the protected `main`, the tag pushes and `validate` after a rewrite did not, and stay untested until a real incident (G33, closed on that basis). Removing it from history rewrites commits, which the design otherwise forbids (W-12: history and revision lines are never rewritten), so this is an exception that you record.
 
 ## 1. Stop the spread (minutes)
 
@@ -26,6 +26,13 @@ git filter-repo --path <leaked-file> --invert-paths        # or --replace-text <
 git push --force --all
 git push --force --tags
 ```
+
+What the rehearsal showed (a file under `profile/` merged by pull request, a release tag cut on it, then the rewrite with `uvx --from git-filter-repo git-filter-repo --path <file> --invert-paths`):
+
+- **Detection.** `uv run poe scan --all` finds a marker or a secret-shaped string only in files git tracks, so run it after the commit. In CI the `scan` job stops at the first failing step: the `scan.py` finding is reported and the gitleaks step after it does not run, so a second secret that only gitleaks sees stays hidden until the first is removed.
+- **Delete the Release before the rewrite.** The release archive of a tag cut after the leak holds the leaked file. On a repository with immutable releases an asset cannot be deleted, but the whole Release can; its tag name can then never be reused.
+- **Every commit id changes, not only those after the leak.** Web merges on GitHub are signed, and `git filter-repo` drops the signatures when it rewrites, so the whole history and every tag get new ids (all six tags moved). A pull request that only added the leaked file becomes an empty commit and disappears, so two tags can end on the same commit.
+- **Revision lines.** Lines that cite `PR #n` stay correct; lines that cite `commit <sha7>` (a library that began as `git-local`) point at ids that no longer exist.
 
 Pushing to a protected `main` needs the ruleset disabled for the push and re-enabled straight after; re-run `uv run python scripts/setup_repo.py --check` to confirm the ruleset is back. Every commit after the leak gets a new identifier.
 

@@ -25,8 +25,10 @@ You write drafts. A person reviews and publishes them. Everything the library re
    uv run scripts/new_concept.py <type> <folder>/<name> --title "<title>" --description "<one sentence>"
    ```
 
-2. Fill each declared section in the declared order and format, in your own words. Where a section has nothing yet, leave the profile's placeholder rather than inventing content.
-3. Cite sources as footnotes (or external links) for every claim of substance. Never cite a source you have not read. A concept without a source cannot become `stable`.
+   The script also adds the new `uid` to `profile/uid-registry.yaml`. Commit that file with the concept: it is the one `profile/` file that belongs in a concept change.
+
+2. Fill each declared section in the declared order and format, in your own words. Where a section has nothing yet, leave the profile's placeholder rather than inventing content; this holds for an optional section too (keep the placeholder, do not invent items to fill a format).
+3. Start every list after a blank line and put no list inside a footnote definition; the site renders those two cases differently from the validator. Cite sources as footnotes (or external links) for every claim of substance. Never cite a source you have not read. A concept without a source cannot become `stable`.
 4. Leave `status: draft`. Only a human owner makes a concept `stable`. Do not add `verified`, `generated` or other fields the schema does not ask for.
 5. Do not edit by hand: the *Revision history* section, any `index.md`, `profile/uid-registry.yaml`. Then rebuild the indexes and validate:
 
@@ -40,7 +42,7 @@ You write drafts. A person reviews and publishes them. Everything the library re
    - `platform: github`: apply the label named by `rules.agent_label` in the profile to the pull request.
    - `platform: git-local`: add the trailer `Agent-Drafted: yes` to the commit message.
 7. Keep tooling and content apart. A change to `scripts/`, `profile/` or `.github/` goes in a separate pull request from a concept, unless it carries the migration label the profile names.
-8. Open the pull request (or commit) with a short description: what the concept is, its sources, and anything you were unsure of.
+8. Open the pull request (or commit) with a short description: what the concept is, its sources, and anything you were unsure of. With a commit and no pull request, put it in the commit message body, above any trailer.
 
 ## Special cases
 

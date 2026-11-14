@@ -115,41 +115,41 @@ The cases of the [Master Test Plan](master-test-plan.md), grouped by requirement
 | AT-FR6.4-02 | scripted | D | S | Diverge: edit one script under `scripts/` and record it in `DECISIONS.md`; `uv run poe check` and `V` → still exit 0 | E1 | pending P2 PR5 |
 | AT-FR6.5-01 | scripted | D | S | `git-local` library with outbound network blocked (offline machine or `HTTPS_PROXY=http://127.0.0.1:9`): `V`, `build_indexes.py --check`, a commit with trailers, `uv run poe revision`, `uv run poe stale`, `uv run poe release v0.0.1` → all exit 0 and no network call is attempted | E1 | pending P2 PR4 |
 | AT-FR6.5-02 | review | RO | T | `grep -rn "api.github.com\|urllib" scripts/okfprofile` → only under `platforms/`; `[T]` the test that fails when a core module imports an adapter passes | E1 | pending P2 PR2 |
-| AT-FR6.6-01 | live | D | G | W-12 rehearsal on the `git-local` library: pre-check, `git push --all` and `--tags` to `p2-w12-target`, tooling PR switching `platform`, `setup_repo.py`, rebuild each release from its tag. Expected: `git rev-list --all` before equals after; revision lines unchanged; each archive tar digest equals the tag message. Adopts plan step 15(c) | E4 | pending P2 PR7 |
-| AT-FR6.6-02 | scripted | D | S | After AT-FR6.6-01: new merges write `PR #n` lines while older `commit <sha7>` lines stay; the `maintainers` map still attributes both | E4 | pending P2 PR7 |
+| AT-FR6.6-01 | live | D | G | W-12 rehearsal on the `git-local` library: pre-check, `git push --all` and `--tags` to `p2-w12-target`, tooling PR switching `platform`, `setup_repo.py`, rebuild each release from its tag. Expected: `git rev-list --all` before equals after; revision lines unchanged; each archive tar digest equals the tag message. Adopts plan step 15(c) | E4 | ready |
+| AT-FR6.6-02 | scripted | D | S | After AT-FR6.6-01: new merges write `PR #n` lines while older `commit <sha7>` lines stay; the `maintainers` map still attributes both | E4 | ready |
 
 ## FR7 Agent skills and delivery
 
 | ID | Kind | Mode | Pre | Steps → expected | Ev. | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| AT-FR7.1-01 | review | RO | L | Each `.agents/skills/<name>/SKILL.md` has only `name` (equal to its folder), `description` and optional `license`, `compatibility`, `metadata`, `allowed-tools`; both `author-concept` and `use-bundle` exist; neither names a type, prefix or tag | E1 | pending P3 |
-| AT-FR7.1-02 | human | D | S | Agent run (any provider): follow `author-concept` to draft a concept of each `<type>`; `V` → exit 0; PR labelled `agent-drafted`. No edit to the skill | E1, E2 | pending P3 |
-| AT-FR7.1-03 | human | RO | L | Agent run: with only the release archive, follow `use-bundle` on five questions the reviewer chose; expected: navigation by `index.md` one level at a time, sections read by heading, vocabularies read from `vocab/` | E1 | pending P3 |
+| AT-FR7.1-01 | review | RO | L | Each `.agents/skills/<name>/SKILL.md` has only `name` (equal to its folder), `description` and optional `license`, `compatibility`, `metadata`, `allowed-tools`; both `author-concept` and `use-bundle` exist; neither names a type, prefix or tag | E1 | ready |
+| AT-FR7.1-02 | human | D | S | Agent run (any provider): follow `author-concept` to draft a concept of each `<type>`; `V` → exit 0; PR labelled `agent-drafted`. No edit to the skill | E1, E2 | ready (smoke run pending, plan step 11) |
+| AT-FR7.1-03 | human | RO | L | Agent run: with only the release archive, follow `use-bundle` on five questions the reviewer chose; expected: navigation by `index.md` one level at a time, sections read by heading, vocabularies read from `vocab/` | E1 | ready (smoke run pending, plan step 11) |
 | AT-FR7.2-01 | human | RO | L | Traced agent run on the release archive: for each answer the report lists concept `uid`, status, trust tier (with `(self)`) and release tag; reviewer checks every cited `uid` exists at that tag. Expected: 100 % of citations trace | E1 | pending P4 |
 | AT-FR7.2-02 | human | D | S | Adversarial: a relevant concept is `draft` with no revision (Unverified); the agent must state that it is unverified; fail if it calls it reviewed | E1 | pending P4 |
-| AT-FR7.3-01 | scripted | D | S | `uv run poe release v0.0.1` then in `dist/`: `sha256sum -c *.sha256` → OK; `tar -tzf` lists `knowledge/`, `profile/`, `AGENTS.md`, `README.md`, `CITATION.cff`, licence files, `NOTICE` (and `.agents/skills/use-bundle/` from P3); manifest holds tag, commit, versions, counts, `platform` | E1 | pending P2 PR4 |
-| AT-FR7.3-02 | scripted | D | S | Fresh clone at the tag, `uv run poe bundle` → same tar digest as the tag message; `.tar.gz` digest compared only if Python and zlib versions match (ADR-004). Repeat on the three systems (V-12) | E1 | pending P2 PR4 |
-| AT-FR7.3-03 | live | D | G | Push a tag in the sandbox → a release exists with archive, checksum, manifest, notes; asset edit refused (immutable). V-07 residue | E3 | pending P3 |
-| AT-FR7.4-01 | scripted | D | S | Merge a concept change but delete its revision line (or skip the writer); `uv run poe release v0.0.2` → fails with an `OKF9xx` finding; restore and rerun → passes | E2 | pending P2 PR4 |
+| AT-FR7.3-01 | scripted | D | S | `uv run poe release v0.0.1` then in `dist/`: `sha256sum -c *.sha256` → OK; `tar -tzf` lists `knowledge/`, `profile/`, `AGENTS.md`, `README.md`, `CITATION.cff`, licence files, `NOTICE`, `RELEASE` and `.agents/skills/use-bundle/`; manifest holds tag, commit, versions, counts, `platform` | E1 | ready |
+| AT-FR7.3-02 | scripted | D | S | Fresh clone at the tag, `uv run poe bundle` → same tar digest as the tag message; `.tar.gz` digest compared only if Python and zlib versions match (ADR-004). Repeat on the three systems (V-12) | E1 | ready |
+| AT-FR7.3-03 | live | D | G | Push a tag in the sandbox → a release exists with archive, checksum, manifest, notes; asset edit refused (immutable). V-07 residue | E3 | ready; passed 2026-11-14 (S3b: `v0.0.3`, `v0.0.5`) |
+| AT-FR7.4-01 | scripted | D | S | Merge a concept change but delete its revision line (or skip the writer); `uv run poe release v0.0.2` → fails with an `OKF9xx` finding; restore and rerun → passes | E2 | ready |
 
 ## FR8 Website
 
 | ID | Kind | Mode | Pre | Steps → expected | Ev. | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| AT-FR8.1-01 | scripted | D | S | `uv run poe docs-build` then `git status --porcelain knowledge/` → empty; the build fails if `knowledge/` is made unreadable, showing it reads in place | E1 | pending P3 |
-| AT-FR8.2-01 | scripted | D | S | Checks 1 and 2: each folder `index.md` is a landing page; a relative link between concepts resolves to a site route (strict build exits 0; `grep` the built HTML for the target path) | E1 | pending P3 |
-| AT-FR8.2-02 | scripted | D | S | Checks 3 to 5: an unknown frontmatter key is kept; a heading anchor equals the platform slug; a concept using `status`, `title`, `tags`, `slug` keys keeps the profile meaning; a colon-namespaced tag gives a valid page and URL | E1 | pending P3 |
-| AT-FR8.2-03 | scripted | D | S | Check 6: a prose line with `<1000 V and {braces}` and a footnote render unchanged in the built HTML | E1 | pending P3 |
-| AT-FR8.2-04 | review | RO | S | Compare constructs the profile does not use between markdown-it-py and Python-Markdown output (lists after paragraphs, tables, nested footnotes, inline HTML) and list each divergence. Closes G2 | E1 | pending P3 |
-| AT-FR8.3-01 | live | D | G | Tag run builds the site from the tag; the deployed or artifact site manifest names the latest tag | E3 | pending P3 |
-| AT-FR8.4-01 | human | RO | S | On a preview build, "Suggest an edit" opens the platform editor on that concept file; the site-wide issue link opens the issue forms | E3 | pending P3 |
-| AT-FR8.5-01 | review | RO | G | For a library before its v1.0.0: `gh api repos/<owner>/<repo>/pages` → 404 (no public site) unless the owner recorded an alpha or beta site in `DECISIONS.md` | E1 | pending P3 |
+| AT-FR8.1-01 | scripted | D | S | `uv run poe docs-build` then `git status --porcelain knowledge/` → empty; the build fails if `knowledge/` is made unreadable, showing it reads in place | E1 | ready |
+| AT-FR8.2-01 | scripted | D | S | Checks 1 and 2: each folder `index.md` is a landing page; a relative link between concepts resolves to a site route (strict build exits 0; `grep` the built HTML for the target path) | E1 | ready |
+| AT-FR8.2-02 | scripted | D | S | Checks 3 to 5: an unknown frontmatter key is kept; a heading anchor equals the platform slug; a concept using `status`, `title`, `tags`, `slug` keys keeps the profile meaning; a colon-namespaced tag gives a valid page and URL | E1 | ready |
+| AT-FR8.2-03 | scripted | D | S | Check 6: a prose line with `<1000 V and {braces}` and a footnote render unchanged in the built HTML | E1 | ready |
+| AT-FR8.2-04 | review | RO | S | Compare constructs the profile does not use between markdown-it-py and Python-Markdown output (lists after paragraphs, tables, nested footnotes, inline HTML) and list each divergence. Closes G2 | E1 | ready; done (`site-divergences.md`, D1 and D2) |
+| AT-FR8.3-01 | live | D | G | Tag run builds the site from the tag; the deployed or artifact site manifest names the latest tag | E3 | ready; passed 2026-11-13 (S3a: `release.json` on `v0.0.1` and `v1.0.0`) |
+| AT-FR8.4-01 | human | RO | S | On a preview build, "Suggest an edit" opens the platform editor on that concept file; the site-wide issue link opens the issue forms | E3 | ready; links present in the built page (S3a), opening them in a browser not done |
+| AT-FR8.5-01 | review | RO | G | For a library before its v1.0.0: `gh api repos/<owner>/<repo>/pages` → 404 (no public site) unless the owner recorded an alpha or beta site in `DECISIONS.md` | E1 | ready; no Pages deploy before `v1.0.0` (S3a) |
 
 ## Non-functional
 
 | ID | Kind | Mode | Pre | Steps → expected | Ev. | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| AT-NFR1-01 | human | RO | L | Extract a release archive; using only `ls`, `cat` and `grep`, reach one concept from the root `index.md` through folder indexes and read its declared sections. Expected: no tool beyond file reading was needed | E1 | pending P2 PR4 |
+| AT-NFR1-01 | human | RO | L | Extract a release archive; using only `ls`, `cat` and `grep`, reach one concept from the root `index.md` through folder indexes and read its declared sections. Expected: no tool beyond file reading was needed | E1 | ready; scripted in `test_archive.py` (`test_an_agent_with_file_tools_only_...`) and passed 2026-11-14 |
 | AT-NFR2-01 | review | RO | T | Read each SRS requirement against the checklist: is it met by only one product? Record any that is. Then `grep -rn "gh \|api.github" scripts/okfprofile` → only under `platforms/` | E1 | ready |
 | AT-NFR3-01 | review | RO | G | Organisation plan is Free; Actions usage for the run month is within the free allowance (billing page); private-library jobs use Linux only (OD-3) | E3 | pending P2 PR6 |
 | AT-NFR4-01 | scripted | RO | L | `uv run poe licences` → exit 0 on each of the three systems (closes G11); the licence files from AT-FR6.2-01 are present; `LICENSE`, `NOTICE` untouched in the template | E1 | ready |

@@ -28,7 +28,7 @@ Status: **Approved by the owner on 2026-11-11:** the plan, all open decisions OD
 | 3 | 8 `GOVERNANCE.md`, `README.md`, `NOTICE`; 9 RFC and `.idea/` | `tooling/p3-governance` | PR 1 |
 | 4 | 10 `release.yml` and archive changes | `tooling/p3-release` | PR 1, PR 2 |
 | S3b | 11 Sandbox rehearsal of `release.yml`, smoke runs of the skills | — | PR 4 drafted |
-| 5 | 12 Stale-report read, leak-removal rehearsal; 13 Test docs, clean-up, exit | `tooling/p3-exit` | PR 3, PR 4, S3b |
+| 5 | 12 Stale-report read, leak-removal rehearsal; 13 Test docs, clean-up, exit; 14 Site generator choice (added 2026-11-14) | `tooling/p3-exit` | PR 3, PR 4, S3b |
 
 PR 1 and PR 2 touch disjoint files and may run in parallel; `pyproject.toml`, `requirements/`, `finding-codes.md` and `known-gaps.md` are shared and the later pull request rebases (the owner is told of the touch). PR 3 can run alongside PR 2. PR 4 needs both skills (archive) and the site workflow (tag run). PR 5 is last. Fixed order inside PR 2: step 4, 5, 6, 7 as separate commits so the owner can review in that order (OD-1).
 
@@ -124,7 +124,17 @@ Work: update `../testing/`: acceptance cases `pending P3` set to `ready` or reco
 
 **NEEDS YOU (account):** archive or delete the sandbox repositories and Apps once the leak rehearsal is done.
 
-Check: SPEC "Done when" 1 to 11 each ticked in `todo.md` with evidence; after the last pull request merges the owner tags `v0.5.0`, the release workflow ran on it, and "Done when" 12 is ticked.
+Check: SPEC "Done when" 1 to 12 each ticked in `todo.md` with evidence; after the last pull request merges the owner tags `v0.5.0`, the release workflow ran on it, and "Done when" 13 is ticked.
+
+### 14. Site generator choice (PR 5, added 2026-11-14)
+
+Added at the owner's request on 2026-11-14: MkDocs and Zensical both pass the six FR8.2 checks, Material for MkDocs reached end of life on 5 November 2026, and Zensical builds the same `mkdocs.yml` faster, so a library should be able to pick its blocking builder.
+
+Work: a profile key `site.generator` (`mkdocs` default, or `zensical`) in `profile.yaml` and its meta-schema; `init_library.py` asks for it (an answers-file key `site_generator`) and writes it; `build_site.py`, `check_site.py` and the tasks `docs`, `docs-build`, `docs-zensical` use the configured generator as primary (output `site/`) and the other as the non-blocking comparison (`site-alt/`); `site.yml` makes the configured generator the blocking job and installs only the groups it needs; the README names the choice; ADR-011 amends ADR-001 and AD-13 (the choice is per library, MkDocs stays the template's default); SDD I-02, I-13, C-07, W-01 step 3, W-08 and I-16 wording (PP-14).
+
+Check: tests for the profile key (default, both values, an invalid value refused); the W-10 self-test instantiates and builds the site strictly for each generator on both platforms; `site.yml` static tests (the blocking job follows the profile); `poe check` and `poe test` pass; a live run in the sandbox library with `zensical` chosen (preview artifact built by Zensical, `deploy` path unchanged).
+
+**NEEDS YOU (decision):** none beyond approving PP-14 (given with the request on 2026-11-14); the default stays MkDocs, and the default is revisited before `v1.0.0`.
 
 ## Effort
 
@@ -179,6 +189,7 @@ PP-1 to PP-6 approved as drafted on 2026-11-11 (text shown for review when each 
 | PP-8 | Only if a site dependency has a licence outside the allowlist (step 4) | `../constraints.md` exceptions table | New ADR, as ADR-006 |
 | PP-9 | Only if a Python-Markdown divergence (G2) makes a construct the profile allows render differently from GitHub | SDD I-01 authoring rule or the profile | RFC or ADR |
 | PP-10 | Only if S3b shows the draft-then-publish flow or `gh release create` conflicts with immutable releases | SDD W-07, C-10, AD-15 | ADR |
+| PP-14 | Added 2026-11-14 at the owner's request (approved with it): per-library choice of site generator | SDD AD-13 status line, I-02 (`site.generator`), I-13, C-07, W-01 step 3, W-08, I-16; DDR change-log row | ADR-011 (amends ADR-001) |
 | PP-11 | Only if a 600-concept site build exceeds 2 minutes per builder on the Linux runner (SDD §12 **[Inf]**) | SDD §12 row | ADR; the limit is not relaxed silently |
 | PP-12 | Fired by the S3a rehearsal (2026-11-13): enabling Pages leaves the `github-pages` environment open to `main` only, so the tag run of `site.yml` that publishes a site was refused. `setup_repo.py --promote` now allows `main` and the tag pattern `v*` (code and test done in PR 2) | SDD W-11 step 3 (one clause: "and lets the `github-pages` environment deploy from `main` and from `v*` tags") and `../operations/runbook-promote-to-public.md` §4 (same clause) | SDD edit with a DDR change-log row; **approved and applied 2026-11-13** |
 

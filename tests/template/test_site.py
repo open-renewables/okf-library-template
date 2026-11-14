@@ -19,9 +19,13 @@ from okfprofile.site import (
     build,
     built_pages,
     compare_pages,
+    default_out,
     docs_dir,
     expected_pages,
+    generator,
     installed,
+    resolve,
+    serve,
     should_deploy,
     site_url,
     write_manifest,
@@ -376,3 +380,66 @@ def test_the_link_check_fails_the_run_when_lychee_does(tmp_path: Path, monkeypat
     (tmp_path / "knowledge").mkdir()
     (tmp_path / "site").mkdir()
     assert check_site_main(["--root", str(tmp_path), "--linkcheck"]) == 1
+
+
+def write_profile(root: Path, generator_line: str | None) -> None:
+    folder = root / "profile"
+    folder.mkdir(exist_ok=True)
+    text = "profile: x\nplatform: github\n"
+    if generator_line is not None:
+        text += f"site:\n  generator: {generator_line}\n"
+    (folder / "profile.yaml").write_text(text, encoding="utf-8", newline="\n")
+
+
+def test_the_generator_is_mkdocs_unless_the_profile_names_zensical(tmp_path: Path) -> None:
+    assert generator(tmp_path) == "mkdocs"  # no profile at all
+    write_profile(tmp_path, None)
+    assert generator(tmp_path) == "mkdocs"  # no site key
+    write_profile(tmp_path, "zensical")
+    assert generator(tmp_path) == "zensical"
+    write_profile(tmp_path, "mkdocs")
+    assert generator(tmp_path) == "mkdocs"
+
+
+def test_an_unknown_generator_in_the_profile_is_refused(tmp_path: Path) -> None:
+    write_profile(tmp_path, "hugo")
+    with pytest.raises(SiteError, match="not one of mkdocs, zensical"):
+        generator(tmp_path)
+
+
+def test_primary_and_alt_resolve_to_the_two_builders_and_their_outputs(tmp_path: Path) -> None:
+    write_profile(tmp_path, "mkdocs")
+    assert (resolve(tmp_path, "primary"), resolve(tmp_path, "alt")) == ("mkdocs", "zensical")
+    assert default_out(tmp_path, "mkdocs") == tmp_path / "site"
+    assert default_out(tmp_path, "zensical") == tmp_path / "site-alt"
+    write_profile(tmp_path, "zensical")
+    assert (resolve(tmp_path, "primary"), resolve(tmp_path, "alt")) == ("zensical", "mkdocs")
+    assert default_out(tmp_path, "zensical") == tmp_path / "site"
+    assert default_out(tmp_path, "mkdocs") == tmp_path / "site-alt"
+    assert resolve(tmp_path, "mkdocs") == "mkdocs"
+    with pytest.raises(SiteError, match="unknown builder"):
+        resolve(tmp_path, "hugo")
+
+
+def test_the_command_line_prints_the_generator_and_builds_the_primary_into_site(
+    fixture_root: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = tmp_path / "lib"
+    shutil.copytree(fixture_root, root, ignore=shutil.ignore_patterns("site", "site-alt", "site-zensical"))
+    write_profile(root, "zensical")
+    assert build_site_main(["--root", str(root), "--print-generator"]) == 0
+    assert capsys.readouterr().out.strip() == "zensical"
+    if not HAVE["zensical"]:
+        pytest.skip(needs["zensical"].kwargs["reason"])
+    assert build_site_main(["--root", str(root)]) == 0  # primary is Zensical here
+    assert built_pages(root / "site") == expected_pages(docs_dir(root))
+    if HAVE["mkdocs"]:
+        assert build_site_main(["alt", "--root", str(root)]) == 0
+        assert built_pages(root / "site-alt") == built_pages(root / "site")
+
+
+def test_serving_needs_the_generators_group(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    write_profile(tmp_path, "zensical")
+    monkeypatch.setattr("okfprofile.site.installed", lambda _name: False)
+    with pytest.raises(SiteError, match="uv sync --group site-zensical"):
+        serve(tmp_path)

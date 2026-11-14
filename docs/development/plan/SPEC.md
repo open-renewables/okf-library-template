@@ -27,6 +27,7 @@ Meet SDD §14's P3 exit: **v0.5.0 (beta)**, tagged by the owner. At that point t
 | Site stack | `site-mkdocs` and `site-zensical` dependency groups, hash-locked exports, `mkdocs.yml` (I-13 baseline), tasks `docs`, `docs-build`, `docs-zensical`, `docs-linkcheck`, a page-list comparison | C-07; AD-13; ADR-001; FR8.1 |
 | Site compatibility | The six FR8.2 checks as tests on a fixture bundle, run on both generators; Python-Markdown divergences listed (G2); MkDocs tolerance of Zensical keys (ADR-001 carried issue) | FR8.2; V-03; AT-FR8.\* |
 | Site workflow | `site.yml`: MkDocs blocking, Zensical non-blocking with lychee and page-list checks, preview artifact, tag build, Pages deploy path (off before v1.0.0), release manifest on the site | W-08; FR8.3 to FR8.5 |
+| Site generator choice | A library chooses `mkdocs` (default) or `zensical` as its blocking site builder at `init_library` time; the choice is a profile key read by the site tasks and `site.yml`; both generators remain tested on every change (added 2026-11-14) | C-07; W-08; I-02, I-13; ADR-011 amends ADR-001 |
 | Site links | "Suggest an edit" (`repo_url`, `edit_uri`) and site-wide issue-form link; none for `git-local` | FR8.4; QA-37 |
 | Release workflow | `release.yml`: revision-line gate, validation, archive, checksum, manifest, GitHub Release, immutable where available, rebuild check | C-10; W-07; FR7.3, FR7.4; V-07 residue |
 | Release archive | `use-bundle` skill and a release-identity file inside the archive so an agent can report the tag from the archive alone | I-12; FR7.2, FR7.3 (PP-3) |
@@ -104,7 +105,8 @@ Carried to P4 and not P3 work: G23, G32, G35 (the owner's instruction), G3, G12 
 9. The leak-removal runbook ran on a synthetic repository with a tag and a Release and is corrected by what the run showed (G33).
 10. The scheduled `stale-report.yml` run of 2026-11-09 is read and recorded, and the run after the P3 merges is green.
 11. `testing/` documents are updated (G2, G11, G18, G21, G25, G27, G33 closed or narrowed; new gaps listed); proposed entries are decided; the P4 estimate is proposed from P3 actuals.
-12. The owner has tagged `v0.5.0` (beta) and the release workflow ran on it (OD-9).
+12. `init_library` asks for the site generator (`mkdocs` by default, or `zensical`); the choice is stored in the profile and read by `poe docs`, `docs-build` and `site.yml`; the self-test instantiates and builds the site strictly for each choice on both platforms (step 14; ADR-011).
+13. The owner has tagged `v0.5.0` (beta) and the release workflow ran on it (OD-9).
 
 ## Interpretations the owner should confirm
 

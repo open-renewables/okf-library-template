@@ -67,6 +67,7 @@ def questionnaire(ask: Ask) -> Answers:
     data["code_licence"] = put(f"Licence for your own code and changes ({', '.join(CODE_LICENCES)})", "Apache-2.0")
     if data["platform"] == "github":
         data["repository"] = put("Repository URL (for example https://github.com/org/name)")
+    data["site_generator"] = put("Site generator (mkdocs or zensical)", "mkdocs")
     data["keep_examples"] = yes("Keep the example concept?", True)
     data["keep_tests"] = yes("Keep the template's own tests?", False)
     return parse_answers(data)

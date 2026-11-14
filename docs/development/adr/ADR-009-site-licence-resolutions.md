@@ -1,6 +1,6 @@
 # ADR-009: Site-group licence metadata resolutions
 
-**Status:** Proposed (P3 plan PP-8, fired by step 4; awaiting the owner). **Supersedes:** none; extends ADR-007's method and edits the metadata table in `constraints.md`. **RFC:** none. **Plan:** P3 step 4.
+**Status:** Accepted (owner, 2026-11-14; P3 plan PP-8, fired by step 4). **Supersedes:** none; extends ADR-007's method and edits the metadata table in `constraints.md`. **RFC:** none. **Plan:** P3 step 4.
 
 ## Context
 

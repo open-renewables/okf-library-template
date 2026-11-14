@@ -60,8 +60,9 @@ Everything CI runs is a task you can run locally (`uv run poe` lists them).
 | `uv run poe check` | Lock check, lint, types, validation, index freshness, skills check |
 | `uv run poe test` | The tests, with coverage |
 | `uv run poe selftest` | Instantiate the template for each platform in a scratch folder and check the result |
-| `uv run poe docs` | Serve the site with live reload (needs `uv sync --group site-mkdocs`) |
-| `uv run poe docs-build` | Build the site with MkDocs, strict |
+| `uv run poe docs` | Serve the site with live reload, using the profile's site generator (needs `uv sync --group site-mkdocs` or `site-zensical`) |
+| `uv run poe docs-build` | Build the site with the profile's generator (MkDocs by default), strict |
+| `uv run poe docs-alt` | Build with the other generator and compare its pages with the primary build |
 | `uv run poe bundle <tag>` | Build the release archive, checksum and manifest into `dist/` |
 | `uv run poe release <tag>` | Release gate and, with `git-local`, the annotated tag |
 | `uv run poe revision` | `git-local`: record merged changes as revision-history lines |
@@ -73,7 +74,7 @@ Two skills in `.agents/skills/` follow the Agent Skills format: `use-bundle` nav
 
 ## Site and releases
 
-- **Site.** One `mkdocs.yml` builds the bundle in place with MkDocs and Material (blocking) and with Zensical (non-blocking). Every change gets a preview artifact; no public site exists before a library's v1.0.0.
+- **Site.** One `mkdocs.yml` builds the bundle in place with MkDocs and Material or with Zensical. `poe init` asks which one blocks (`mkdocs` by default; the choice is `site.generator` in `profile/profile.yaml`), and the other builds beside it as a non-blocking comparison. Every change gets a preview artifact; no public site exists before a library's v1.0.0.
 - **Releases.** A semver tag cuts a release: an archive of the bundle, the profile, `AGENTS.md` and the `use-bundle` skill, with its SHA-256 and a manifest. A release fails while any merged change lacks its revision-history line.
 
 ## Documents

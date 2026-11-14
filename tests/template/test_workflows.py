@@ -164,16 +164,26 @@ def test_the_template_only_workflow_is_removed_at_instantiation() -> None:
     assert ".github/workflows/template-tests.yml" in TEMPLATE_TESTS
 
 
-def test_the_site_workflow_blocks_on_mkdocs_only_and_publishes_pages_only_from_the_deploy_job() -> None:
+def test_the_site_workflow_blocks_on_the_profile_generator_and_publishes_pages_only_from_the_deploy_job() -> None:
     jobs = load(WORKFLOWS / "site.yml")["jobs"]
-    assert set(jobs) == {"mkdocs", "zensical", "deploy"}
-    assert jobs["zensical"]["continue-on-error"] is True
-    assert "continue-on-error" not in jobs["mkdocs"]
-    assert jobs["deploy"]["needs"] == "mkdocs"
+    assert set(jobs) == {"primary", "alternate", "deploy"}
+    assert jobs["alternate"]["continue-on-error"] is True
+    assert "continue-on-error" not in jobs["primary"]
+    assert jobs["deploy"]["needs"] == "primary"
     assert jobs["deploy"]["permissions"] == {"contents": "read", "pages": "write", "id-token": "write"}
-    for name in ("mkdocs", "zensical"):
+    for name in ("primary", "alternate"):
         assert jobs[name]["permissions"] == {"contents": "read"}
-    assert any("site-deploy-check" in block for block in run_blocks({"jobs": {"mkdocs": jobs["mkdocs"]}}))
+    primary = "\n".join(run_blocks({"jobs": {"primary": jobs["primary"]}}))
+    assert "site-deploy-check" in primary
+    assert "poe site-generator" in primary and "site-${{ steps.generator.outputs.name }}" in primary
+    assert "poe docs-build" in primary
+
+
+def test_the_alternate_job_builds_the_other_generator_and_checks_its_output() -> None:
+    alternate = load(WORKFLOWS / "site.yml")["jobs"]["alternate"]
+    script = "\n".join(run_blocks({"jobs": {"alternate": alternate}}))
+    assert "poe docs-alt" in script and "poe docs-linkcheck --site site-alt" in script
+    assert "--group site-mkdocs --group site-zensical" in script
 
 
 def test_the_release_workflow_runs_on_version_tags_and_only_publish_can_write() -> None:
@@ -220,7 +230,7 @@ def test_the_lychee_pin_matches_constraints() -> None:
     text = (ROOT / "docs" / "development" / "constraints.md").read_text(encoding="utf-8")
     row = next(line for line in text.splitlines() if line.startswith("| lychee |"))
     cells = [c.strip().strip("`") for c in row.strip("|").split("|")]
-    env = load(WORKFLOWS / "site.yml")["jobs"]["zensical"]["env"]
+    env = load(WORKFLOWS / "site.yml")["jobs"]["alternate"]["env"]
     assert env["LYCHEE_VERSION"] == cells[1]
     assert env["LYCHEE_SHA256"] == cells[3]
     assert len(cells[3]) == 64

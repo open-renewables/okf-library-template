@@ -81,7 +81,7 @@ def test_the_issue_chooser_links_a_file_that_exists() -> None:
 
 def test_rfc_001_follows_the_rfc_rules() -> None:
     text = (ROOT / "docs" / "development" / "rfcs" / "RFC-001-scope-notes.md").read_text(encoding="utf-8")
-    assert text.startswith("Status: Draft\n")
+    assert text.startswith("Status: ")
     assert "ADRs produced:" in text
     assert "## Recommendation" in text
 

@@ -45,6 +45,7 @@ Use the `author-concept` skill from a clone. The rules that matter:
 - Never delete a concept; deprecate it by `status: deprecated`.
 - Leave new concepts `status: draft`; a human owner makes one `stable`. A `stable` concept cites a source.
 - Tag values must exist in the vocabulary concepts. Adding one is a reviewed change.
+- Start every list after a blank line, and put no list inside a footnote definition: the site renders those two cases differently from the validator.
 - Mark agent-drafted work: the label named by `rules.agent_label` in the profile, or the commit trailer `Agent-Drafted: yes` when `platform: git-local`.
 - A change to `scripts/`, `profile/` or `.github/` is a separate pull request from a change to `knowledge/`, unless it carries the profile-migration label.
 - Before you finish: `uv run poe check` and `uv run poe test` pass.
