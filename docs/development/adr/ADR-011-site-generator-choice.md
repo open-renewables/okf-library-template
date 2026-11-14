@@ -15,6 +15,7 @@ ADR-001 made MkDocs with Material the blocking site build and Zensical a non-blo
 
 ## Consequences
 
+- Switching later is a task, not a refactor: `poe site-switch <generator>` builds the site with the new generator, then rewrites `site.generator` and the generated README sentence, and restores both files if the build fails or its pages differ from the bundle.
 - No second build mechanism: the choice changes which builder is blocking, not how builds are made. The W-10 self-test instantiates both generators (one per platform) and builds the site strictly with each.
 - A library that picks Zensical takes on its pre-1.0 risk for the build that gates its pull requests; the MkDocs comparison build still runs and reports page differences.
 - Supersedes the "blocking build is MkDocs" wording of ADR-001 and AD-13; the SDD wording (I-02, I-13, C-07, W-01 step 3, W-08, I-16) is edited under PP-14.

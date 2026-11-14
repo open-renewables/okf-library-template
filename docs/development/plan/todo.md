@@ -64,7 +64,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [ ] 13. `testing/` updated (acceptance statuses, matrix, strategy, master test plan line, known gaps: G2, G11, G18, G21, G25, G27, G30, G33 closed or narrowed; new gaps listed)
 - [ ] **NEEDS YOU (account):** sandbox repositories and Apps from P2 and P3 archived or deleted (decided 2026-11-14: after `v0.5.0` is verified, archive `p3-scratch-github` and `p0-spikes`, delete the App's private key and uninstall it; the P2 repositories are already gone)
 - [x] 13. Full gate locally on 3.11 and 3.14 and in CI on three systems; coverage figure; P4 estimate proposed from actuals; `v0.5.0` tag message drafted (gate: 799 passed on each Python before the generator work, 808 after; estimate and tag message below)
-- [x] 14. Site generator choice: profile key `site.generator`; `init_library` question and answers key; tasks and `site.yml` follow the profile (MkDocs default); ADR-011; README; SDD wording (PP-14)
+- [x] 14. Site generator choice (with `poe site-switch`, added 2026-11-15): profile key `site.generator`; `init_library` question and answers key; tasks and `site.yml` follow the profile (MkDocs default); ADR-011; README; SDD wording (PP-14)
 - [x] 14. Check: key tests (default, both values, invalid refused); self-test builds the site strict for each generator on both platforms; workflow tests; `poe check` and `poe test` pass; live sandbox run with `zensical` chosen
 - [ ] PR 5 closed: agent h ___, owner h ___
 

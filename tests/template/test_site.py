@@ -28,9 +28,10 @@ from okfprofile.site import (
     serve,
     should_deploy,
     site_url,
+    switch_generator,
     write_manifest,
 )
-from okfprofile.site_cli import build_site_main, check_site_main
+from okfprofile.site_cli import build_site_main, check_site_main, site_switch_main
 from support import ROOT
 
 FIXTURE = ROOT / "tests" / "template" / "fixtures" / "site"
@@ -443,3 +444,112 @@ def test_serving_needs_the_generators_group(tmp_path: Path, monkeypatch: pytest.
     monkeypatch.setattr("okfprofile.site.installed", lambda _name: False)
     with pytest.raises(SiteError, match="uv sync --group site-zensical"):
         serve(tmp_path)
+
+
+README_SENTENCE = (
+    "The site is built with Mkdocs (`site.generator` in `profile/profile.yaml`): `uv sync --group site-mkdocs`, "
+    "then `uv run poe docs-build`."
+)
+
+
+def switchable(fixture_root: Path, tmp_path: Path, generator_line: str | None = "mkdocs") -> Path:
+    root = tmp_path / "lib"
+    shutil.copytree(fixture_root, root, ignore=shutil.ignore_patterns("site", "site-alt", "site-zensical"))
+    write_profile(root, generator_line)
+    (root / "README.md").write_text(f"# Lib\n\n{README_SENTENCE}\n\nMore.\n", encoding="utf-8", newline="\n")
+    return root
+
+
+def test_the_switch_rewrites_the_profile_key_and_the_readme_sentence(fixture_root: Path, tmp_path: Path) -> None:
+    root = switchable(fixture_root, tmp_path)
+    assert switch_generator(root, "zensical", verify=False) == ["profile/profile.yaml", "README.md"]
+    assert generator(root) == "zensical"
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    assert "built with Zensical (" in readme and "--group site-zensical`" in readme and "site-mkdocs" not in readme
+    assert readme.startswith("# Lib\n\n") and readme.endswith("\n\nMore.\n")
+    assert switch_generator(root, "mkdocs", verify=False) == ["profile/profile.yaml", "README.md"]
+    assert (root / "README.md").read_text(encoding="utf-8").count("built with Mkdocs (") == 1
+
+
+def test_switching_to_the_current_generator_changes_nothing(fixture_root: Path, tmp_path: Path) -> None:
+    root = switchable(fixture_root, tmp_path)
+    before = (root / "profile" / "profile.yaml").read_bytes()
+    assert switch_generator(root, "mkdocs") == []
+    assert (root / "profile" / "profile.yaml").read_bytes() == before
+
+
+def test_a_profile_without_a_site_key_gets_one_after_the_platform_line(fixture_root: Path, tmp_path: Path) -> None:
+    root = switchable(fixture_root, tmp_path, generator_line=None)
+    assert switch_generator(root, "zensical", verify=False) == ["profile/profile.yaml", "README.md"]
+    assert (root / "profile" / "profile.yaml").read_text(encoding="utf-8") == (
+        "profile: x\nplatform: github\nsite:\n  generator: zensical\n"
+    )
+
+
+def test_a_readme_without_the_sentence_is_left_alone(fixture_root: Path, tmp_path: Path) -> None:
+    root = switchable(fixture_root, tmp_path)
+    (root / "README.md").write_text("# Lib\n", encoding="utf-8", newline="\n")
+    assert switch_generator(root, "zensical", verify=False) == ["profile/profile.yaml"]
+    assert (root / "README.md").read_text(encoding="utf-8") == "# Lib\n"
+
+
+def test_an_unknown_generator_is_refused(fixture_root: Path, tmp_path: Path) -> None:
+    root = switchable(fixture_root, tmp_path)
+    with pytest.raises(SiteError, match="unknown generator"):
+        switch_generator(root, "hugo")
+
+
+def test_a_failed_build_puts_both_files_back(
+    fixture_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = switchable(fixture_root, tmp_path)
+    before = {n: (root / n).read_bytes() for n in ("profile/profile.yaml", "README.md")}
+
+    def broken(*_args: object, **_kwargs: object) -> Path:
+        msg = "zensical is not installed"
+        raise SiteError(msg)
+
+    monkeypatch.setattr("okfprofile.site.build", broken)
+    with pytest.raises(SiteError, match="not installed"):
+        switch_generator(root, "zensical")
+    assert {n: (root / n).read_bytes() for n in before} == before
+
+
+def test_a_build_with_the_wrong_pages_puts_both_files_back(
+    fixture_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    root = switchable(fixture_root, tmp_path)
+    before = (root / "profile" / "profile.yaml").read_bytes()
+
+    def empty_site(_root: Path, _builder: str, out: Path | None = None) -> Path:
+        assert out is not None
+        out.mkdir(parents=True)
+        return out
+
+    monkeypatch.setattr("okfprofile.site.build", empty_site)
+    with pytest.raises(SiteError, match="lacks pages"):
+        switch_generator(root, "zensical")
+    assert (root / "profile" / "profile.yaml").read_bytes() == before
+
+
+def test_the_switch_builds_the_new_generator_before_it_commits_to_it(fixture_root: Path, tmp_path: Path) -> None:
+    if not (HAVE["mkdocs"] and HAVE["zensical"]):
+        pytest.skip("both site groups are needed (uv sync --group site-mkdocs --group site-zensical)")
+    root = switchable(fixture_root, tmp_path)
+    assert switch_generator(root, "zensical") == ["profile/profile.yaml", "README.md"]
+    assert generator(root) == "zensical"
+    assert not (root / "site").exists() and not (root / "site-alt").exists()  # the check built into a scratch folder
+
+
+def test_the_command_line_switches_reports_and_refuses(
+    fixture_root: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    root = switchable(fixture_root, tmp_path)
+    assert site_switch_main(["zensical", "--root", str(root), "--no-build"]) == 0
+    err = capsys.readouterr().err
+    assert "changed profile/profile.yaml" in err and "uv sync --group site-zensical" in err
+    assert site_switch_main(["zensical", "--root", str(root), "--no-build"]) == 0
+    assert "already the site generator" in capsys.readouterr().err
+    (root / "profile" / "profile.yaml").write_text("profile: x\nsite:\n  other: 1\n", encoding="utf-8")
+    assert site_switch_main(["zensical", "--root", str(root), "--no-build"]) == 2
+    assert "nothing was changed" in capsys.readouterr().err
