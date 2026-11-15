@@ -23,7 +23,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 ## PR 2: site (`tooling/p3-site`)
 
 - [x] PP-2 (lychee SHA-256) and PP-6 approved 2026-11-11 (text shown when written)
-- [ ] **NEEDS YOU (decision):** confirm the Zensical 0.1.1 and Material 9.7.7 pins in review (OD-3)
+- [x] **NEEDS YOU (decision):** confirm the Zensical 0.1.1 and Material 9.7.7 pins in review (OD-3) (confirmed 2026-11-14; Zensical stays exact-pinned and moves only through a reviewed pull request)
 - [x] 4. `site-mkdocs` and `site-zensical` groups, lock, hashed exports, licence check on site groups, audit, lychee SHA-256
 - [x] 4. Check: clean venv from each export installs with hashes; licences zero findings or each decided (PP-8 if not); export no-op; audit clean or decided; `validate` export unchanged
 - [x] 5. `mkdocs.yml`, `build_site.py`, `check_site.py`, tasks, fixture bundle, six-check tests, Zensical expectations, divergence study, build-time record
@@ -62,9 +62,9 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] **NEEDS YOU (setting):** confirm `p2-w12-target` may be rewritten; disable and re-enable its ruleset during the rehearsal
 - [x] 12. Leak-removal rehearsal on `p2-w12-target`: synthetic secret merged, detected, history rewritten, force-pushed, ruleset restored (`setup_repo.py --check`); effects on `validate`, revision lines, tag and Release recorded; runbook corrected (G33)
 - [ ] 13. `testing/` updated (acceptance statuses, matrix, strategy, master test plan line, known gaps: G2, G11, G18, G21, G25, G27, G30, G33 closed or narrowed; new gaps listed)
-- [ ] **NEEDS YOU (account):** sandbox repositories and Apps from P2 and P3 archived or deleted
-- [ ] 13. Full gate locally on 3.11 and 3.14 and in CI on three systems; coverage figure; P4 estimate proposed from actuals; `v0.5.0` tag message drafted
-- [x] 14. Site generator choice: profile key `site.generator`; `init_library` question and answers key; tasks and `site.yml` follow the profile (MkDocs default); ADR-011; README; SDD wording (PP-14)
+- [ ] **NEEDS YOU (account):** sandbox repositories and Apps from P2 and P3 archived or deleted (decided 2026-11-14: after `v0.5.0` is verified, archive `p3-scratch-github` and `p0-spikes`, delete the App's private key and uninstall it; the P2 repositories are already gone)
+- [x] 13. Full gate locally on 3.11 and 3.14 and in CI on three systems; coverage figure; P4 estimate proposed from actuals; `v0.5.0` tag message drafted (gate: 799 passed on each Python before the generator work, 808 after; estimate and tag message below)
+- [x] 14. Site generator choice (with `poe site-switch`, added 2026-11-15): profile key `site.generator`; `init_library` question and answers key; tasks and `site.yml` follow the profile (MkDocs default); ADR-011; README; SDD wording (PP-14)
 - [x] 14. Check: key tests (default, both values, invalid refused); self-test builds the site strict for each generator on both platforms; workflow tests; `poe check` and `poe test` pass; live sandbox run with `zensical` chosen
 - [ ] PR 5 closed: agent h ___, owner h ___
 
@@ -93,12 +93,13 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | 11 (smoke) | 2026-11-14, one provider, fresh subagent per skill, scratch library `p3-scratch-github`. `use-bundle` from the unpacked `v0.0.5` archive and `AGENTS.md` only, on five owner-approved questions: all answers matched the files; indexes read one level at a time, section by heading, tags from `vocab/`, status and tier as written, out-of-scope answered "not covered", `<uid>@v0.0.5` cited from `RELEASE`. `author-concept` in a clone drafted ITM-0002; validate 0 errors, `poe check` and `poe test` pass; the pull request carries `agent-drafted`. Four unclear points in the skill corrected (registry file in the commit, optional section placeholder, description in the commit body, label versus trailer). Details in `testing/skill-evals.md` | [Test], one provider (G38) | |
 | Owner decisions | 2026-11-14 Q&A: **ADR-009 approved** as drafted (Accepted). **PP-9:** an authoring rule now (SDD I-01, `AGENTS.md`, `author-concept`); a warning kind is reconsidered in P4 on real content. **RFC-001:** the owner chose none of A, B or C as written but "C combined with a YAML header in the `index.md` file": no scope-note type, a `description` in a YAML header on each folder's `index.md`, kept by the generator; recorded as option D in RFC-001 (Accepted) and **ADR-010**; built in P4 (about 2 to 3 agent hours); it needs the SRS FR4.3 wording and SDD I-07 and I-02 text, proposed as PP-13. **OD-9:** immutable releases off for `v0.5.0`, on before `v1.0.0` | | |
 | 14 | Site generator choice, requested 2026-11-14 (plan step 14, PP-14, ADR-011). Profile key `site.generator` (`mkdocs` default, `zensical`; schema, loader `Profile.site_generator`, optional); `init_library` asks for it (answers key `site_generator`) and writes it, the README names it; `build_site.py` takes `primary` (default), `alt`, `--serve`, `--print-generator`; tasks `docs`, `docs-build` use the library's generator, `docs-zensical` becomes `docs-alt` (output `site-alt/`), new `site-generator`; `site.yml` jobs `primary` (installs only the chosen group, blocking) and `alternate` (non-blocking, both groups, lychee). Tests: generator resolution, default outputs, invalid value refused, command line, serve needs the group, questionnaire and answers, workflow rules, and the W-10 self-test instantiates MkDocs on `github` and Zensical on `git-local` and builds each site strict. `poe check` clean; 808 passed, 4 skipped, coverage 98.15 %. **Live, 2026-11-14, sandbox PR #12:** with `site.generator: zensical` the `primary` job installed `site-zensical` and built with Zensical, `alternate` built MkDocs and compared pages, both green, `deploy` skipped. ADR-011 (Accepted) amends ADR-001 and AD-13; SDD §1, C-07, I-02, I-16, W-01, W-08 and a DDR row apply PP-14. Default stays MkDocs; revisit before v1.0.0 | [Test] | PP-14 applied |
+| G37 | Fixed 2026-11-15 at the owner's request, before the `v0.5.0` tag: `audit.py` reads `constraints.md` where it exists, else `profile/audit-ignore.txt` (advisory IDs; none means no exceptions); `test_supply.py` covers both and the W-10 self-test runs `audit_command` and `audit.py --print-command` in each instantiated library. The scratch library's `audit` job had failed on the missing file in S3a. Stale-report issue #37 (the 2026-11-09 run) read and recorded in step 12 | [Test] | |
 
 ### Status of proposed entries
 
 | # | Status | Evidence |
 | --- | --- | --- |
-| PP-1 | Approved 2026-11-11 as drafted; applied when its step lands | |
+| PP-1 | Approved 2026-11-11 as drafted; applied in PR 5 | SDD §1 and §14 (P3 actuals); DDR change-log row 2026-11-14 |
 | PP-2 | Approved 2026-11-11 as drafted; applied when its step lands | |
 | PP-3 | Approved 2026-11-11 as drafted; applied in PR 4 | SDD I-12, W-07, C-10, W-08; DDR change-log row 2026-11-13 |
 | PP-4 | Approved 2026-11-11 as drafted; applied in PR 4 | SDD W-07, C-10; DDR change-log row 2026-11-13 |
@@ -110,9 +111,67 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | PP-10 | Not needed: the draft-then-publish flow and `gh release create` work with immutable releases | S3b |
 | PP-11 | Not needed: 604 concepts build in 7.7 s (MkDocs) and 4.3 s (Zensical) | `performance.md` |
 | PP-12 | Approved and applied 2026-11-13 | SDD W-11 step 3; runbook; DDR row |
+| PP-15 | Approved 2026-11-14 and applied in PR 5: the P4 estimate (agent 26–37 h, owner 9–10 h, 6–9 days) | SDD §14 P4 row; DDR change-log row 2026-11-14 |
 | PP-14 | Added 2026-11-14 at the owner's request; approved with it and applied in PR 5 | ADR-011; SDD §1, C-07, I-02, I-16, W-01, W-08; DDR change-log row |
-| PP-13 | **Proposed**, from the RFC-001 decision (ADR-010): SRS FR4.3 wording (the index header is the one hand-written part), SDD I-07 and I-02 text, `author-concept` guidance; applied when P4 builds it | Awaiting the owner |
+| PP-13 | Approved 2026-11-14, **applied when P4 builds the index header** (ADR-010): SRS FR4.3 wording (yours), SDD I-07 and I-02 text, `author-concept` guidance | P4 |
 
 ## Draft: message of the annotated tag `v0.5.0`
 
-To be drafted at step 13 from what shipped.
+## Proposed P4 estimate (from P3 actuals, 2026-11-14)
+
+**P3 actuals [Inf]** (not time-logged; reconstructed from pull requests and sessions): agent about 36 hours (plan 0 about 4, PR 1 about 5, PR 2 about 9, PR 3 about 3, PR 4 about 5, PR 5 about 10 including both rehearsals, the smoke runs and the generator choice added on 2026-11-14), owner about 7 hours (the Q&As, the sandbox repository, App and immutability settings, the merges and reviews), and 4 calendar days from the plan merge (2026-11-11) to the last pull request. Plan was 32–50 agent hours, 7–11 owner hours and 5–8 days, so P3 landed inside it, as P2 did (54 against 53–83).
+
+**P4 estimate [Inf]**, same units and the same assumptions as the P3 plan (one pull request per sitting, review within a working day, no second runtime):
+
+| Item | Agent (h) | Owner (h) | Owner content |
+| --- | --- | --- | --- |
+| Instantiate the pilot, run the W-01 sheet, platform steps | 2 | 1.5 | Create the repository, App and settings; brief a second person |
+| Index scope-note header (ADR-010): `build_indexes.py`, check 5, fixtures, golden files; SRS FR4.3 and SDD I-07, I-02 wording (PP-13) | 3 | 0.5 | Approve PP-13 |
+| About 20 concepts with scope notes, vocabulary values and glossary entries, drafted with `author-concept` | 8–12 | 3–4 | Review each concept; mark the whole-concept reviews `full-review` |
+| Traced agent run from the archive (FR7.2) and the Master Test Plan run (AT cases) | 6–9 | 1.5 | Choose questions; read the trace |
+| G37 (`audit` in instantiated libraries) and the PP-9 warning decision, built if chosen | 2–4 | 0.5 | Decide |
+| W-12 rehearsal on the pilot (carried) | 2–3 | 0.5 | Confirm the move |
+| Hardening for v1.0.0: default generator, immutable releases on, release notes, the v1.0.0 gate, tag | 3–4 | 1.5 | Decide, tag |
+| **Total** | **26–37** | **9–10** | |
+
+Calendar time 6–9 days. Against the SDD §14 P4 row (5–8 person-days, owner about 6 hours) the agent effort is in range; the owner figure is higher because 20 concepts need a human review for the tier to mean anything. The largest uncertainty is the concept authoring (volume and review rounds), as the P1 core build was in P1. Proposed as PP-15 for the SDD §14 P4 row; not applied until the owner approves.
+
+## Draft: message of the annotated tag `v0.5.0`
+
+To be pushed by the owner as an annotated tag on `main` after the last P3 pull request merges. Edit the counts to the final run before tagging.
+
+```
+okf-library-template v0.5.0 (beta)
+
+A template for building validated, agent-ready knowledge libraries on the
+Open Knowledge Format (OKF) v0.2. Beta: build phases P0 to P3 are done and
+rehearsed; the pilot library (P4) and v1.0.0 follow. Not for citing as stable.
+
+What is in it
+- Profile tooling (okfprofile): six validation checks, generated indexes,
+  uid registry, revision history and trust tiers, base-branch validation
+- init_library for platform github and git-local; setup_repo; an instantiation
+  self-test that builds each library and its site
+- CI: validate, revision writer, stale report, site (MkDocs or Zensical, chosen
+  at init, switchable later with poe site-switch; MkDocs is the default),
+  release (gate, build, rebuild, publish)
+- Agent skills use-bundle and author-concept, AGENTS.md, GOVERNANCE.md, runbooks
+
+How it was checked
+- uv run poe check and poe test on Python 3.11 and 3.14: 821 tests,
+  coverage 98.1 %; CI on Linux, macOS and Windows
+- Live rehearsals in sandbox libraries: release from a tag (immutable
+  pre-release, gate refuses a missing revision line), Pages deploy from v1.0.0
+  with a site URL, a Zensical-primary site build, a leak removal up to the
+  force-push, two agent smoke runs (one provider)
+
+Known gaps (docs/development/testing/known-gaps.md)
+- G38 the skills were tried on one provider; G39 a whole immutable Release can
+  still be deleted; G40 this is the template's first release.yml run
+- Scope notes (ADR-010), a warning for the two Python-Markdown divergences
+  (PP-9) and the pilot are P4
+
+Verify a download: sha256sum -c <archive>.sha256; the RELEASE file inside the
+archive names this tag and its commit. This release is a pre-release; its
+assets are not yet immutable (immutable releases are switched on before v1.0.0).
+```

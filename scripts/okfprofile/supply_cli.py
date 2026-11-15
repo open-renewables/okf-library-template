@@ -18,6 +18,7 @@ from okfprofile.gitutil import GitError, git
 from okfprofile.licences import CONSTRAINTS, PolicyError, audit_exceptions, check_repository
 from okfprofile.scanner import ScanConfigError, load_scan_config, scan_files
 
+LIBRARY_AUDIT_IGNORE = "profile/audit-ignore.txt"
 EXIT_OK = 0
 EXIT_FINDINGS = 1
 EXIT_USAGE = 2
@@ -134,8 +135,35 @@ def licences_main(argv: Sequence[str] | None = None) -> int:
     return EXIT_OK if report.ok else EXIT_FINDINGS
 
 
+def audit_ignored(root: Path) -> list[str]:
+    """Advisory IDs the audit should ignore.
+
+    The template records them in ``docs/development/constraints.md``. A library has no such file (``init_library``
+    removes ``docs/``), so it may list advisory IDs, one per line with ``#`` comments, in ``profile/audit-ignore.txt``;
+    with neither file there are no exceptions (known gap G37).
+
+    Args:
+        root: Repository root.
+
+    Returns:
+        The advisory IDs.
+
+    Raises:
+        PolicyError: If ``constraints.md`` has no readable exceptions table.
+        OSError: If a file that exists cannot be read.
+    """
+    constraints = root / CONSTRAINTS
+    if constraints.is_file():
+        return audit_exceptions(constraints.read_text(encoding="utf-8"))
+    ignore = root / LIBRARY_AUDIT_IGNORE
+    if not ignore.is_file():
+        return []
+    lines = (line.split("#", 1)[0].strip() for line in ignore.read_text(encoding="utf-8").splitlines())
+    return [line for line in lines if line]
+
+
 def audit_command(root: Path) -> list[str]:
-    """The ``pip-audit`` command for the locked set, with the exceptions recorded in ``constraints.md``.
+    """The ``pip-audit`` command for the locked set, with the exceptions the repository records.
 
     Args:
         root: Repository root.
@@ -143,7 +171,7 @@ def audit_command(root: Path) -> list[str]:
     Returns:
         The argument list.
     """
-    ignored = audit_exceptions((root / CONSTRAINTS).read_text(encoding="utf-8"))
+    ignored = audit_ignored(root)
     command = ["uvx", "pip-audit", "--disable-pip", "--no-deps", "-r", "requirements/dev.txt"]
     for advisory in ignored:
         command += ["--ignore-vuln", advisory]

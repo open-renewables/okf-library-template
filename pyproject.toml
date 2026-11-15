@@ -48,7 +48,7 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py scripts/check_skills.py scripts/link_skills.py scripts/build_site.py scripts/check_site.py tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py scripts/check_skills.py scripts/link_skills.py scripts/build_site.py scripts/check_site.py scripts/site_switch.py tests",
     "python scripts/validate_profile.py",
     "python scripts/build_indexes.py --check",
     "python scripts/export_requirements.py --check",
@@ -87,6 +87,11 @@ default_item_type = "cmd"
 [tool.poe.tasks.site-generator]
 help = "Print the profile's site.generator (mkdocs or zensical)"
 cmd = "python scripts/build_site.py --print-generator"
+
+[tool.poe.tasks.site-switch]
+help = "Make mkdocs or zensical the blocking site generator: edits profile.yaml and the README sentence, after a strict build with the new one"
+cmd = "python scripts/site_switch.py ${generator}"
+args = [{ name = "generator", positional = true, required = true, help = "mkdocs or zensical" }]
 
 [tool.poe.tasks.docs-linkcheck]
 help = "Check the built site's links and fragments offline with lychee, if installed"
