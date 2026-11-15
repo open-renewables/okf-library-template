@@ -153,20 +153,21 @@ What is in it
 - init_library for platform github and git-local; setup_repo; an instantiation
   self-test that builds each library and its site
 - CI: validate, revision writer, stale report, site (MkDocs or Zensical, chosen
-  at init; MkDocs is the default), release (gate, build, rebuild, publish)
+  at init, switchable later with poe site-switch; MkDocs is the default),
+  release (gate, build, rebuild, publish)
 - Agent skills use-bundle and author-concept, AGENTS.md, GOVERNANCE.md, runbooks
 
 How it was checked
-- uv run poe check and poe test on Python 3.11 and 3.14: about 800 tests,
-  coverage about 98 %; CI on Linux, macOS and Windows
+- uv run poe check and poe test on Python 3.11 and 3.14: 821 tests,
+  coverage 98.1 %; CI on Linux, macOS and Windows
 - Live rehearsals in sandbox libraries: release from a tag (immutable
   pre-release, gate refuses a missing revision line), Pages deploy from v1.0.0
   with a site URL, a Zensical-primary site build, a leak removal up to the
   force-push, two agent smoke runs (one provider)
 
 Known gaps (docs/development/testing/known-gaps.md)
-- G37 the audit job fails in instantiated libraries; G38 skills tried on one
-  provider; G40 this is the template's first release.workflow run
+- G38 the skills were tried on one provider; G39 a whole immutable Release can
+  still be deleted; G40 this is the template's first release.yml run
 - Scope notes (ADR-010), a warning for the two Python-Markdown divergences
   (PP-9) and the pilot are P4
 
