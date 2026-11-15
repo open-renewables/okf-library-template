@@ -841,7 +841,7 @@ Baseline controls (NFR6):
 - Validation and site dependencies are separate groups; validation installs only `requirements/validate.txt` with hashes.
 - Dependency licence check in `template-tests.yml` against an allowlist compatible with Apache 2.0.
 - Secrets: the gitleaks CLI at a pinned version, with its checksum verified, on every pull request and push, plus `scan.py` for confidentiality markers; public repositories add native secret scanning, push protection and CodeQL. Locally the pre-commit hook runs gitleaks only if it is installed. The `gitleaks-action` wrapper is not used, because it requires a licence key for repositories owned by an organisation (free on sign-up; not needed for personal accounts) **[Doc]**, checked 25 October 2026 (QA-74).
-- Vulnerabilities: `uvx pip-audit` on the locked set for every pull request that changes `uv.lock` and weekly in `stale-report.yml`; a finding fails the run unless an exception is recorded in `docs/development/constraints.md`. In `git-local` mode, `poe audit` is run by hand.
+- Vulnerabilities: `uvx pip-audit` on the locked set for every pull request that changes `uv.lock` and weekly in `stale-report.yml`; a finding fails the run unless an exception is recorded in `docs/development/constraints.md` (the template) or, in a library, which has no such file, as an advisory ID in `profile/audit-ignore.txt` (one per line, `#` comments; no file means no exceptions). In `git-local` mode, `poe audit` is run by hand.
 - In `git-local` mode the platform controls above do not apply; the same scans run through pre-commit and the poe tasks.
 
 ## 11. Deployment and repository configuration

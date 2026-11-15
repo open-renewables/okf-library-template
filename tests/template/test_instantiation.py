@@ -26,6 +26,7 @@ from okfprofile.release_cli import release_main
 from okfprofile.revision_cli import write_revision_main
 from okfprofile.site import build, compare_pages, docs_dir, generator, installed
 from okfprofile.skills_cli import check_skills_main
+from okfprofile.supply_cli import audit_command, audit_main
 from support import ROOT, git
 from test_instantiate import copy_template
 
@@ -232,6 +233,14 @@ def test_the_librarys_site_config_names_the_library_and_links_only_where_there_i
         for dead in ("repo_url", "edit_uri", "social", "content.action.edit", "issues/new"):
             assert dead not in config, dead
         assert "extra:" in config
+
+
+def test_the_audit_runs_in_an_instantiated_library_without_constraints_md(instantiated: tuple[str, Path]) -> None:
+    """Known gap G37: the audit used to read `docs/development/constraints.md`, which a library does not have."""
+    _platform, root = instantiated
+    assert not (root / "docs").exists()
+    assert audit_command(root) == ["uvx", "pip-audit", "--disable-pip", "--no-deps", "-r", "requirements/dev.txt"]
+    assert audit_main(["--root", str(root), "--print-command"]) == 0
 
 
 def test_the_chosen_site_generator_is_in_the_profile_and_the_readme(instantiated: tuple[str, Path]) -> None:
