@@ -18,7 +18,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] 2. Check: every command in both skills exists; scratch library follows the author sequence and validates; adapter idempotent, refuses a foreign folder, `git status` clean
 - [x] 3. `AGENTS.md` library-facing below the template-only markers
 - [x] 3. Check: instantiated `AGENTS.md` has no template text or placeholder; its commands exist; `CLAUDE.md` still loads it
-- [ ] PR 1 closed: agent h ___, owner h ___
+- [x] PR 1 closed: agent about 5 h, owner not logged (PR merged as #39)
 
 ## PR 2: site (`tooling/p3-site`)
 
@@ -43,7 +43,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] 9. `RFC-001-scope-notes.md` (Draft, no build); `.idea/` untracked and ignored (G30)
 - [x] 9. Check: RFC follows `rfcs/README.md`; `git ls-files .idea` empty; no `.idea` warning on instantiation
 - [x] **NEEDS YOU (decision):** read RFC-001 and decide before P4 (OD-4) (decided 2026-11-14: option D, ADR-010)
-- [ ] PR 3 closed: agent h ___, owner h ___
+- [x] PR 3 closed: agent about 3 h, owner not logged (PR merged as #41)
 
 ## PR 4: release workflow (`tooling/p3-release`)
 
@@ -54,27 +54,27 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] 11. S3b: `v0.0.1` Release with archive, checksum, manifest, notes, pre-release mark; asset edit refused; rebuild job green; missing line fails `v0.0.2` and no Release exists; restored line passes (AT-FR7.3-03)
 - [x] **NEEDS YOU (person):** choose five questions for the `use-bundle` run; optionally run the prompts on a second runtime (OD-13)
 - [x] 11. Smoke runs: `use-bundle` from the archive and `AGENTS.md` only on five questions; `author-concept` drafts a concept that validates and is labelled agent-drafted; each labelled **[Test]**, one provider; skills corrected and rerun if they miss (PP-10 if the release flow conflicts with immutability)
-- [ ] PR 4 closed: agent h ___, owner h ___
+- [x] PR 4 closed: agent about 5 h, owner not logged (PR merged as #42)
 
 ## PR 5: exit (`tooling/p3-exit`)
 
-- [ ] 12. Read the scheduled `stale-report.yml` run of 2026-11-09 (run 42629913632) and record it (G27); next scheduled run after PR 3 and PR 4 merge is green and lists the new tag in its gap check
+- [ ] 12. (First part done; the run of 2026-11-16 is carried out of P3 and recorded after the archive, next to G27.) Read the scheduled `stale-report.yml` run of 2026-11-09 (run 42629913632) and record it (G27); next scheduled run after PR 3 and PR 4 merge is green and lists the new tag in its gap check
 - [x] **NEEDS YOU (setting):** confirm `p2-w12-target` may be rewritten; disable and re-enable its ruleset during the rehearsal
 - [x] 12. Leak-removal rehearsal on `p2-w12-target`: synthetic secret merged, detected, history rewritten, force-pushed, ruleset restored (`setup_repo.py --check`); effects on `validate`, revision lines, tag and Release recorded; runbook corrected (G33)
-- [ ] 13. `testing/` updated (acceptance statuses, matrix, strategy, master test plan line, known gaps: G2, G11, G18, G21, G25, G27, G30, G33 closed or narrowed; new gaps listed)
-- [ ] **NEEDS YOU (account):** sandbox repositories and Apps from P2 and P3 archived or deleted (decided 2026-11-14: after `v0.5.0` is verified, archive `p3-scratch-github` and `p0-spikes`, delete the App's private key and uninstall it; the P2 repositories are already gone)
+- [x] 13. `testing/` updated (acceptance statuses, matrix, strategy, master test plan line, known gaps: G2, G11, G18, G21, G25, G27, G30, G33 closed or narrowed; new gaps listed)
+- [ ] **NEEDS YOU (account), carried out of P3:** sandbox repositories and Apps from P2 and P3 archived or deleted (decided 2026-11-14: after `v0.5.0` is verified, archive `p3-scratch-github` and `p0-spikes`, delete the App's private key and uninstall it; the P2 repositories are already gone)
 - [x] 13. Full gate locally on 3.11 and 3.14 and in CI on three systems; coverage figure; P4 estimate proposed from actuals; `v0.5.0` tag message drafted (gate: 799 passed on each Python before the generator work, 808 after; estimate and tag message below)
 - [x] 14. Site generator choice (with `poe site-switch`, added 2026-11-15): profile key `site.generator`; `init_library` question and answers key; tasks and `site.yml` follow the profile (MkDocs default); ADR-011; README; SDD wording (PP-14)
 - [x] 14. Check: key tests (default, both values, invalid refused); self-test builds the site strict for each generator on both platforms; workflow tests; `poe check` and `poe test` pass; live sandbox run with `zensical` chosen
-- [ ] PR 5 closed: agent h ___, owner h ___
+- [x] PR 5 closed: agent about 13 h including the follow-up (the generator choice, `poe site-switch`, G37, the P4 estimate), owner not logged (merged as #43 and #44)
 
 ## Exit
 
-- [ ] SPEC "Done when" items 1 to 12 met, evidence in the Outcomes table
+- [x] SPEC "Done when" items 1 to 12 met, evidence in the Outcomes table (item 10, the run after the P3 merges, is carried: see step 12)
 - [x] **NEEDS YOU (decision):** owner decides immutability of releases on the template before tagging (OD-9) (decided 2026-11-14: off for v0.5.0, on before v1.0.0)
-- [ ] **NEEDS YOU (person):** owner pushes annotated tag `v0.5.0` (beta) on `main`; `release.yml` runs on it; "Done when" 12 ticked
-- [ ] Proposed entries PP-1 to PP-6 decided and, where approved, applied; conditional PP-7 to PP-11 closed as "not needed" or decided
-- [ ] On the owner's instruction, move the three plan files to `plan/archive/2026-11-p3-site-release-skills/` and re-point relative links; the SRS status is not changed
+- [x] **NEEDS YOU (person):** owner pushes annotated tag `v0.5.0` (beta) on `main`; `release.yml` runs on it; "Done when" 13 ticked (pushed 2026-11-15 on `b58eb53`)
+- [x] Proposed entries PP-1 to PP-6 decided and, where approved, applied; conditional PP-7 to PP-11 closed as "not needed" or decided
+- [x] On the owner's instruction (2026-11-15), move the three plan files to `plan/archive/2026-11-p3-site-release-skills/` and re-point relative links; the SRS status is not changed
 
 ## Outcomes
 
@@ -94,6 +94,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | Owner decisions | 2026-11-14 Q&A: **ADR-009 approved** as drafted (Accepted). **PP-9:** an authoring rule now (SDD I-01, `AGENTS.md`, `author-concept`); a warning kind is reconsidered in P4 on real content. **RFC-001:** the owner chose none of A, B or C as written but "C combined with a YAML header in the `index.md` file": no scope-note type, a `description` in a YAML header on each folder's `index.md`, kept by the generator; recorded as option D in RFC-001 (Accepted) and **ADR-010**; built in P4 (about 2 to 3 agent hours); it needs the SRS FR4.3 wording and SDD I-07 and I-02 text, proposed as PP-13. **OD-9:** immutable releases off for `v0.5.0`, on before `v1.0.0` | | |
 | 14 | Site generator choice, requested 2026-11-14 (plan step 14, PP-14, ADR-011). Profile key `site.generator` (`mkdocs` default, `zensical`; schema, loader `Profile.site_generator`, optional); `init_library` asks for it (answers key `site_generator`) and writes it, the README names it; `build_site.py` takes `primary` (default), `alt`, `--serve`, `--print-generator`; tasks `docs`, `docs-build` use the library's generator, `docs-zensical` becomes `docs-alt` (output `site-alt/`), new `site-generator`; `site.yml` jobs `primary` (installs only the chosen group, blocking) and `alternate` (non-blocking, both groups, lychee). Tests: generator resolution, default outputs, invalid value refused, command line, serve needs the group, questionnaire and answers, workflow rules, and the W-10 self-test instantiates MkDocs on `github` and Zensical on `git-local` and builds each site strict. `poe check` clean; 808 passed, 4 skipped, coverage 98.15 %. **Live, 2026-11-14, sandbox PR #12:** with `site.generator: zensical` the `primary` job installed `site-zensical` and built with Zensical, `alternate` built MkDocs and compared pages, both green, `deploy` skipped. ADR-011 (Accepted) amends ADR-001 and AD-13; SDD §1, C-07, I-02, I-16, W-01, W-08 and a DDR row apply PP-14. Default stays MkDocs; revisit before v1.0.0 | [Test] | PP-14 applied |
 | G37 | Fixed 2026-11-15 at the owner's request, before the `v0.5.0` tag: `audit.py` reads `constraints.md` where it exists, else `profile/audit-ignore.txt` (advisory IDs; none means no exceptions); `test_supply.py` covers both and the W-10 self-test runs `audit_command` and `audit.py --print-command` in each instantiated library. The scratch library's `audit` job had failed on the missing file in S3a. Stale-report issue #37 (the 2026-11-09 run) read and recorded in step 12 | [Test] | |
+| Release | `v0.5.0` pushed by the owner on 2026-11-15 as an annotated tag on `b58eb53` (the merge of #44, which carried `poe site-switch`, the G37 fix, the P4 estimate and the tag message; #43 had been merged before those commits were pushed, found when the merge was checked). `release.yml` ran on it for the first time on the template: `gate`, `build`, `rebuild` and `publish` green. The Release is a published pre-release, not immutable (decided), with `okf-library-template-v0.5.0.tar.gz`, its `.sha256`, the manifest and generated notes. Downloaded and checked: `sha256sum -c` OK, the tar digest equals the manifest's, `RELEASE` names `v0.5.0` and `b58eb53`, `use-bundle` is in the archive and `author-concept` is not, 4 concepts and 26 files. Closes G40. Not yet done: the stale-report run of 2026-11-16 (carried) and the sandbox clean-up (carried, owner) | [Test] | |
 
 ### Status of proposed entries
 
