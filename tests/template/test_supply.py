@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 from okfprofile import supply_cli
-from okfprofile.supply_cli import EXPORTS, audit_command, audit_main, export_main, export_text
+from okfprofile.supply_cli import EXPORTS, audit_command, audit_ignored, audit_main, export_main, export_text
 from support import ROOT
 
 needs_uv = pytest.mark.skipif(shutil.which("uv") is None, reason="uv is not installed")
@@ -60,6 +60,24 @@ def test_the_audit_command_carries_recorded_exceptions(scratch: Path) -> None:
     )
     constraints.write_text(text, encoding="utf-8", newline="\n")
     assert audit_command(scratch)[-2:] == ["--ignore-vuln", "PYSEC-1"]
+
+
+def test_a_library_without_constraints_md_audits_with_no_exceptions_or_with_its_own_list(scratch: Path) -> None:
+    """Known gap G37: `init_library` removes `docs/`, so the audit must not need `constraints.md`."""
+    shutil.rmtree(scratch / "docs")
+    base = ["uvx", "pip-audit", "--disable-pip", "--no-deps", "-r", "requirements/dev.txt"]
+    assert audit_command(scratch) == base
+    (scratch / "profile").mkdir(exist_ok=True)
+    listing = "# advisories this library has reviewed\nPYSEC-1  # no fix yet\n\nGHSA-2\n"
+    (scratch / "profile" / "audit-ignore.txt").write_text(listing, encoding="utf-8", newline="\n")
+    assert audit_ignored(scratch) == ["PYSEC-1", "GHSA-2"]
+    assert audit_command(scratch)[-4:] == ["--ignore-vuln", "PYSEC-1", "--ignore-vuln", "GHSA-2"]
+
+
+def test_constraints_md_wins_over_the_library_list_when_both_exist(scratch: Path) -> None:
+    (scratch / "profile").mkdir(exist_ok=True)
+    (scratch / "profile" / "audit-ignore.txt").write_text("PYSEC-9\n", encoding="utf-8", newline="\n")
+    assert audit_ignored(scratch) == []  # the template's table records none
 
 
 def test_audit_main_prints_or_refuses(
