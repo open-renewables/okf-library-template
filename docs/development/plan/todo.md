@@ -12,7 +12,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR D: Dependabot #24 to #28
 
-- [ ] 1. Each pull request's diff read (only `uv.lock` and `requirements/dev.txt`), upstream notes checked, rebased
+- [x] 1. Each pull request's diff read: they change only `requirements/*.txt`, not `uv.lock`, and no CI ran on them, so OD-12's replacement applies (G41)
 - [ ] **NEEDS YOU (person):** `@dependabot rebase` on each, or approve the `tooling/p4-deps` replacement (OD-12); merge; close superseded ones
 - [ ] 1. Check: `poe licences` and `poe audit` zero findings; `poe export --check` passes; `validate` export unchanged; CI green on three systems; none of #24 to #28 left open
 - [ ] PR D closed: agent __ h, owner __ h
