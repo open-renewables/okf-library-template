@@ -1,11 +1,11 @@
 # Finding codes
 
-Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/okfprofile/codes.py` is the source; this file mirrors it with the fixture that proves each code. A code is stable once defined and is never reused. Ranges follow I-09:
+Catalogue of the finding codes the validator reports. The registry in `scripts/okfprofile/codes.py` is the source; this file mirrors it with the fixture that proves each code. A code is stable once defined and is never reused. Ranges by check:
 
 | Range | Check |
 | --- | --- |
 | `OKF0xx` | Change rules: mixed tooling and content changes; `profile-migration` conditions |
-| `OKF1xx` | 1. OKF conformance (the OKF v0.3 validator's findings mapped by code, ADR-013; frontmatter-first; datetime offsets) |
+| `OKF1xx` | 1. OKF conformance (the OKF v0.3 validator's findings mapped by code; frontmatter-first; datetime offsets) |
 | `OKF2xx` | 2. Frontmatter schema; unknown fields; declared type |
 | `OKF3xx` | 3. Body sections, order, placeholders, formats, CI-managed sections |
 | `OKF4xx` | 4. Links, anchors, vocabulary membership, path rules |
@@ -30,10 +30,10 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF113 | warning | 1 | Actor does not follow the OKF actor convention | `tests/library/fixtures/fail/OKF113/` |
 | OKF116 | warning | 1 | `usage_count` has no window, a footnote matches no `sources[].id`, or an id repeats (validator `W107` to `W109`) | `tests/library/fixtures/fail/OKF116/` |
 | OKF117 | warning | 1 | Root `index.md` lacks a quoted `okf_version`, or `log.md` dates are out of order (validator `W117`, `W118`, `W125`) | `tests/library/fixtures/fail/OKF117/` |
-| OKF118 | warning | 1 | Attested Computation contract field is missing or dangling | unit test, `tests/template/test_conformance.py` (see known gaps) |
+| OKF118 | warning | 1 | Attested Computation contract field is missing or dangling | unit test, `tests/template/test_conformance.py` |
 | OKF119 | warning | 1 | The OKF validator reported a code this tool does not map | unit test, `tests/template/test_conformance.py` |
 | OKF120 | error | 1 | Timestamp is not an ISO 8601 datetime with an explicit UTC offset | `tests/library/fixtures/fail/OKF120/` |
-| OKF121 | warning | 1 | Folder index headers carry a scope description (ADR-010), which OKF v0.3 section 8 does not allow; one warning per bundle naming the files, in place of the validator's per-index `E004` errors (ADR-012, ADR-013) | `tests/library/fixtures/fail/OKF121/` |
+| OKF121 | warning | 1 | Folder index headers carry a scope description, which OKF v0.3 section 8 does not allow; one warning per bundle naming the files, in place of the validator's per-index `E004` errors | `tests/library/fixtures/fail/OKF121/` |
 | OKF122 | warning | 1 | `superseded_by` is set but `status` is not `deprecated` (OKF section 5.4; validator `W123`) | `tests/library/fixtures/fail/OKF122/` |
 | OKF201 | error | 2 | Concept type is not declared in the profile | `tests/library/fixtures/fail/OKF201/` |
 | OKF202 | error | 2 | Required frontmatter field missing | `tests/library/fixtures/fail/OKF202/` |
@@ -90,10 +90,10 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF804 | warning | Profile warnings | Folder holds more concepts than the profile's limit | `tests/library/fixtures/fail/OKF804/` |
 | OKF901 | error | Revision completeness | A merged change has no revision line in a concept it touched | unit test, `tests/template/test_revision_writer.py` (raised by `write_revision.py --check-since`, which reads git history, so no bundle fixture can show it) |
 
-Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered; `OKF111`, legacy OKF v0.1 constructs, was retired by ADR-013 because the OKF v0.3 validator does not check them). `OKF9xx` (revision completeness) is raised by `write_revision.py --check-since`, not by `validate_profile.py`. The check column holds the I-09 check number, or the name of a group of rules that has no number there.
+Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered; `OKF111`, legacy OKF v0.1 constructs, was retired with the move to OKF v0.3 because the OKF v0.3 validator does not check them). `OKF9xx` (revision completeness) is raised by `write_revision.py --check-since`, not by `validate_profile.py`. The check column holds the number of the validation check (1 to 6), or the name of a group of rules that has none.
 
 ## Reading rules
 
 - **YAML.** Frontmatter is YAML 1.2 with the timestamp type disabled: `no` and dates stay strings; numbers and `true`/`false` keep their types. Findings carry the 1-based file line of the offending key, or the line where the parser stopped.
-- **Levels.** `error` blocks; `warning` never fails a run. The `low` and `medium` priority of a profile warning (I-02) is separate from the level.
-- **Revision-history edits.** FR3.4 (a hand edit fails check 3) cannot be proved from content alone. `OKF314` checks that each line fits the I-08 grammar; `OKF315` checks, against a base, that existing lines are unchanged and only appended to. A well-formed line added by hand, and any edit in a run with no base, are not detected (known gap G4; proposed entry PP-6).
+- **Levels.** `error` blocks; `warning` never fails a run. The `low` and `medium` priority of a profile warning is separate from the level.
+- **Revision-history edits.** A hand edit cannot always be told from content alone. `OKF314` checks that each line fits the [revision-line grammar](reference.md#revision-history-line); `OKF315` checks, against a base, that existing lines are unchanged and only appended to. A well-formed line added by hand, and any edit in a run with no base, are not detected.

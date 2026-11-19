@@ -11,7 +11,7 @@ What is tested at which level, and why. The measured limits (coverage, matrix) a
 | Golden file | `tests/template/golden/` | Generated output stays byte-identical: the four index shapes and every I-08 revision-tier case (`tiers.json`) | `uv run poe test` |
 | Self-validation | `knowledge/` and `tests/library/fixtures/pass/` | The shipped example bundle has zero errors and its indexes are current | `uv run poe check` |
 | Local CI-style parity | `tests/template/test_cli.py` | A plain local run and a `--tooling-from <ref> --base <ref>` run on the same commit give identical JSON (FR2.8, FR2.11); FR2.5 is exercised in a real scratch git repository | `uv run poe test` |
-| Catalogue | `tests/template/test_catalogue.py` | Every code in `scripts/okfprofile/codes.py` has a row in [finding-codes.md](../architecture/finding-codes.md), every row names a code that exists, and every fixture or test path listed exists | `uv run poe test` |
+| Catalogue | `tests/template/test_catalogue.py` | Every code in `scripts/okfprofile/codes.py` has a row in [finding-codes.md](../../guide/finding-codes.md), every row names a code that exists, and every fixture or test path listed exists | `uv run poe test` |
 
 Tests use no network. Tooling tests that need git build a scratch repository under `tmp_path`.
 

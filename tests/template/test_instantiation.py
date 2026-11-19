@@ -8,6 +8,7 @@ covers it against an in-memory GitHub. Nothing here may call a platform: the ``g
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -55,7 +56,7 @@ def copy_of(root: Path, tmp_path: Path) -> Path:
 
 def test_template_only_files_are_gone_and_library_files_remain(instantiated: tuple[str, Path]) -> None:
     platform, root = instantiated
-    for gone in ("CLAUDE.md", "docs", "tests/template", ".github/workflows/template-tests.yml"):
+    for gone in ("CLAUDE.md", "docs/development", "tests/template", ".github/workflows/template-tests.yml"):
         assert not (root / gone).exists(), gone
     assert (root / "tests" / "library" / "test_fixtures.py").is_file()
     assert (root / "AGENTS.md").is_file() and "template-only" not in (root / "AGENTS.md").read_text(encoding="utf-8")
@@ -242,7 +243,7 @@ def test_the_librarys_site_config_names_the_library_and_links_only_where_there_i
 def test_the_audit_runs_in_an_instantiated_library_without_constraints_md(instantiated: tuple[str, Path]) -> None:
     """Known gap G37: the audit used to read `docs/development/constraints.md`, which a library does not have."""
     _platform, root = instantiated
-    assert not (root / "docs").exists()
+    assert not (root / "docs" / "development").exists()
     assert audit_command(root) == ["uvx", "pip-audit", "--disable-pip", "--no-deps", "-r", "requirements/dev.txt"]
     assert audit_main(["--root", str(root), "--print-command"]) == 0
 
@@ -304,3 +305,55 @@ def test_a_proprietary_content_licence_is_a_licence_ref() -> None:
         content_licence="proprietary",
     )
     assert "license: LicenseRef-proprietary\n" in root_index_header(answers, "0.3")
+
+
+def _guide_pages(root: Path) -> dict[str, str]:
+    return {p.name: p.read_text(encoding="utf-8") for p in sorted((root / "docs" / "guide").glob("*.md"))}
+
+
+def test_the_user_guide_is_kept_as_the_answers_chose(instantiated: tuple[str, Path]) -> None:
+    """OD-24: `github` answers morph the guide (the default), `git-local` answers copy it."""
+    platform, root = instantiated
+    pages = _guide_pages(root)
+    assert {"index.md", "getting-started.md", "maintaining.md", "customising.md", "reference.md"} <= set(pages)
+    assert {"finding-codes.md", "runbooks.md"} <= set(pages)
+    for name, text in pages.items():
+        assert "<!-- template-only" not in text, name
+        assert "<!-- platform:" not in text, name
+        assert "docs/development" not in text, name
+        for target in re.findall(r"\]\(([^)#\s]+)(?:#[^)]*)?\)", text):
+            if "://" not in target:
+                assert (root / "docs" / "guide" / target).resolve().exists(), f"{name}: {target}"
+    if platform == "github":
+        assert "## Instantiate a library" not in pages["runbooks.md"]
+        assert "## Promote a library to public" in pages["runbooks.md"]
+        assert "conventions.md" in pages
+        assert "## How this library was created" in pages["getting-started.md"]
+        assert "Sample library was created from the OKF library template, release v" in pages["getting-started.md"]
+        assert "Choose how the library runs" not in pages["getting-started.md"]
+        assert "With `git-local`" not in pages["maintaining.md"]
+        assert "On GitHub:" in pages["maintaining.md"]
+        assert "[This library's conventions](conventions.md)" in pages["index.md"]
+    else:
+        assert "## Instantiate a library" in pages["runbooks.md"]
+        assert "conventions.md" not in pages
+        assert "Choose how the library runs" in pages["getting-started.md"]
+        assert "With `git-local`" in pages["maintaining.md"] and "On GitHub:" in pages["maintaining.md"]
+    decisions = (root / "DECISIONS.md").read_text(encoding="utf-8")
+    assert ("made the library's own" if platform == "github" else "copied as the template wrote it") in decisions
+    assert "docs/guide/index.md" in (root / "README.md").read_text(encoding="utf-8")
+    assert "`docs/guide/`" in (root / "AGENTS.md").read_text(encoding="utf-8")
+
+
+def test_the_user_guide_can_be_removed(tmp_path: Path) -> None:
+    root = copy_template(tmp_path / "library")
+    answers = tmp_path / "answers.yaml"
+    answers.write_text(
+        (ANSWERS / "answers-git-local.yaml").read_text(encoding="utf-8").replace("guide: copy", "guide: remove"),
+        encoding="utf-8",
+    )
+    assert init_library_main(["--root", str(root), "--answers", str(answers)]) == 0
+    assert not (root / "docs").exists()
+    assert "docs/guide" not in (root / "AGENTS.md").read_text(encoding="utf-8")
+    assert "docs/guide" not in (root / "README.md").read_text(encoding="utf-8")
+    assert "User guide: removed." in (root / "DECISIONS.md").read_text(encoding="utf-8")

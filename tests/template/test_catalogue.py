@@ -7,7 +7,7 @@ from okfprofile.codes import CODES
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs" / "development"
-CATALOGUE = DOCS / "architecture" / "finding-codes.md"
+CATALOGUE = ROOT / "docs" / "guide" / "finding-codes.md"
 ROW = re.compile(r"^\| (OKF\d{3}) \|.*\| (?P<fixture>[^|]+) \|\s*$")
 PATH = re.compile(r"`([^`]+)`")
 LINK = re.compile(r"\]\(([^)#\s][^)\s]*|<[^>]+>)\)")

@@ -70,6 +70,9 @@ def questionnaire(ask: Ask) -> Answers:
     data["site_generator"] = put("Site generator (mkdocs or zensical)", "mkdocs")
     data["keep_examples"] = yes("Keep the example concept?", True)
     data["keep_tests"] = yes("Keep the template's own tests?", False)
+    data["guide"] = put(
+        "User guide: morph it into this library's own, copy it as it is, or remove it (morph, copy or remove)", "morph"
+    )
     return parse_answers(data)
 
 

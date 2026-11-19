@@ -1,7 +1,7 @@
 """Registry of validation finding codes (SDD I-09).
 
 A code is stable once defined and is never reused. The registry is the single list that
-``Finding`` checks against and that ``docs/development/architecture/finding-codes.md`` mirrors.
+``Finding`` checks against and that ``docs/guide/finding-codes.md`` mirrors.
 """
 
 from __future__ import annotations

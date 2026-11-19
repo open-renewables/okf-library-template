@@ -105,7 +105,7 @@ If a flag is rejected, use **Settings → General** and **Settings → Code secu
 
 Added in P2 (plan step 13): the required status check `validate` and the GitHub App on the bypass list ("always"). Do this once, after the pull request that adds `.github/workflows/validate.yml` has merged and the `validate` job has run green on `main`; a check that has never run can block every pull request.
 
-1. Create and install the organisation App (`runbook-promote-to-public.md`, step 3) and note its slug.
+1. Create and install the organisation App (`docs/guide/runbooks.md#promote-a-library-to-public`, step 3) and note its slug.
 2. Look first, then apply. The ruleset on this repository is called `main`, so name it:
 
    ```bash

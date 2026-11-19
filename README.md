@@ -49,7 +49,7 @@ uv sync --all-groups
 uv run poe init
 ```
 
-`poe init` asks for the platform (`github` or `git-local`), the library's name and maintainer, and its licences, rewrites the template's names and removes the template-only files. With `platform: github`, run `uv run poe setup-repo` to configure labels, merge methods, permissions and, for a public library, the ruleset. Finish with `uv run poe check`, create a first concept with `uv run python scripts/new_concept.py <Type> <path>` and merge it. The step-by-step run sheet, with timings, is `docs/development/operations/runbook-instantiate-library.md`.
+`poe init` asks for the platform (`github` or `git-local`), the library's name and maintainer, and its licences, rewrites the template's names and removes the template-only files. With `platform: github`, run `uv run poe setup-repo` to configure labels, merge methods, permissions and, for a public library, the ruleset. Finish with `uv run poe check`, create a first concept with `uv run python scripts/new_concept.py <Type> <path>` and merge it. The step-by-step run sheet, with timings, is [Instantiate a library](docs/guide/runbooks.md#instantiate-a-library) in the user guide, and [Getting started](docs/guide/getting-started.md) explains the choices `poe init` asks for.
 
 ## Commands
 
@@ -80,7 +80,22 @@ Two skills in `.agents/skills/` follow the Agent Skills format: `use-bundle` nav
 
 ## Documents
 
-The design documents are in `docs/development/`; start with [docs/development/README.md](docs/development/README.md). The rules for running a library are in [GOVERNANCE.md](GOVERNANCE.md).
+### User guide
+
+The user guide in [`docs/guide/`](docs/guide/index.md) is for the people who maintain, author and customise a library. Every library keeps it unless its owner removes it at `poe init`, and `poe init` can turn it into the library's own guide. The rules for running a library are in [GOVERNANCE.md](GOVERNANCE.md); agents start at [AGENTS.md](AGENTS.md).
+
+| Document | What it covers |
+| --- | --- |
+| [Getting started](docs/guide/getting-started.md) | Choosing a platform, creating a library, working on a clone |
+| [Maintaining a library](docs/guide/maintaining.md) | Writing concepts, review and trust tiers, revision history, releases, the site, staleness, dependencies |
+| [Customising the profile](docs/guide/customising.md) | Concept types, sections, formats, vocabularies, rules, folder scope, renaming the primary type |
+| [Reference](docs/guide/reference.md) | Commands, revision-line grammar, commit trailers |
+| [Runbooks](docs/guide/runbooks.md) | Instantiate a library, promote to public, move to GitHub, recover the revision history, remove leaked content |
+| [Finding codes](docs/guide/finding-codes.md) | Every validation code, with its level and check |
+
+### Design documents
+
+The template's own design documents are in `docs/development/`; start with [docs/development/README.md](docs/development/README.md). They are template-only: `poe init` removes them from a library.
 
 | Document | What it covers |
 | --- | --- |
