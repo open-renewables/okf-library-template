@@ -84,7 +84,7 @@ Two skills in `.agents/skills/` follow the Agent Skills format: `use-bundle` nav
 
 The user guide in [`docs/guide/`](docs/guide/index.md) is for the people who maintain, author and customise a library. Every library keeps it unless its owner removes it at `poe init`, and `poe init` can turn it into the library's own guide. The rules for running a library are in [GOVERNANCE.md](GOVERNANCE.md); agents start at [AGENTS.md](AGENTS.md).
 
-| Page | What it covers |
+| Document | What it covers |
 | --- | --- |
 | [Getting started](docs/guide/getting-started.md) | Choosing a platform, creating a library, working on a clone |
 | [Maintaining a library](docs/guide/maintaining.md) | Writing concepts, review and trust tiers, revision history, releases, the site, staleness, dependencies |
