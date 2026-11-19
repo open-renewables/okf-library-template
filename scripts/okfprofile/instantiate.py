@@ -407,7 +407,7 @@ GUIDE_OUTCOME = {
     "copy": "copied as the template wrote it",
     "remove": "removed",
 }
-GUIDE_TEMPLATE_ONLY = ("runbook-instantiate-library.md",)
+GUIDE_TEMPLATE_ONLY: tuple[str, ...] = ()
 MARKER_LINE = re.compile(r"^<!-- (template-only|platform:[a-z-]+):(start|end) -->\n", re.MULTILINE)
 
 

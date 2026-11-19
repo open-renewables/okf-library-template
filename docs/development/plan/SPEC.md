@@ -13,7 +13,7 @@ Status: **Approved by the owner on 2026-11-19:** the plan as drafted, with OD-9,
 | [P3 close-out](archive/2026-11-p3-site-release-skills/todo.md) | Carried items: P3 PP-13 (approved, applied when the header is built), sandbox clean-up, the P4 estimate (P3 PP-15, applied to SDD §14) | Applied |
 | [Master Test Plan](../testing/master-test-plan.md), [acceptance cases](../testing/acceptance-test-cases.md), [traceability matrix](../testing/traceability-matrix.md), [parameter file](../testing/library-under-test.yaml) | The acceptance level, run at P4; open decisions OD-AT1 to OD-AT5 and PE-AT-1 to PE-AT-5 | Draft; decided in this plan |
 | [Known gaps](../testing/known-gaps.md) | G3, G23, G32, G35, G38, G39 open or carried to P4 | Current |
-| [`runbook-instantiate-library.md`](../../guide/runbook-instantiate-library.md) | The V-06 run sheet | Current |
+| [`docs/guide/runbooks.md#instantiate-a-library`](../../guide/runbooks.md#instantiate-a-library) | The V-06 run sheet | Current |
 
 **Abbreviations.** P4: build phase 4, "Pilot and hardening" (SDD §14). FR/NFR: SRS requirements. AD-, QA-, DR-, ADR-: decision IDs, cited as written. I-nn, C-nn, W-nn, V-nn: SDD items. G-n: known gap. AT-: acceptance case. MTP: Master Test Plan. LUT: library under test. RC: release candidate. PP-n: a proposed entry for the owner in this plan; "P3 PP-n" is an entry of the archived P3 plan. OD-n: an open decision with a default (`plan.md`). OD-ATn and PE-AT-n: the MTP's own open decisions and proposed entries.
 

@@ -316,7 +316,7 @@ def test_the_user_guide_is_kept_as_the_answers_chose(instantiated: tuple[str, Pa
     platform, root = instantiated
     pages = _guide_pages(root)
     assert {"index.md", "getting-started.md", "maintaining.md", "customising.md", "reference.md"} <= set(pages)
-    assert {"finding-codes.md", "runbook-promote-to-public.md", "runbook-move-git-local-to-platform.md"} <= set(pages)
+    assert {"finding-codes.md", "runbooks.md"} <= set(pages)
     for name, text in pages.items():
         assert "<!-- template-only" not in text, name
         assert "<!-- platform:" not in text, name
@@ -325,7 +325,8 @@ def test_the_user_guide_is_kept_as_the_answers_chose(instantiated: tuple[str, Pa
             if "://" not in target:
                 assert (root / "docs" / "guide" / target).resolve().exists(), f"{name}: {target}"
     if platform == "github":
-        assert "runbook-instantiate-library.md" not in pages
+        assert "## Instantiate a library" not in pages["runbooks.md"]
+        assert "## Promote a library to public" in pages["runbooks.md"]
         assert "conventions.md" in pages
         assert "## How this library was created" in pages["getting-started.md"]
         assert "Sample library was created from the OKF library template, release v" in pages["getting-started.md"]
@@ -334,7 +335,7 @@ def test_the_user_guide_is_kept_as_the_answers_chose(instantiated: tuple[str, Pa
         assert "On GitHub:" in pages["maintaining.md"]
         assert "[This library's conventions](conventions.md)" in pages["index.md"]
     else:
-        assert "runbook-instantiate-library.md" in pages
+        assert "## Instantiate a library" in pages["runbooks.md"]
         assert "conventions.md" not in pages
         assert "Choose how the library runs" in pages["getting-started.md"]
         assert "With `git-local`" in pages["maintaining.md"] and "On GitHub:" in pages["maintaining.md"]

@@ -10,7 +10,7 @@ This page is the template's. When a library is created, `init_library.py` turns 
 | `github` | A GitHub organisation, `gh` signed in | Pull requests, labels, issue forms, CI, the revision bot, Releases, an optional Pages site |
 | `git-local` | `git`, Python 3.11 or later and `uv` | The same checks, revision history, trust tiers, releases and local site, run as `uv run poe` tasks; approvals and labels are commit trailers |
 
-A `git-local` library can move to GitHub later without rewriting history ([runbook](runbook-move-git-local-to-platform.md)).
+A `git-local` library can move to GitHub later without rewriting history ([runbook](runbooks.md#move-a-git-local-library-to-github)).
 
 ## Create the library
 
@@ -20,7 +20,7 @@ Three routes, all supported:
 2. **Clone** the template and push it to an empty repository, or keep it local (`git-local`). The template's history comes along, so a later template tag can be merged.
 3. **Unpack a release archive** and run `git init`.
 
-Forking is not a way to create a library. Then follow the step-by-step sheet, [Instantiate a library](runbook-instantiate-library.md): `uv sync`, `uv run python scripts/init_library.py`, `uv run poe check`, a first concept, merge. With answers prepared it takes under 30 minutes.
+Forking is not a way to create a library. Then follow the step-by-step sheet, [Instantiate a library](runbooks.md#instantiate-a-library): `uv sync`, `uv run python scripts/init_library.py`, `uv run poe check`, a first concept, merge. With answers prepared it takes under 30 minutes.
 
 `init_library.py` asks for the platform, the library's name, title and description, the maintainer, the licences (content default CC BY 4.0; code default Apache 2.0; proprietary allowed), the site generator (MkDocs by default, or Zensical), whether to keep the example concepts and the template's tests, and what to do with this guide. It writes the licence files, `README.md`, `CITATION.cff`, `DECISIONS.md` and the root index's `title` and `license`, and removes the template-only files.
 

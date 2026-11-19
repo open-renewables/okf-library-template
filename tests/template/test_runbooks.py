@@ -48,15 +48,43 @@ def help_of(script: str) -> str:
 
 
 def test_there_are_runbooks_for_every_procedure() -> None:
-    names = {path.name for path in RUNBOOKS}
+    assert (OPERATIONS / "runbook-create-template-repository.md").is_file()
+    sections = set(re.findall(r"^## (.+)$", (GUIDE / "runbooks.md").read_text(encoding="utf-8"), re.MULTILINE))
     assert {
-        "runbook-create-template-repository.md",
-        "runbook-promote-to-public.md",
-        "runbook-move-git-local-to-platform.md",
-        "runbook-revision-writer-recovery.md",
-        "runbook-remove-leaked-content.md",
-        "runbook-instantiate-library.md",
-    } <= names
+        "Instantiate a library",
+        "Promote a library to public",
+        "Move a git-local library to GitHub",
+        "Recover the revision history",
+        "Remove leaked content",
+    } <= sections
+
+
+DEVELOPMENT_ID = re.compile(
+    r"\b(SRS|SDD|DDR|(W|V|I|C|PP|OD|QA|DR|AD|ADR|RFC)-[0-9]+|FR[0-9]+(\.[0-9]+)?|NFR[0-9]+|G[0-9]+)\b"
+)
+
+
+@pytest.mark.parametrize("path", sorted(GUIDE.glob("*.md")), ids=lambda p: p.name)
+def test_the_guide_names_no_development_document(path: Path) -> None:
+    """A library keeps the guide but not `docs/development/`, so the guide cites neither its files nor its IDs."""
+    text = path.read_text(encoding="utf-8")
+    assert "docs/development" not in text
+    assert sorted({m[0] for m in DEVELOPMENT_ID.finditer(text)}) == []
+
+
+@pytest.mark.parametrize("path", sorted(GUIDE.glob("*.md")), ids=lambda p: p.name)
+def test_every_relative_link_in_the_guide_resolves(path: Path) -> None:
+    text = path.read_text(encoding="utf-8")
+    for target in re.findall(r"\]\(([^)\s]+)\)", text):
+        if "://" in target:
+            continue
+        file, _, fragment = target.partition("#")
+        resolved = (path.parent / file).resolve() if file else path
+        assert resolved.exists(), target
+        if fragment and resolved.suffix == ".md":
+            headings = re.findall(r"^#+ (.+)$", resolved.read_text(encoding="utf-8"), re.MULTILINE)
+            slugs = {re.sub(r"[^a-z0-9 -]", "", h.lower()).replace(" ", "-") for h in headings}
+            assert fragment in slugs, target
 
 
 @pytest.mark.parametrize("path", RUNBOOKS, ids=lambda p: p.name)

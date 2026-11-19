@@ -59,7 +59,7 @@ With `git-local`: mark the same facts as commit trailers (`Agent-Drafted: yes`, 
 ## Revision history
 
 <!-- platform:github:start -->
-After each merge to `main`, `revision.yml` appends the lines and rebuilds the affected indexes in one commit. Each run records every change since the last revision commit, so a cancelled or failed run is caught up by the next. If lines go missing or the bot cannot push, follow [Recover the revision writer](runbook-revision-writer-recovery.md).
+After each merge to `main`, `revision.yml` appends the lines and rebuilds the affected indexes in one commit. Each run records every change since the last revision commit, so a cancelled or failed run is caught up by the next. If lines go missing or the bot cannot push, follow [Recover the revision writer](runbooks.md#recover-the-revision-history).
 <!-- platform:github:end -->
 <!-- platform:git-local:start -->
 After each merge to `main`, run `uv run poe revision`. It records every commit since the last revision commit and commits the result with the trailer `Revision-Bot: true`.
@@ -92,9 +92,9 @@ A concept is due for review at the earlier of its `stale_after` time and two yea
 
 ## Going public, moving, and leaks
 
-- [Promote a library to public](runbook-promote-to-public.md): ruleset, revision App, secret scanning, Pages.
-- [Move a git-local library to a platform](runbook-move-git-local-to-platform.md): history, revision lines and release digests unchanged.
-- [Remove leaked content](runbook-remove-leaked-content.md): what to rewrite, what to rotate, what cannot be undone.
+- [Promote a library to public](runbooks.md#promote-a-library-to-public): ruleset, revision App, secret scanning, Pages.
+- [Move a git-local library to a platform](runbooks.md#move-a-git-local-library-to-github): history, revision lines and release digests unchanged.
+- [Remove leaked content](runbooks.md#remove-leaked-content): what to rewrite, what to rotate, what cannot be undone.
 
 ## Taking a later template version
 

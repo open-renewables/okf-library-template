@@ -27,8 +27,8 @@ def test_every_script_and_path_the_readme_names_exists() -> None:
     for script in re.findall(r"scripts/([a-z_]+)\.py", README):
         assert (ROOT / "scripts" / f"{script}.py").is_file(), script
     for target in re.findall(r"\]\((?!https?:|#)([^)]+)\)", README):
-        assert (ROOT / target.replace("%20", " ")).exists(), target
-    for path in ("docs/guide/runbook-instantiate-library.md", ".agents/skills", "AGENTS.md"):
+        assert (ROOT / target.split("#", 1)[0].replace("%20", " ")).exists(), target
+    for path in ("docs/guide/runbooks.md", ".agents/skills", "AGENTS.md"):
         assert (ROOT / path).exists(), path
 
 
