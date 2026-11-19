@@ -30,5 +30,6 @@ This item shows how a concept is written to the profile. The description is plai
 <!-- Maintained by CI. Do not edit. -->
 
 - 2026-11-01 · author @richard-gledhill · self-approved (owner) · PR #16
+- 2026-11-19 · author @richard-gledhill · self-approved (owner) · PR #54 · agent-drafted
 
 [^okf-spec]: Open Knowledge Format specification v0.3, <https://github.com/open-knowledge-format/open-knowledge-format>.
