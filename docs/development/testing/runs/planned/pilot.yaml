@@ -1,0 +1,43 @@
+# Planned P4 run: E-REAL, the read-only subset after the pilot is promoted (OD-AT4), and the phase 5 agent run. Copy to the run folder and set the date.
+# Parameter file for one acceptance run (copy to the run folder as library-under-test.yaml).
+# Cases read every library-specific value from here or from the library's profile/profile.yaml.
+# Never put a token, key or password in this file: name the environment variable that holds it.
+
+run:
+  id: 2026-11-00-pilot          # YYYY-MM-DD-<library>; also the run folder name under testing/runs/
+  template_tag: v0.9.0            # template release under test (P4 release candidate, step 5)
+  template_checkout: ../okf-library-template   # path to a checkout at that tag, for [T] steps
+  runner: owner                   # owner | agent | second-person; see master-test-plan.md, Roles
+
+library:
+  kind: pilot                     # scratch | pilot | real
+  path: ../okf-pilot-solar-pv        # local path of the library root
+  platform: github                # git-local | github (must equal profile.yaml)
+  profile: profile/profile.yaml   # types, prefixes and vocabularies are read from here
+  repository: open-renewables-sandbox/okf-pilot-solar-pv   # owner/name (P4 OD-2); github only, and only in open-renewables-sandbox for scratch libraries
+  default_branch: main
+  destructive_allowed: false      # true only for kind: scratch. A real library must be false:
+                                  # the run then selects Mode RO cases only.
+
+accounts:
+  owner_login: ""                 # the maintainer's login
+  token_env: OKF_AT_TOKEN         # environment variable holding the sandbox token (never the token itself)
+  app_installed: true             # sandbox GitHub App available for App-submitted reviews
+  second_account:                 # open decision OD-AT1; leave blank if there is none
+    login: ""
+    token_env: ""
+  second_person: ""               # name of the person timing FR6.1; blank if none
+
+environments:
+  systems: [windows]              # any of windows, macos, linux; one result row per system
+  python: ["3.11", "3.14"]
+  network: allowed                # allowed | blocked (AT-FR6.5-01 needs blocked)
+
+data:
+  bundle_600: ""                  # path to a generated 600-concept bundle, or blank to generate
+  known_good: tests/library/fixtures/pass     # known-good concept sets
+  known_bad: tests/library/fixtures/fail      # known-bad concept sets (one folder per finding code)
+
+evidence:
+  folder: docs/development/testing/runs/2026-11-00-pilot
+  commit_logs: false              # false: keep raw logs outside the repository and record their location
