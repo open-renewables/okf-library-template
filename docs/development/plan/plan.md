@@ -1,6 +1,6 @@
 # Plan: build phase P4
 
-Status: **Approved by the owner on 2026-11-19:** the plan as drafted; OD-9, OD-22, OD-23 and OD-24 answered explicitly (2026-11-17), the other open decisions on their defaults; scope kept rather than trimmed. PP-1 is P3 PP-13 (approved 2026-11-14); PP-2 to PP-14 are approved one by one when their text is shown. Nothing is built. What is built and why: `SPEC.md` (abbreviations are defined there). Checklist: `todo.md`. Effort is in **agent build hours**, **owner hours** and calendar days, as in P2 and P3; the basis is in "Effort". The SDD §14 P4 row (agent 26–37 h, owner 9–10 h, 6–9 days, P3 PP-15) is not edited here (PP-9).
+Status: **Approved by the owner on 2026-11-19:** the plan as drafted; OD-9, OD-22, OD-23 and OD-24 answered explicitly (2026-11-17), the other open decisions on their defaults; scope kept rather than trimmed. PP-1 is P3 PP-13 (approved 2026-11-14); PP-2 to PP-14 are approved one by one when their text is shown. **Amended on 2026-11-19 by RFC-002** (OKF v0.3, owner decisions D1 to D7): step 4b and PR V added before the release candidate, PP-15 and PP-16 added, ADR numbers corrected (ADR-013 is the v0.3 move; the PR 6 site-generator ADR takes the next free number, ADR-014 unless another is taken first); the amendment was approved by the owner on 2026-11-19. Nothing is built. What is built and why: `SPEC.md` (abbreviations are defined there). Checklist: `todo.md`. Effort is in **agent build hours**, **owner hours** and calendar days, as in P2 and P3; the basis is in "Effort". The SDD §14 P4 row (agent 26–37 h, owner 9–10 h, 6–9 days, P3 PP-15) is not edited here (PP-9).
 
 **NEEDS YOU** marks a step that needs a decision, person, account, machine or setting that only the owner can supply. Types: *decision*, *person*, *account*, *machine*, *setting*.
 
@@ -27,14 +27,15 @@ Status: **Approved by the owner on 2026-11-19:** the plan as drafted; OD-9, OD-2
 | 2 | 3 Authoring aids (`--set`, rename procedure, PP-9 warning decision deferred to step 7) | `tooling/p4-authoring` | PR 0 |
 | 3 | 4 Test readiness: AT statuses, MTP decisions, parameter files | `docs/p4-test-readiness` | PR 0 |
 | U | 4a User documentation (option B in `docs/guide/`, OD-22, OD-23) | `tooling/p4-user-guide` (it changes `init_library`) | PR 2 (the rename procedure) |
-| RC | 5 `v0.9.0` tag | — (owner tag) | D, 1, 2, 3, U |
+| V | 4b OKF v0.3 move (RFC-002, ADR-013); `profile-migration` label | `tooling/p4-okf-v03` | PR 1 (#49, merged 2026-11-19); after PR 2 and PR 3 merge, because it touches `known-gaps.md`, the finding-code catalogue and test files they also change |
+| RC | 5 `v0.9.0` tag | — (owner tag) | D, 1, 2, 3, U, V |
 | P | 6 Pilot instantiation; 7 Pilot authoring (in the pilot repository) | pilot repository | RC |
 | T | 8 Library-build test: the owner's real-life scenario (default); second-person timing (optional) | scenario library (owner's location) | RC |
 | P | 9 Pilot on the platform: W-12, W-11, second approver, issue form, anchors, FR8.2 | pilot repository, sandbox | step 7 |
 | A | 10 Traced agent run | — | step 9 (a pilot release on GitHub) |
 | 4 | 11 MTP run; defect fixes (`tooling/p4-fix-<slug>`, one per defect or group) | `docs/p4-mtp-run` plus fix branches | RC, steps 8 to 10 |
 | 5 | 12 Verification closure (PP-2 to PP-4, PP-9 actuals) | `docs/p4-verification` | PR 4 |
-| 6 | 13 Hardening: generator default (ADR-012), versions, README, release notes, sandbox clean-up | `tooling/p4-v1` | PR 5 |
+| 6 | 13 Hardening: generator default (ADR-014, the next free number), versions, README, release notes, sandbox clean-up | `tooling/p4-v1` | PR 5 |
 | — | 14 Exit: immutable releases on, `v1.0.0` tag, verify, archive the plan | — (owner) | PR 6 |
 
 PR D, PR 1, PR 2 and PR 3 touch disjoint files and may run in parallel; `known-gaps.md`, `pyproject.toml` and `uv.lock` are shared, so the later pull request rebases. Steps 8 and 6 to 7 can run in parallel once the RC exists. Fixes found in step 11 land before PR 5; each fix after the RC is listed in the `v1.0.0` notes.
@@ -103,9 +104,48 @@ The self-test gains, for `morph` (the `github` copy) and `copy` (the `git-local`
 
 Check: the guide exists in both instantiated trees and every relative link resolves (no link into `docs/development/`); every command in it exists; `poe check`, `poe test` and `poe selftest` pass; step 8a follows the guide's *Getting started* instead of the old runbook path, and every place you had to look elsewhere is a correction to the guide.
 
+### 4b. OKF v0.3 (PR V)
+
+Added 2026-11-19 by RFC-002 ([`../rfcs/RFC-002-okf-v0.3.md`](../rfcs/RFC-002-okf-v0.3.md), accepted). The owner's decisions D1 to D7 are in its "Decision" section: move within P4, before the `v0.9.0` release candidate (D1), so the pilot, the library-build test and the agent run all test v0.3. Numbered 4b so later step numbers stay stable. It starts after PR 1 (`tooling/p4-index-header`, #49, merged 2026-11-19), because both change `OKF121` and `OKF506` in `conformance.py` and `indexes.py`.
+
+Work (RFC-002 §3 items 1 to 6):
+
+1. **Checker (D2; 4–6 agent hours).** Vendor the OKF project's validator, `open-knowledge-format/open-knowledge-format` `skills/okf-generate/scripts/validate.py` at commit `527e81aff55992be21507e97004286789126f88c` (Apache-2.0, PyYAML only, stable codes), with its licence, in place of okf-skills (amends AD-08). `scripts/okfprofile/checks/conformance.py` maps findings **by code**, not message text: a table over its 33 codes (`E002`, `E004` to `E007`, `W101` to `W126`, `I201`, `I203` to `I205`) onto the existing `OKF1xx` codes, with checker line numbers instead of `0`. Drops: `I203`, which `uid`, `namespace` and the profile's own fields trigger (D6); `W120` where check 2 owns it; and `W115`, because check 4 owns links. `OKF101` and `OKF104` keep coming from the reader and check 2. `OKF120` stays as the profile's stricter rule (D4). `tests/template/test_conformance.py` is rebuilt around the code table, with a coverage test that fails when the vendored file can emit a code the table does not know.
+2. **Profile pin (1 agent hour).** `profile.yaml`: `okf_version: "0.3"`, `okf_spec_commit: 527e81a`. `profile/types/okf-base.schema.json`: add `superseded_by`; `parameters` entries require only `name` and `type`. The profile meta-schema is unchanged.
+3. **Root index header (D3, D5; 2–3 agent hours).**
+   - The generator keeps every key of the root index header, as v0.3 §8.1 requires of a regenerating producer.
+   - `OKF506` allows `title`, `license` and extension keys on the root.
+   - `OKF121` collects the checker's `E004` errors for usable ADR-010 folder headers and replaces them with one warning (D3). The root no longer counts, and the message cites v0.3 §8 and §11.1.
+   - `init_library.py` writes `title` (from `library.title`) and `license` (from the content licence, `CC-BY-4.0` by default) into the root index header (D5).
+   - The W-10 self-test asserts both keys are written.
+4. **Path fields (2–3 agent hours).** Check 4 resolves path-valued frontmatter fields by v0.3 §6.2: relative to the file's own folder; a leading `/` means the bundle root. Fixtures for each.
+5. **`verified` currency (1 agent hour).** I-08: the revision writer never writes a `verified[].at` earlier than the concept's `generated.at` (v0.3 §5.3). One golden case.
+6. **Documents (3–4 agent hours).**
+   - New decision: ADR-013 "OKF v0.3 and the OKF project's validator" (D7), linked both ways with RFC-002. It records the D6 departure from v0.3 §4.1, which asks for `x-` keys.
+   - SDD edits as RFC-002 §4 lists them (PP-15), with a DDR change-log row.
+   - Text that names the version or the checker: `AGENTS.md`, `README.md`, both skills, the finding-code catalogue, `docs/development/constraints.md` pinned versions if it lists the checker.
+   - Licensing: `scripts/vendor/` `VENDORED.md`, the validator's licence file, `NOTICE`.
+   - Known gaps: G42 updated, because the root `description` is no longer a departure.
+   - The SRS wording (FR1.2, executive summary, Evidence, constraints, risks) is the owner's, as PP-16; it is not applied without approval.
+
+**Label.** The pull request that changes `profile.yaml` and regenerates `knowledge/index.md` carries the `profile-migration` label (AD-18). It needs a maintainer's approval and a `DECISIONS.md`-equivalent record (for the template: the DDR change-log row and ADR-013). For the template it is a pre-1.0 release, so the major-version rule does not yet apply (RFC-002, Consequences). If the content part is only the regenerated root index, the owner may instead split it into a tooling pull request and a follow-up index regeneration (OD-25).
+
+**NEEDS YOU (decision):** approve ADR-013 and the PP-15 SDD text when shown; write or approve the PP-16 SRS wording; apply the `profile-migration` label, or choose the split (OD-25).
+
+Check:
+
+- The vendored validator's file hash is recorded in `VENDORED.md` and checked by a test, as for okf-skills.
+- Every code the validator can emit is in the code table.
+- `OKF1xx` fixtures pass; new fixtures pass for `E004` folder headers (one `OKF121`) and for a root header with `title`, `license` and an extension key (no finding).
+- §6.2 path-field fixtures pass, both relative and `/`-rooted; the I-08 golden case passes.
+- The W-10 self-test finds `title` and `license` in both instantiated root indexes.
+- The template's own bundle validates with no finding.
+- `poe check` and `poe test` pass on Python 3.11 and 3.14 and in CI on three systems.
+- `grep -rn "0\.2" AGENTS.md README.md .agents/skills` names no current version, only history.
+
 ### 5. Release candidate `v0.9.0`
 
-Work: after PR D, PR 1, PR 2, PR 3 and PR U merge, draft the annotated tag message (what changed since `v0.5.0`, known gaps, "release candidate for v1.0.0"); the owner tags `v0.9.0` on `main`; `release.yml` publishes a pre-release; download and verify as in P3 (`sha256sum -c`, tar digest equals the manifest, `RELEASE` names the tag). Immutability stays off for the RC (OD-15).
+Work: after PR D, PR 1, PR 2, PR 3, PR U and PR V merge, draft the annotated tag message (what changed since `v0.5.0`, known gaps, "release candidate for v1.0.0"); the owner tags `v0.9.0` on `main`; `release.yml` publishes a pre-release; download and verify as in P3 (`sha256sum -c`, tar digest equals the manifest, `RELEASE` names the tag). Immutability stays off for the RC (OD-15).
 
 **NEEDS YOU (person):** push the annotated tag `v0.9.0`.
 
@@ -171,11 +211,11 @@ Check: SDD §14 gate items each have evidence in `todo.md`; no V-item is open; `
 
 ### 13. Hardening for `v1.0.0` (PR 6)
 
-Work: (a) **Default site generator** (ADR-011, OD-13): evidence from step 9 (f), the Zensical release history since 0.1.1, the Material end-of-life exposure (`poe audit` results since 2026-11-05); ADR-012 records the decision either way (PP-10). (b) **Versions** (OD-18): `pyproject.toml` `version = "1.0.0"`, the template profile `template_version: 1.0.0` and `profile_version` reviewed; a test that the two agree, so the next release cannot drift. (c) **README**: status line from beta to stable; the known gaps that a library owner should know (G35 if still partial, FR6.1 timed by the owner only if no second person ran it, G38, G39). (d) **Release notes**: the `v1.0.0` tag message draft (changes since `v0.5.0`, fixes after the RC, known gaps, how to verify). (e) **Sandbox clean-up** (OD-20): archive `p3-scratch-github`, `p0-spikes` and the step 8 (if in the sandbox) and step 11 scratch repositories; the pilot is archived after `v1.0.0`; delete the sandbox App's private key and uninstall it once no rehearsal needs it. (f) `poe check`, `poe test` on 3.11 and 3.14 and CI on three systems on the PR 6 head.
+Work: (a) **Default site generator** (ADR-011, OD-13): evidence from step 9 (f), the Zensical release history since 0.1.1, the Material end-of-life exposure (`poe audit` results since 2026-11-05); ADR-014 (the next free number) records the decision either way (PP-10). (b) **Versions** (OD-18): `pyproject.toml` `version = "1.0.0"`, the template profile `template_version: 1.0.0` and `profile_version` reviewed; a test that the two agree, so the next release cannot drift. (c) **README**: status line from beta to stable, naming OKF v0.3; the known gaps that a library owner should know (G35 if still partial, FR6.1 timed by the owner only if no second person ran it, G38, G39). (d) **Release notes**: the `v1.0.0` tag message draft (changes since `v0.5.0`, fixes after the RC, known gaps, how to verify). (e) **Sandbox clean-up** (OD-20): archive `p3-scratch-github`, `p0-spikes` and the step 8 (if in the sandbox) and step 11 scratch repositories; the pilot is archived after `v1.0.0`; delete the sandbox App's private key and uninstall it once no rehearsal needs it. (f) `poe check`, `poe test` on 3.11 and 3.14 and CI on three systems on the PR 6 head.
 
 **NEEDS YOU (decision, account):** decide OD-13; archive repositories and uninstall the App.
 
-Check: ADR-012 accepted; the version test passes; README has no "beta"; the tag message drafted in `todo.md`; full gate green.
+Check: the site-generator ADR (ADR-014 unless that number is taken first) accepted; the version test passes; README has no "beta"; the tag message drafted in `todo.md`; full gate green.
 
 ### 14. Exit
 
@@ -201,6 +241,7 @@ Estimates are for an agent-built, owner-reviewed process **[Inf]**, in hours: **
 | PR 2 authoring aids | 2–3 | 0.5 | Review |
 | PR 3 test readiness | 2–3 | 0.25 | Review |
 | PR U user documentation (option B, morphed into the library's guide) | 10–15 | 2.5–3.5 | Read the guide closely, in the template and in an instantiated library |
+| PR V OKF v0.3 move (RFC-002 §3 items 1 to 6) | 13–18 | 2–3 | ADR-013, PP-15 and PP-16 (SRS wording), the `profile-migration` label, review |
 | RC `v0.9.0` | 0.5 | 0.25 | Tag |
 | Steps 6 and 7 pilot instantiation and 20 concepts | 10–15 | 3.5–5 | Names, type, sources, concept reviews |
 | Step 8 library-build test (owner's scenario) | 1–1.5 | 1.5–2 | Share the scenario, run the timed build, classify findings |
@@ -209,20 +250,21 @@ Estimates are for an agent-built, owner-reviewed process **[Inf]**, in hours: **
 | PR 4 MTP run and fixes | 6–10 | 1–1.5 | Live cases, partial acceptance |
 | PR 5 verification closure | 2–3 | 0.5–0.75 | PP-2 to PP-4 |
 | PR 6 hardening and step 14 exit | 3–4 | 1–1.5 | Generator decision, settings, tag, clean-up |
-| **Total** | **45.5–68.5** (about 46–69) | **14–20** | |
+| **Total** | **58.5–86.5** (about 59–87) | **16–23** | |
 
 Against the SDD §14 P4 row (26–37 agent, 9–10 owner) this is higher by about 20–32 agent and 5–10 owner hours, from the items listed in basis (2) and the user documentation added on 2026-11-17 (option B, with the guide morphed into each library's own; option A would take 6–9 agent and 1.5–2.5 owner hours off, option C would add 6 agent and 1 owner hour). Two ways to close the gap: accept the bottom-up figures (PP-9 edits the row), or trim: run only the MTP cases not already proved live in P2 and P3 (saves about 3–4 agent hours) and author 12 concepts instead of 20 (saves about 4 agent and 1.5 owner hours). The default is to keep the scope and propose PP-9.
 
-**Calendar elapsed [Inf].** 9–13 working days, central estimate 11. Serial chain: PR 1 and PR 2, PR U, the RC, pilot authoring (review rounds), pilot on the platform, the traced run, the MTP fixes, PR 5, PR 6, tag. The scenario build runs in parallel with authoring; concept review rounds are the most likely delay. At P3's pace (one pull request a day plus parallel sessions) about 8 days.
+**Calendar elapsed [Inf].** 11–16 working days, central estimate 13 (PR V adds 2–3). Serial chain: PR 1 and PR 2, PR U, PR V, the RC, pilot authoring (review rounds), pilot on the platform, the traced run, the MTP fixes, PR 5, PR 6, tag. The scenario build runs in parallel with authoring; concept review rounds are the most likely delay. At P3's pace (one pull request a day plus parallel sessions) about 8 days.
 
 ## Needs from you: summary
 
 | Item | Need | Type | Blocks |
 | --- | --- | --- | --- |
-| All | Approve this plan; answer OD-1 to OD-24 or accept the defaults | decision | Step 1 |
-| Proposed entries | PP-1 (FR4.3 wording is yours), PP-2, PP-3, PP-8, PP-10 always; PP-14 (option B chosen); PP-4 and PP-6 your wording; PP-5, PP-7, PP-11, PP-12, PP-13 only if they fire; PP-9 for the effort row | decision | PP-1 before PR 1 merges; PP-8 before PR 2; PP-2 to PP-4 before PR 5; PP-10 before PR 6 |
+| All | Approve this plan; answer OD-1 to OD-26 or accept the defaults | decision | Step 1 |
+| Proposed entries | PP-1 (FR4.3 wording is yours), PP-2, PP-3, PP-8, PP-10, PP-15 always; PP-14 (option B chosen); PP-16 your SRS wording; PP-4 and PP-6 your wording; PP-5, PP-7, PP-11, PP-12, PP-13 only if they fire; PP-9 for the effort row | decision | PP-1 before PR 1 merges; PP-8 before PR 2; PP-2 to PP-4 before PR 5; PP-10 before PR 6 |
 | Step 1 | `@dependabot rebase` or approve a replacement; merge | person | RC |
 | Step 4a | PP-14; close reading of the guide (option B in `docs/guide/` decided 2026-11-17) | decision, person | RC |
+| Step 4b | ADR-013 and PP-15 text; PP-16 SRS wording; `profile-migration` label or the split (OD-25) | decision | RC |
 | Step 5 | Push `v0.9.0` | person | Pilot, timing |
 | Step 6 | Pilot name, visibility, primary type and sections | decision | Step 6 |
 | Step 7 | Sources; review about 20 concepts; choose which are `stable`; OD-7 | person, decision | Step 9 |
@@ -236,7 +278,7 @@ Against the SDD §14 P4 row (26–37 agent, 9–10 owner) this is higher by abou
 
 ## Proposed entries
 
-Nothing below is written until its text is shown and approved. IDs for ADRs are assigned on approval (next is ADR-012).
+Nothing below is written until its text is shown and approved. IDs for ADRs are assigned on approval: ADR-012 is the index-header ADR (accepted 2026-11-19), ADR-013 the OKF v0.3 move (RFC-002, D7); the next free number is ADR-014.
 
 | # | Trigger | Would change | Form |
 | --- | --- | --- | --- |
@@ -249,11 +291,13 @@ Nothing below is written until its text is shown and approved. IDs for ADRs are 
 | PP-7 | Only if OD-7 chooses to build a warning for the D1 and D2 divergences | SDD I-02 warning-kind table (a new kind, for example `list_needs_blank_line`); `finding-codes.md` | SDD edit with a DDR change-log row |
 | PP-8 | Always, with step 3: `new_concept.py` gains `--set`; the primary-type rename becomes a documented procedure | SDD C-04 `new_concept.py` row (one clause); W-01 step 3 ("renamed by hand (known gap G23)" becomes "renamed by the procedure in `runbook-instantiate-library.md`") | SDD edit with a DDR change-log row |
 | PP-9 | Always at exit, and now if the owner accepts the bottom-up estimate | SDD §14 P4 row (plan figures now; actuals at exit) and the §1 effort sentence | SDD edit with a DDR change-log row |
-| PP-10 | Always: ADR-011 says the default is revisited before `v1.0.0` | ADR-012 (keep `mkdocs`, or switch to `zensical`); if switched, SDD C-07, I-02 default and AD-13 status line, `init_library` default | New ADR; SDD edit if switched |
+| PP-10 | Always: ADR-011 says the default is revisited before `v1.0.0` | ADR-014, or the next free number (keep `mkdocs`, or switch to `zensical`); if switched, SDD C-07, I-02 default and AD-13 status line, `init_library` default | New ADR; SDD edit if switched |
 | PP-11 | Only if step 9 (e) shows GitHub does not scroll to an `<a id>` in a placement the profile allows | SDD I-01 or AD-14: a placement rule for explicit anchors | SDD edit, or ADR if AD-14 changes |
 | PP-12 | Only if the `github` timing exceeds 30 minutes because of a W-01 step as designed (for example the App) | SDD W-01 (move the step, or mark it W-11 only) | SDD edit with a DDR change-log row; FR6.1 is not relaxed |
 | PP-13 | Only if no second person runs step 8b: the SDD §14 v1.0.0 gate says "a second person instantiates a library in under 30 minutes" and V-06 says "Second person performs W-01" | SDD §14 gate bullet and §15 V-06 (for example "a timed instantiation against a real-life scenario, by the owner or a second person"); FR6.1 itself is PP-4, the owner's | SDD edit with a DDR change-log row, or an owner-recorded deviation at the gate |
 | PP-14 | Unless OD-22 is option A: SDD §6 says `init_library` removes `docs/`, and lists the runbooks and finding codes under `docs/development/` | SDD §6 layout (`docs/guide/` kept in libraries; runbooks and `finding-codes.md` moved there) and the template-only paragraph (`docs/development/`, not `docs/`); W-01 step 3 and C-04 `init_library.py` (it asks whether to morph, copy or remove the guide, OD-24); `../AGENTS.md` and `../README.md` paths. AD-21 is unchanged: development documentation stays template-only | SDD edit with a DDR change-log row; an ADR only if you read it as amending AD-21 |
+| PP-15 | Always, with step 4b (RFC-002, D1 to D7) | ADR-013 (new, "OKF v0.3 and the OKF project's validator"); SDD as RFC-002 §4 lists: §1, §3 drivers, AD-08 (new checker; status "amended by QA-44, ADR-013"), C-03 `checks`, I-01 (timestamps; §6.2 path fields), I-02 (`okf_version`, `okf_spec_commit`, status extensions read as not current by a generic consumer), I-03 (`superseded_by`; `parameters`), I-07 (root keys kept; folder headers per ADR-010 and ADR-013), I-08 (`verified` currency), I-09 (`OKF1xx` mapped by code), §15 (V-08, V-11 re-answered), Sources; a DDR change-log row and the "Current position" Validation row | New ADR; SDD edit with a DDR change-log row |
+| PP-16 | Always, with step 4b; the owner's wording | SRS executive summary (v0.3; v0.2 superseded on 18 November 2026), Evidence (new repository, pin `527e81a`, deprecated `GoogleCloudPlatform/open-knowledge-format` at `8a8ff87`, v0.3 conformance, timestamps, trust tier, root metadata; the OKF project's validator in the tooling table; a source), FR1.2 ("conforms to OKF v0.3 at the pinned specification commit"; frontmatter-first and offset rules as the profile's), FR2.2 check 1 (unchanged in substance), Constraints (OKF pre-1.0; a minor version may break), Risks (pin version, spec commit and checker commit). Proposed text in RFC-002 §4 | Owner decision; no edit by the agent |
 
 ## Risks
 
@@ -269,7 +313,9 @@ Nothing below is written until its text is shown and approved. IDs for ADRs are 
 | An S1 defect is found late (for example PE-AT-5) | `v1.0.0` slips | Run AT-FR2.5-03 early in step 11; PP-5 |
 | GitHub dropped events (G34) | A live case stalls | Push again; record |
 | Zensical pre-1.0 changes between the RC and `v1.0.0` | The comparison build changes | Exact pin; Dependabot pull requests for it are reviewed, not auto-merged |
-| Material for MkDocs past end of life | An advisory with no fix | `poe audit` weekly; ADR-012 decides the default with that evidence |
+| Material for MkDocs past end of life | An advisory with no fix | `poe audit` weekly; ADR-014 decides the default with that evidence |
+| OKF v0.3 is one day old and its validator one month old, with no release tag | An erratum or a validator change after the pin | Pinned by commit; errata come as v0.4 (v0.3 §12), not silent changes; the code table's coverage test fails when a re-pinned validator emits a new code |
+| The v0.3 move lands late | The release candidate, and everything after it, slips | It starts as soon as this amendment is reviewed; PR 2 and PR 3 merge first, so it rebases once |
 | Immutable releases cannot be undone for a tag | A defect in `v1.0.0` assets is permanent | RC first; immutability on only for `v1.0.0`; the archive is rebuilt and verified by `release.yml` before publish |
 | The bottom-up estimate is above the SDD row | Surprise | Stated here and in PP-9 |
 
@@ -286,12 +332,12 @@ Each has a default that applies if the owner does not answer.
 | OD-5 | Pilot content and review depth | 20 RE solar PV risks, drafted with `author-concept` from sources you approve; you review every concept; at least five made `stable` by an owner `full-review`; one left `draft` and Unverified |
 | OD-6 | G23 form | `new_concept.py --set` built; the rename is a tested runbook procedure; no `init_library` question |
 | OD-7 | PP-9 warning kind for D1 and D2 | Decided after step 7: build only if pilot authoring wrote D1 or D2 at least once and the validator did not catch it; otherwise the authoring rule stands and the warning is post-v1.0.0 |
-| OD-8 | Release candidate | Yes: `v0.9.0` pre-release after PR D to PR 3, not immutable |
+| OD-8 | Release candidate | Yes: `v0.9.0` pre-release after PR D to PR 3, PR U and PR V (OKF v0.3), not immutable |
 | OD-9 | How the library build is tested, and whether a second person or account takes part | **Owner's instruction 2026-11-17:** the owner builds a library against a mapped-out real-life scenario, timed per step (8a); a second person is optional (8b). Default: no second person and no second account; FR6.1 `partial` with PP-4 and PP-13; G35 stays a known gap; the owner submits the issue form from the browser |
 | OD-10 | Who runs the live cases (MTP OD-AT1) | You run phase 3 in the sandbox with the agent preparing each case; the agent runs phases 1, 2 and 4; AT-FR2.6-02 and AT-FR3.5-01 run on their fallbacks and are `partial` unless a second account exists |
 | OD-11 | MTP harness and run options (OD-AT2 to OD-AT5) | No harness for `v1.0.0` (cases by hand; harness after `v1.0.0`); raw logs not committed; the pilot gets the read-only subset after promotion; CI matrix evidence is enough for macOS and Linux |
 | OD-12 | Dependabot #24 to #28 | Rebase and merge each if green and only `uv.lock` and `requirements/dev.txt` change; otherwise close all five and replace with one `tooling/p4-deps` pull request |
-| OD-13 | Default site generator for `v1.0.0` | Keep `mkdocs` as the template default (proven on every change; Zensical is pre-1.0), recorded in ADR-012 with the step 9 evidence; you may switch |
+| OD-13 | Default site generator for `v1.0.0` | Keep `mkdocs` as the template default (proven on every change; Zensical is pre-1.0), recorded in ADR-014 (the next free number) with the step 9 evidence; you may switch |
 | OD-14 | V-07 remaining parts | Closed as not applicable: no library wants a private preview or private immutable release; reopened if one does |
 | OD-15 | Immutable releases on the template | Off for `v0.9.0`; turned on immediately before the `v1.0.0` tag (P3 OD-9) |
 | OD-16 | Second runtime for the skills (G38) | Not run; G38 stays a known gap at `v1.0.0` and is named in the README; you may run the step 10 prompts on another runtime |
@@ -303,3 +349,5 @@ Each has a default that applies if the owner does not answer.
 | OD-22 | User documentation scope (step 4a) | **Decided (owner, 2026-11-17):** option B, a library guide with the essentials, the five runbooks and the finding-code reference moved into it |
 | OD-23 | User documentation location | **Decided (owner, 2026-11-17):** `docs/guide/`, kept by `init_library`, which then removes only `docs/development/` |
 | OD-24 | Does `init_library` turn the template's guide into the library's own guide? | **Decided (owner, 2026-11-17):** the user selects during `init_library`: `morph` (template-only text stripped, the chosen platform's blocks kept, placeholders rewritten, *Getting started* becomes *How this library was created*, a conventions stub added), `copy` (unchanged apart from the markers) or `remove` (no guide; links to it dropped). Answers-file key `guide`; the prompt offers `morph` as its default |
+| OD-25 | `profile-migration` pull request for PR V | One pull request labelled `profile-migration` (profile pin, tooling and the regenerated `knowledge/index.md` together), as RFC-002 recommends; or two, tooling first and the index regeneration after, if you prefer to keep content separate |
+| OD-26 | OKF v0.3 decisions D1 to D7 | **Decided (owner, 2026-11-19, RFC-002):** D1 move within P4 before `v0.9.0`; D2 the OKF project's `validate.py` at `527e81a`, mapped by code (amends AD-08); D3 usable folder headers downgraded from `E004` to one `OKF121`; D4 keep `OKF120`; D5 `init_library` writes root `title` and `license`; D6 `uid` and `namespace` stay unprefixed, `I203` dropped; D7 ADR-012 index header, ADR-013 v0.3, the generator ADR the next free number |

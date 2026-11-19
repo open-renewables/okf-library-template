@@ -7,6 +7,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] Owner reviews `SPEC.md`, `plan.md` and `todo.md` (approved 2026-11-19)
 - [x] **NEEDS YOU (decision):** owner answers OD-1 to OD-24 or accepts the defaults (OD-9, OD-22 to OD-24 answered 2026-11-17; the rest on their defaults with the approval of 2026-11-19); OD-2 (pilot location and visibility), OD-4 (primary type), OD-9 (library-build test; second person optional), OD-13 (default generator) and OD-15 (immutability) are the ones that change work
 - [ ] **NEEDS YOU (decision):** owner approves or rejects PP-1 to PP-14 as they apply (PP-5, PP-7, PP-11, PP-12, PP-13 only if they fire)
+- [x] **NEEDS YOU (decision):** owner confirms the amended estimate with PR V (RFC-002; approved with the amendment, 2026-11-19): agent about 59–87 h, owner about 16–23 h, 11–16 days; RFC-002's own figure, on the SDD §14 baseline, is about 39–55 agent hours
 - [x] **NEEDS YOU (decision):** owner confirms the effort units and the bottom-up figures (scope kept, 2026-11-19; the SDD row changes only through PP-9) in `plan.md` "Effort" (agent about 46–69 h, owner about 14–20 h, 9–13 days with user-documentation option B morphed into each library's guide against the SDD row 26–37, 9–10, 6–9), or chooses the trim
 - [ ] **NEEDS YOU (decision):** owner shares the real-life scenario mapping for step 8a (path or document) and where its library will live (OD-9); a second person is optional
 
@@ -27,16 +28,16 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 
 ## PR 2: authoring aids (`tooling/p4-authoring`)
 
-- [ ] 3. `new_concept.py --set key=value`; "Rename the primary type" procedure in `runbook-instantiate-library.md` with a scripted test
-- [ ] 3. Check: `--set` tests (declared, undeclared refused, list, Vocabulary with `namespace` validates); rename test passes on a copy, template unchanged; `poe check`, `poe test`
-- [ ] PP-8 approved and applied (SDD C-04, W-01 step 3)
-- [ ] PR 2 closed: agent __ h, owner __ h
+- [x] 3. `new_concept.py --set key=value`; "Rename the primary type" procedure in `runbook-instantiate-library.md` with a scripted test (plus `rename_type.py`, owner-approved in PP-8)
+- [x] 3. Check: `--set` tests (declared, undeclared refused, list, Vocabulary with `namespace` validates); rename test passes on a copy, template unchanged; `poe check`, `poe test`
+- [x] PP-8 approved and applied (SDD C-04, W-01 step 3) (approved 2026-11-19; SDD §6, C-04, W-01 step 3; DDR row)
+- [x] PR 2 closed: agent about 6 h including the review fixes, owner about 0.5 h (merged as #50)
 
 ## PR 3: test readiness (`docs/p4-test-readiness`)
 
-- [ ] 4. AT statuses refreshed (no `pending P2` or `pending P3`); MTP §11 decisions written (OD-10, OD-11); parameter files for `scratch-local`, `scratch-github`, `pilot`; `runs/README.md` with run-sheet and report skeletons; traceability matrix refreshed (ADR-010, ADR-011, P3 cases)
-- [ ] 4. Check: grep for `pending P2|pending P3` empty; matrix and case file agree both ways; no secret in parameter files; MTP §7 entry criteria listed with state below
-- [ ] PR 3 closed: agent __ h, owner __ h
+- [x] 4. AT statuses refreshed (no `pending P2` or `pending P3`); MTP §11 decisions written (OD-10, OD-11); parameter files for `scratch-local`, `scratch-github`, `pilot`; `runs/README.md` with run-sheet and report skeletons; traceability matrix refreshed (ADR-010, ADR-011, P3 cases)
+- [x] 4. Check: grep for `pending P2|pending P3` empty; matrix and case file agree both ways; no secret in parameter files; MTP §7 entry criteria listed with state below
+- [x] PR 3 closed: agent about 2 h, owner about 0.25 h (merged as #51)
 
 ## PR U: user documentation (`tooling/p4-user-guide`)
 
@@ -48,6 +49,21 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [ ] **NEEDS YOU (person):** close reading of the guide
 - [ ] PP-14 applied (SDD §6; DDR row)
 - [ ] PR U closed: agent __ h, owner __ h
+
+## PR V: OKF v0.3 (`tooling/p4-okf-v03`, RFC-002)
+
+- [x] **NEEDS YOU (decision):** D1 to D7 (decided 2026-11-19, RFC-002 "Decision"; OD-26)
+- [x] **NEEDS YOU (decision):** owner reviews this plan amendment before step 4b starts (approved 2026-11-19)
+- [ ] **NEEDS YOU (decision):** ADR-013 and the PP-15 SDD text approved when shown; PP-16 SRS wording (yours); `profile-migration` label or the split (OD-25)
+- [ ] 4b.1 OKF project validator vendored at `527e81a` with its licence; check 1 mapped by code; `I203`, `W115` and check-2-owned `W120` dropped; `OKF120` kept; `test_conformance.py` rebuilt with a code-coverage test
+- [ ] 4b.2 `profile.yaml` pin (`okf_version: "0.3"`, `okf_spec_commit: 527e81a`); `okf-base.schema.json` (`superseded_by`; `parameters` require `name` and `type`)
+- [ ] 4b.3 Root header keeps every key; `OKF506` allows `title`, `license`, extension keys on the root; `OKF121` from `E004`, root no longer counted; `init_library` writes `title` and `license`; W-10 assertion
+- [ ] 4b.4 Check 4 path fields by v0.3 §6.2 (own folder; leading `/` the bundle root), with fixtures
+- [ ] 4b.5 I-08: written `verified[].at` never earlier than `generated.at`; golden case
+- [ ] 4b.6 ADR-013; SDD (PP-15) and DDR row; `AGENTS.md`, `README.md`, both skills, `VENDORED.md`, licence and `NOTICE`, finding-code catalogue, `constraints.md` pins, G42
+- [ ] 4b. Check: vendored hash tested; every emitted code in the table; `OKF1xx`, `E004`, root-metadata, §6.2 and I-08 fixtures pass; self-test finds `title` and `license`; template bundle has no finding; `poe check` and `poe test` on 3.11 and 3.14 and CI on three systems; no current "v0.2" in `AGENTS.md`, `README.md` or the skills
+- [ ] PP-15 applied; PP-16 applied by the owner or recorded as declined
+- [ ] PR V closed: agent __ h, owner __ h
 
 ## RC: `v0.9.0`
 
@@ -115,7 +131,7 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 ## PR 6: hardening (`tooling/p4-v1`)
 
 - [ ] **NEEDS YOU (decision):** default site generator (OD-13)
-- [ ] 13a. ADR-012 drafted with the step 9 (f) evidence, Zensical release history and the Material audit record (PP-10)
+- [ ] 13a. Site-generator ADR (ADR-014 unless that number is taken first) drafted with the step 9 (f) evidence, Zensical release history and the Material audit record (PP-10)
 - [ ] 13b. `pyproject.toml` and the template profile at `1.0.0`; a test that they agree (OD-18)
 - [ ] 13c. README stable; known gaps a library owner should know
 - [ ] 13d. `v1.0.0` tag message drafted (below)
@@ -142,6 +158,8 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | --- | --- | --- | --- |
 | 1 | PR D merged as #48. Dependabot #24 to #28 changed only `requirements/*.txt` and no CI ran on them (G41); replaced by `uv lock --upgrade-package` for five dev packages and `poe export`. `nodeenv` 1.12.0 licence re-read, unchanged; its `constraints.md` row moved to 1.12.0 with the owner's approval. `poe licences` 0 findings, `poe audit` clean, 820 passed before the version test fix | [Test] | |
 | 2 | PR 1. Folder-scope header built (ADR-010). Found: OKF v0.2 §8 and §12 allow no frontmatter on a folder index, and §11 makes that conformance; OKF v0.3 (2026-11-18, new repository; the pinned one deprecated) allows root `title`, `description`, `license` but still no folder frontmatter. Owner kept the YAML header for Obsidian and site generators (Option A); ADR-012 replaces okf-skills' per-index `OKF117` with one `OKF121` per bundle; `OKF505`, `OKF506` for unusable headers; G42. 829 passed, coverage 98.13 %. OKF v0.3 assessment handed to the parent session | [Test] | PP-1, ADR-012 |
+| 3 | PR 2 merged as #50. `new_concept.py --set key=value` (declared keys only; scalars or lists) and `rename_type.py` (`poe rename-type`), which renames a type and its `uid` prefix in the profile, the schema file, the bundle, the registry and `tests/library/` and rebuilds the indexes; tested by renaming `Item` to `Risk`/`RSK` in a copy (every library fixture still raises its own code). Review on 2026-11-19 found ten points; three fixed before merge (binary files skipped and every change worked out before writing; other types' schema names untouched; rename before the first commit, because check 6 reports a renamed `uid` as OKF606 and OKF607, with a warning when the registry is committed); seven left open (whole-word rename of other text, quoted values, no release-tag guard, three reuse items). PP-8 applied; G23 narrowed. 854 passed | [Test] | PP-8 |
+| 4 | PR 3 merged as #51. 53 acceptance cases moved from `pending P2` to `ready`, 7 to `ready for P4`; AT-FR4.3-02 and AT-FR8.1-02 added; MTP §11 records OD-AT1 to OD-AT5 as decided; `testing/runs/` with the entry criteria and three planned parameter files | [Doc] | |
 
 ### MTP §7 entry criteria
 
@@ -177,7 +195,9 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 | PP-7 | Conditional (OD-7) | |
 | PP-8 | Proposed, with PR 2 | |
 | PP-9 | Proposed now and at exit | |
-| PP-10 | Proposed (ADR-012) | |
+| PP-10 | Proposed (ADR-014, the next free number) | |
+| PP-15 | Proposed, with PR V (RFC-002) | |
+| PP-16 | Owner's SRS wording, with PR V (RFC-002 §4) | |
 | PP-11 | Conditional (step 9 e) | |
 | PP-12 | Conditional (step 8) | |
 | PP-13 | Conditional (no step 8b) | |
