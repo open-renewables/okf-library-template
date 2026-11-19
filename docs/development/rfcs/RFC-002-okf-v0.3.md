@@ -1,6 +1,6 @@
-Status: Draft
+Status: Accepted (owner, 2026-11-19, in Q&A; option (b), see "Decision" at the end)
 
-ADRs produced: none yet. Proposed: ADR-013 (OKF v0.3), number to be confirmed against the ADRs the P4 plan has reserved.
+ADRs produced: ADR-013 (OKF v0.3 and the OKF project's validator), to be written with the change. ADR-012 stays the index-header ADR on `tooling/p4-index-header`; the generator ADR that the P4 plan names for PR 6 takes the next free number (D7).
 
 # RFC-002: Moving from OKF v0.2 to OKF v0.3
 
@@ -45,7 +45,7 @@ v0.3 §13 lists its own changes from v0.2. The table below is checked against th
 | 6.4 | — | Bundle graph: links and path fields that resolve to a concept are edges | No effect |
 | 7 | `<producer>/<version>`, `human:`, `process:` | General `<scheme>:<id>`; adds `team:`; unknown schemes are non-human; `team:` gives machine-confirmed | No effect: the base schema's `actor` is any non-empty string, and I-08 writes `human:` and `process:` only. `OKF113` mapping changes (reference validator `W103`) |
 | 8 | **Index files contain no frontmatter**, except a root `okf_version` | A subdirectory index **has no frontmatter**. A root index MAY have frontmatter (§8.1) | **ADR-012** unchanged for folder headers: still non-conformant under v0.3, and the reference validator makes it an **error** (`E004`), where okf-skills warned (see §2) |
-| 8.1 | — | Root index MAY carry `okf_version`, `title`, `description`, `license` (SPDX expression or a path to a licence file in the bundle) and extension keys. A producer that regenerates `index.md` **MUST keep** the root frontmatter. Producers SHOULD put a root `index.md` with `okf_version` in each bundle | **Root index header** (`scripts/okfprofile/indexes.py` line 91 writes `okf_version` only; on the P4 branch `read_header` keeps `okf_version` and `description`). Needed: keep **every** root key, including unknown and `x-` keys; ADR-012's `OKF506` must then stop rejecting `title`, `license` and extension keys on the root; the root `description` drops out of `OKF121` (ADR-012 item 5). Optional and additive: `init_library.py` writes `title` from `library.title` and `license` from the content licence (`CC-BY-4.0` by default), so the archive (I-12) says its licence in OKF terms. `okf_version` becomes `"0.3"` |
+| 8.1 | — | Root index MAY carry `okf_version`, `title`, `description`, `license` (SPDX expression or a path to a licence file in the bundle) and extension keys. A producer that regenerates `index.md` **MUST keep** the root frontmatter. Producers SHOULD put a root `index.md` with `okf_version` in each bundle | **Root index header** (`scripts/okfprofile/indexes.py` line 91 writes `okf_version` only; on the P4 branch `read_header` keeps `okf_version` and `description`). Needed: keep **every** root key, including unknown and `x-` keys; ADR-012's `OKF506` must then stop rejecting `title`, `license` and extension keys on the root; the root `description` drops out of `OKF121` (ADR-012 item 5). `init_library.py` writes `title` from `library.title` and `license` from the content licence (`CC-BY-4.0` by default), so the archive (I-12) says its licence in OKF terms (D5). `okf_version` becomes `"0.3"` |
 | 9 | `log.md` format; frontmatter not addressed | `log.md` has no frontmatter | No effect: the template does not use `log.md` (SRS, Design overview) |
 | 10 | `parameters` entries `{ name, type, required }`, all listed | `name` and `type` REQUIRED, `required` optional (default `false`); common parameter types listed; locator rule for the inline computation; consumers MUST NOT show a value as attested without `runtime` and `attester`; attester verdict has `ok` and optional `reason` | **`okf-base.schema.json`**: `parameters.items.required` becomes `["name", "type"]` (today it also requires `required`, which v0.3 makes optional). No template type uses Attested Computation |
 | 11 | Conformance: (1) every non-reserved `.md` has parseable frontmatter, (2) with a non-empty `type`, (3) reserved files follow §8 and §9 | **11.1:** (1) every frontmatter block parses as a YAML mapping, (2) reserved files follow §8 and §9. A `.md` without frontmatter or `type` does not make the bundle non-conformant. **11.2:** consumer rules (resolve both link forms; never read outside the root; null, empty and absent are the same; one item may stand for a list; ignore family entries missing a REQUIRED key; keep out-of-vocabulary values) | **Conformance (check 1):** the profile validator stays the authority (SRS constraints), and check 2 keeps requiring `type`. The `OKF1xx` mapping is rebuilt (see §2). A folder-index header is a §11.1 item 2 failure in both versions |
@@ -91,7 +91,7 @@ Effort is stated as the P4 plan states it: agent hours, owner hours, calendar da
 
 1. Vendor the K1 checker and rebuild the check 1 code table and its tests (4–6 agent hours).
 2. `profile.yaml` pin; `okf-base.schema.json` (`superseded_by`, `parameters.required`); profile meta-schema unchanged (1 agent hour).
-3. Root index header: keep all root keys, relax `OKF506`, update `OKF121` to `E004`; optional `title` and `license` from `init_library.py` (2–3 agent hours).
+3. Root index header: keep all root keys, relax `OKF506`, update `OKF121` to `E004`; `title` and `license` from `init_library.py`, with a W-10 self-test assertion (2–3 agent hours).
 4. Check 4 path-field resolution by §6.2, with fixtures (2–3 agent hours).
 5. I-08 `verified` currency rule and a golden case (1 agent hour).
 6. Documents: SRS proposals, SDD, ADR, DDR change log, `AGENTS.md`, `README.md`, the two skills, `VENDORED.md`, `NOTICE`, finding-code catalogue, known gaps (3–4 agent hours).
@@ -113,7 +113,7 @@ Total 13–18 agent hours for the change itself.
 
 ### Under (b)
 
-**New ADR (proposed ADR-013, "OKF v0.3 and the OKF project's validator")**, linked both ways with this RFC. Decision: the profile pins OKF v0.3 at `527e81a`; check 1 uses the OKF project's `validate.py` at the same commit, mapped by code (amends AD-08, supersedes the okf-skills pin of QA-25 and QA-44); `OKF120` keeps the offset rule (or not, D4); ADR-010 folder headers stay a departure, reported as one `OKF121` warning that replaces the checker's `E004` errors (amends ADR-012 items 2 and 5); `uid` and `namespace` stay unprefixed (§4.1 SHOULD).
+**New ADR-013, "OKF v0.3 and the OKF project's validator"** (D7), linked both ways with this RFC. Decision: the profile pins OKF v0.3 at `527e81a`; check 1 uses the OKF project's `validate.py` at the same commit, mapped by code (amends AD-08, supersedes the okf-skills pin of QA-25 and QA-44); `OKF120` keeps the offset rule (D4); `init_library.py` writes `title` and `license` into the root index header (D5); ADR-010 folder headers stay a departure, reported as one `OKF121` warning that replaces the checker's `E004` errors (amends ADR-012 items 2 and 5); `uid` and `namespace` stay unprefixed (§4.1 SHOULD).
 
 **SRS** (owner's wording; proposed text only):
 
@@ -156,14 +156,22 @@ Total 13–18 agent hours for the change itself.
 
 All of the (b) edits, plus: I-02 `okf_version` is an enum `"0.2" | "0.3"` and `okf_spec_commit` is chosen from it; AD-08 lists two checker pins; C-03 `checks` selects the checker by `okf_version`; I-09 `OKF1xx` has two code tables; SRS FR1.2 names both versions; W-10 instantiates once per version.
 
-## Decisions for the owner
+## Decision (owner, 2026-11-19)
 
-| # | Decision | Recommended |
-| --- | --- | --- |
-| D1 | When to move: (a) after `v1.0.0`, (b) within P4 before the `v0.9.0` release candidate, or (c) support both | (b) |
-| D2 | Which checker for v0.3: K1 the OKF project's `validate.py` at `527e81a` (Apache-2.0), K2 wait for okf-skills, K3 keep okf-skills v0.12.0 | K1 |
-| D3 | Under v0.3 a folder-index header is an `E004` error in the reference validator. Downgrade usable ADR-010 headers to the single `OKF121` warning (as ADR-012 does today), or treat them as errors, or drop folder headers | Downgrade to `OKF121`; ADR-012 decision unchanged |
-| D4 | Timestamps: keep `OKF120` (offset required everywhere), or accept v0.3's date-only form for some keys | Keep `OKF120` |
-| D5 | Root bundle metadata: should `init_library.py` write `title` and `license` into the root index header | Yes, `license` from the content licence |
-| D6 | `uid` and `namespace` stay unprefixed (v0.3 §4.1 asks for `x-<producer>-<name>` as a SHOULD) | Keep; record in the ADR |
-| D7 | The ADR number: the P4 plan already names an "ADR-012 default generator" for PR 6 while the index-header ADR on `tooling/p4-index-header` is ADR-012 | Confirm numbering before either merges |
+The owner settled the seven decisions in Q&A on 2026-11-19 and took the recommendation in each case.
+
+| # | Decision | Recommended | Owner's decision |
+| --- | --- | --- | --- |
+| D1 | When to move: (a) after `v1.0.0`, (b) within P4 before the `v0.9.0` release candidate, or (c) support both | (b) | **(b)**: move within P4, before the `v0.9.0` release candidate, so the pilot tests v0.3 |
+| D2 | Which checker for v0.3: K1 the OKF project's `validate.py` at `527e81a` (Apache-2.0), K2 wait for okf-skills, K3 keep okf-skills v0.12.0 | K1 | **K1**: vendor the OKF project's validator at `527e81a`, mapped by code; amends AD-08 |
+| D3 | Under v0.3 a folder-index header is an `E004` error in the reference validator. Downgrade usable ADR-010 headers to the single `OKF121` warning (as ADR-012 does today), or treat them as errors, or drop folder headers | Downgrade to `OKF121`; ADR-012 decision unchanged | **Downgrade**: usable headers give one `OKF121` warning that replaces the `E004` errors; ADR-010 and ADR-012 stand |
+| D4 | Timestamps: keep `OKF120` (offset required everywhere), or accept v0.3's date-only form for some keys | Keep `OKF120` | **Keep `OKF120`** |
+| D5 | Root bundle metadata: should `init_library.py` write `title` and `license` into the root index header | Yes | **Write both**: `title` from `library.title`, `license` from the content licence (`CC-BY-4.0` by default) |
+| D6 | `uid` and `namespace` stay unprefixed (v0.3 §4.1 asks for `x-<producer>-<name>` as a SHOULD) | Keep; record in the ADR | **Keep unprefixed**; the ADR records the departure and check 1 drops `I203` |
+| D7 | The ADR number: the P4 plan already names an "ADR-012 default generator" for PR 6 while the index-header ADR on `tooling/p4-index-header` is ADR-012 | Keep ADR-012 for the index header | **ADR-012** stays the index-header ADR; **ADR-013** is this move; the PR 6 generator ADR takes the next free number, and the P4 plan is corrected to say so |
+
+Consequences for the work:
+
+- The (b) work list in §3 and the (b) edits in §4 apply. They are applied with the change, not in this RFC. The SRS wording is still the owner's (FR1.2, Evidence, constraints, risks).
+- The P4 plan gains a step before the `v0.9.0` release candidate: the v0.3 move (13–18 agent hours, 2–3 owner hours, 2–3 days), which raises the P4 estimate to about 39–55 agent hours. The step lands after `tooling/p4-index-header` merges, because it changes the same `conformance.py` code (`OKF121`) and `OKF506`.
+- The pull request that changes `profile.yaml` and regenerates `knowledge/index.md` carries the `profile-migration` label (AD-18) and a decision-record entry; for the template it is a pre-1.0 release, so the major-version rule does not yet bite.
