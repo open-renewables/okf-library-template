@@ -32,6 +32,7 @@ Meet the SDD §14 P4 exit and the template v1.0.0 gate: a pilot library built fr
 | Dependencies | Dependabot pull requests #24 to #28 merged or replaced | NFR6 |
 | Test readiness | AT case statuses refreshed (most still say `pending P2 PRn`); MTP open decisions answered; the parameter file filled for each run | MTP §7 entry criteria |
 | User documentation | A library user guide (option B, decided 2026-11-17, OD-22): getting started, maintaining a library, customising the profile, reference; the five operational runbooks and `finding-codes.md` moved out of the template-only `docs/development/` so libraries keep them (in `docs/guide/`, decided 2026-11-17, OD-23; PP-14). Drafted as a library guide; during `init_library` the user chooses to **morph** it into the new library's own guide (template-only and wrong-platform text stripped, placeholders rewritten, a conventions stub added) **copy** it unchanged, or **remove** it (OD-24). Added 2026-11-17 | SDD §6; W-01, W-11, W-12; NFR7 |
+| OKF v0.3 | Added 2026-11-19 by RFC-002 (owner decisions D1 to D7): the profile pins OKF v0.3 at `527e81a`; check 1 uses the OKF project's validator, vendored and mapped by code (amends AD-08); root index metadata (`title`, `license`) written and kept; check 4 resolves path fields by v0.3 §6.2; the I-08 `verified` currency rule; ADR-013; the SRS wording is the owner's (PP-16) | RFC-002; FR1.2; AD-08 |
 | Release candidate | `v0.9.0` pre-release on the template, the version the pilot and the timing use (OD-8) | MTP §7 `template_tag` |
 | Pilot library | Instantiated from `v0.9.0`, primary type renamed, about 20 RE solar PV risks with folder-scope headers, vocabulary values and glossary entries; started `git-local` with two local releases, moved to GitHub by W-12, promoted by W-11 | SDD §14 P4 row; §13 FR6 ("W-12 rehearsed on the pilot"); G32 |
 | Platform cases on the pilot | A contribution through an issue form (FR5.3); a second directory owner approves and merges, only if a second account exists (G35, OD-9); glossary anchors scroll on GitHub (G3, V-01); the six FR8.2 checks on the pilot bundle with both generators (ADR-001 criterion) | FR2.10, FR3.5, FR5.3, FR8.2 |
@@ -39,7 +40,7 @@ Meet the SDD §14 P4 exit and the template v1.0.0 gate: a pilot library built fr
 | Traced agent run | `use-bundle` on the pilot's release archive; every citation traced; an Unverified concept reported as unverified | FR7.2; AT-FR7.2-01, -02 |
 | Acceptance run | MTP phases 1 to 5 by hand, evidence in `../testing/runs/`; defects triaged by severity and fixed or recorded | MTP §6, §7, §9 |
 | Verification closure | V-01 to V-13 closed and recorded; SDD §13 rows verified | SDD §14 gate; §15 |
-| Hardening | Default site generator decided (ADR-012); immutable releases on the template; version fields set to `1.0.0`; README and release notes; sandbox clean-up | ADR-011; P3 OD-9; P3 carried |
+| Hardening | Default site generator decided (ADR-014, the next free number); immutable releases on the template; version fields set to `1.0.0`; README and release notes; sandbox clean-up | ADR-011; P3 OD-9; P3 carried |
 | Exit | `v1.0.0` tagged by the owner; `release.yml` publishes an immutable release; verified by download | SDD §14 |
 
 ### Requirements covered
@@ -97,7 +98,7 @@ G1, G2, G4, G5, G9 to G22, G24 to G31, G33, G34, G36, G37, G39, G40 are unchange
 1. `uv run poe check` and `uv run poe test` pass locally on Python 3.11 and 3.14 and in CI on three systems on the `v1.0.0` commit, with `constraints.md` changed only by an approved entry.
 2. The folder-scope header is built and tested (ADR-010); P3 PP-13 is applied with the owner's FR4.3 wording.
 3. `new_concept.py --set` exists; the primary-type rename procedure is documented and was followed on the pilot; G23 is closed or narrowed.
-4. Dependabot pull requests #24 to #28 are merged or closed with a replacement; the user documentation of the chosen option (OD-22) is in place, is kept in an instantiated library, morphed, copied or removed as the user chose at `init_library` (OD-24), with all three answers tested, no template-only text or unresolved placeholder after a morph, and every link and command resolving, and was followed in step 8a.
+4. Dependabot pull requests #24 to #28 are merged or closed with a replacement; the template pins OKF v0.3 and validates with the OKF project's validator before `v0.9.0` (RFC-002, ADR-013); the user documentation of the chosen option (OD-22) is in place, is kept in an instantiated library, morphed, copied or removed as the user chose at `init_library` (OD-24), with all three answers tested, no template-only text or unresolved placeholder after a morph, and every link and command resolving, and was followed in step 8a.
 5. The pilot, instantiated from `v0.9.0`, holds about 20 concepts of its primary type, each folder with a scope header, with vocabulary values and glossary entries; `poe check` passes; at least five concepts are owner-reviewed (`full-review`), some are agent-drafted and Machine-confirmed, and at least one is `draft` and Unverified, so every tier appears in its indexes.
 6. The pilot moved from `git-local` to GitHub by W-12 with at least two tags, each archive matching its tag-message digest; revision after the move used the App token (G32).
 7. Live on the pilot: an issue-form contribution merged as a concept (FR5.3); if a second account exists, an approval by a second directory owner and a merge by someone other than the author (G35), otherwise G35 recorded as a known gap at `v1.0.0`; glossary anchors scroll for plain, non-ASCII and parenthesised terms (G3, V-01); the six FR8.2 checks pass on the pilot bundle with both generators.
@@ -105,7 +106,7 @@ G1, G2, G4, G5, G9 to G22, G24 to G31, G33, G34, G36, G37, G39, G40 are unchange
 9. A fresh agent, given the pilot release archive only, answered the reviewer's questions with 100 % of citations traced to `<uid>@<tag>` and status and tier as written, and reported the Unverified concept as unverified (FR7.2).
 10. The MTP run is recorded in `../testing/runs/`; every FR1 to FR8 criterion has a case with `pass`, or `partial` accepted by the owner; no S1 or S2 defect is open.
 11. V-01 to V-13 are closed and recorded (PP-2); `known-gaps.md` and the testing documents are current; P4 actuals are recorded (PP-9).
-12. The default site generator for `v1.0.0` is decided and recorded (ADR-012); immutable releases are on for the template; version fields say `1.0.0`; the sandbox is cleaned up.
+12. The default site generator for `v1.0.0` is decided and recorded (ADR-014, the next free number); immutable releases are on for the template; version fields say `1.0.0`; the sandbox is cleaned up.
 13. The owner has tagged `v1.0.0`; `release.yml` published an immutable release (not a pre-release); the downloaded archive verifies.
 
 ## Interpretations the owner should confirm
