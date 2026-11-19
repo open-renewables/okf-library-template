@@ -72,7 +72,7 @@ Packages whose metadata is not an allowlisted SPDX identifier, resolved by readi
 | ADR | Package | Version | Metadata | Resolved as | Basis |
 | --- | --- | --- | --- | --- | --- |
 | ADR-007 | `colorama` | 0.4.6 | classifier "BSD License" | `BSD-3-Clause` | Licence text is the standard BSD-3-Clause |
-| ADR-007 | `nodeenv` | 1.11.1 | `License: BSD` | `BSD-3-Clause` | Three BSD conditions; endorsement clause worded differently from the SPDX text; accepted by the owner |
+| ADR-007 | `nodeenv` | 1.12.0 | `License: BSD` | `BSD-3-Clause` | Three BSD conditions; endorsement clause worded differently from the SPDX text; accepted by the owner. Re-read for 1.12.0 on 2026-11-19: unchanged |
 | ADR-009 | `ghp-import` | 2.1.0 | `License: Apache Software License` | `Apache-2.0` | Licence text is Apache License 2.0 |
 | ADR-009 | `jinja2` | 3.1.6 | classifier "BSD License" | `BSD-3-Clause` | Licence text is the standard BSD-3-Clause |
 | ADR-009 | `mergedeep` | 1.3.4 | `License: UNKNOWN`; classifier "MIT License" | `MIT` | Licence text is the standard MIT licence |

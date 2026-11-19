@@ -39,7 +39,7 @@ def test_the_real_policy_is_read_from_constraints() -> None:
     assert "MPL-2.0" not in policy.allowed
     assert set(policy.exceptions) == {"pathspec", "certifi"}
     assert policy.exceptions["pathspec"].adr == "ADR-007"
-    assert policy.resolutions[("nodeenv", "1.11.1")] == "BSD-3-Clause"
+    assert policy.resolutions[("nodeenv", "1.12.0")] == "BSD-3-Clause"
 
 
 def test_missing_policy_parts_are_refused() -> None:
