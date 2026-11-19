@@ -1,6 +1,6 @@
 # ADR-013: OKF v0.3 and the OKF project's validator
 
-**Status:** Proposed (drafted 2026-11-19 in P4 PR V; decisions D1 to D7 accepted by the owner on 2026-11-19 in [RFC-002](../rfcs/RFC-002-okf-v0.3.md)). **Supersedes:** the okf-skills pin of DDR QA-25 and QA-44. **Amends:** SDD AD-08 (the checker), ADR-012 items 2 and 5 (`OKF121` now replaces `E004`, and the root index no longer counts). **RFC:** RFC-002. **Plan:** P4 step 4b, proposed entry PP-15.
+**Status:** Accepted (owner, 2026-11-20, with PP-15, the `constraints.md` row and the v0.3 citation convention; drafted 2026-11-19 in P4 PR V; decisions D1 to D7 accepted by the owner on 2026-11-19 in [RFC-002](../rfcs/RFC-002-okf-v0.3.md)). **Supersedes:** the okf-skills pin of DDR QA-25 and QA-44. **Amends:** SDD AD-08 (the checker), ADR-012 items 2 and 5 (`OKF121` now replaces `E004`, and the root index no longer counts). **RFC:** RFC-002. **Plan:** P4 step 4b, proposed entry PP-15.
 
 ## Context
 
