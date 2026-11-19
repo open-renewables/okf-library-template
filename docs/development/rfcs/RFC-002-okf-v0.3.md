@@ -1,6 +1,6 @@
 Status: Accepted (owner, 2026-11-19, in Q&A; option (b), see "Decision" at the end)
 
-ADRs produced: ADR-013 (OKF v0.3 and the OKF project's validator), to be written with the change. ADR-012 stays the index-header ADR on `tooling/p4-index-header`; the generator ADR that the P4 plan names for PR 6 takes the next free number (D7).
+ADRs produced: ADR-013 (OKF v0.3 and the OKF project's validator), to be written with the change. ADR-012 stays the index-header ADR ([ADR-012](../adr/ADR-012-index-headers-and-okf-conformance.md), merged in #49); the generator ADR that the P4 plan names for PR 6 takes the next free number (D7).
 
 # RFC-002: Moving from OKF v0.2 to OKF v0.3
 
@@ -8,7 +8,7 @@ ADRs produced: ADR-013 (OKF v0.3 and the OKF project's validator), to be written
 
 The template pins OKF v0.2 at commit `ad30107` of `GoogleCloudPlatform/open-knowledge-format` (`profile/profile.yaml`, SRS FR1.2 and Evidence, SDD AD-08 and §3). On 2026-11-18 that repository was marked deprecated (commit `8a8ff87`, a README banner pointing to the new home), and OKF v0.3 is the current specification at `open-knowledge-format/open-knowledge-format`. The template is in P4 and heading for `v1.0.0`. The owner needs to decide whether to move before or after `v1.0.0`.
 
-ADR-012 (on branch `tooling/p4-index-header`, commit `bafb9d0`, not yet on `main`) already records one v0.3 consequence: a folder-index header breaks §8 in both versions, and a root `description` is allowed from v0.3.
+[ADR-012](../adr/ADR-012-index-headers-and-okf-conformance.md) (merged to `main` in #49, `a699ccf`) already records one v0.3 consequence: a folder-index header breaks §8 in both versions, and a root `description` is allowed from v0.3.
 
 This RFC proposes no change. It does not alter a requirement, decision, profile, schema or script.
 
@@ -79,7 +79,7 @@ Recommendation: **K1.** It amends AD-08 (checker changes from okf-skills to the 
 - `OKF120` stays as the profile's stricter rule (D4).
 - `tests/template/test_conformance.py` (21 `OKF1` references today) is rewritten around the code table; the message-mapping test becomes a code-coverage test that fails when the vendored file emits a code the table does not know.
 
-**What it means for ADR-012's `OKF121`:** on the P4 branch, `_index_header_findings` collects okf-skills' per-index `OKF117` warnings whose text is `"§8 index.md should contain no frontmatter"` or `"§12 root index.md frontmatter may only carry"`, and replaces them with one `OKF121` warning. Under K1:
+**What it means for ADR-012's `OKF121`:** in `conformance.py` on `main` (since #49), `_index_header_findings` collects okf-skills' per-index `OKF117` warnings whose text is `"§8 index.md should contain no frontmatter"` or `"§12 root index.md frontmatter may only carry"`, and replaces them with one `OKF121` warning. Under K1:
 
 - **Folder headers:** the reference validator reports each as an **error**, `E004` ("an index.md below the bundle root has no frontmatter (section 8)"). `OKF121` must collect `E004` instead of the two message texts, and the template must decide that a usable ADR-010 header is downgraded to the one `OKF121` warning, not left as an error (D3). Without that decision, every library using ADR-010 headers would fail check 1.
 - **Root header:** no finding any more for `description`, `title`, `license` or extension keys, so the root drops out of `OKF121`, as ADR-012 item 5 expects. `OKF506` must then allow those root keys, because §8.1 requires a regenerating producer to keep them.
@@ -168,10 +168,10 @@ The owner settled the seven decisions in Q&A on 2026-11-19 and took the recommen
 | D4 | Timestamps: keep `OKF120` (offset required everywhere), or accept v0.3's date-only form for some keys | Keep `OKF120` | **Keep `OKF120`** |
 | D5 | Root bundle metadata: should `init_library.py` write `title` and `license` into the root index header | Yes | **Write both**: `title` from `library.title`, `license` from the content licence (`CC-BY-4.0` by default) |
 | D6 | `uid` and `namespace` stay unprefixed (v0.3 §4.1 asks for `x-<producer>-<name>` as a SHOULD) | Keep; record in the ADR | **Keep unprefixed**; the ADR records the departure and check 1 drops `I203` |
-| D7 | The ADR number: the P4 plan already names an "ADR-012 default generator" for PR 6 while the index-header ADR on `tooling/p4-index-header` is ADR-012 | Keep ADR-012 for the index header | **ADR-012** stays the index-header ADR; **ADR-013** is this move; the PR 6 generator ADR takes the next free number, and the P4 plan is corrected to say so |
+| D7 | The ADR number: the P4 plan already names an "ADR-012 default generator" for PR 6 while the index-header ADR, merged in #49, is ADR-012 | Keep ADR-012 for the index header | **ADR-012** stays the index-header ADR; **ADR-013** is this move; the PR 6 generator ADR takes the next free number, and the P4 plan is corrected to say so |
 
 Consequences for the work:
 
 - The (b) work list in §3 and the (b) edits in §4 apply. They are applied with the change, not in this RFC. The SRS wording is still the owner's (FR1.2, Evidence, constraints, risks).
-- The P4 plan gains a step before the `v0.9.0` release candidate: the v0.3 move (13–18 agent hours, 2–3 owner hours, 2–3 days), which raises the P4 estimate to about 39–55 agent hours. The step lands after `tooling/p4-index-header` merges, because it changes the same `conformance.py` code (`OKF121`) and `OKF506`.
+- The P4 plan gains a step before the `v0.9.0` release candidate: the v0.3 move (13–18 agent hours, 2–3 owner hours, 2–3 days), which raises the P4 estimate to about 39–55 agent hours. The step builds on #49 (merged), because it changes the same `conformance.py` code (`OKF121`) and `OKF506`.
 - The pull request that changes `profile.yaml` and regenerates `knowledge/index.md` carries the `profile-migration` label (AD-18) and a decision-record entry; for the template it is a pre-1.0 release, so the major-version rule does not yet bite.
