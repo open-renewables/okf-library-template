@@ -229,6 +229,7 @@ Tooling references TQ1–TQ15 (QA-52 to QA-65) are to the owner Q&A of 25 Octobe
 | 2026-11-15 | SDD; ADR-011 | C-07; I-16 | Owner request of 2026-11-15: `poe site-switch <generator>` changes a library's site generator after init, building the site with the new generator first and restoring `profile.yaml` and the README sentence if that fails. Extends PP-14; no decision changes | ADR-011 |
 | 2026-11-15 | SDD | §10 (Vulnerabilities bullet) | Known gap G37 fixed at the owner's request: the dependency audit no longer needs `docs/development/constraints.md`, which a library does not have. A library may list reviewed advisory IDs in `profile/audit-ignore.txt`; with neither file there are no exceptions. No decision changes | NFR6, QA-74 |
 | 2026-11-13 | SDD | W-01 step 3 (`GOVERNANCE.md` wording) | Owner approved P3 plan entry PP-6 on 2026-11-11; its `GOVERNANCE.md` part is applied with the file: `init_library.py` fills the maintainer and the security contact in `GOVERNANCE.md`. No decision changes | QA-47 |
+| 2026-11-19 | SDD | §6 layout; C-04 (`new_concept.py`, new `rename_type.py` row); W-01 step 3 | Owner approved P4 plan entry PP-8 on 2026-11-19: `new_concept.py --set key=value` writes another key the type's schema declares; `rename_type.py` renames a type and its `uid` prefix before any release, and the primary-type rename of W-01 uses it instead of a hand edit (OD-6 amended by the owner's approval; known gap G23 narrowed). No other decision changes | OD-6, G23 |
 
 ## 4. Related documents
 

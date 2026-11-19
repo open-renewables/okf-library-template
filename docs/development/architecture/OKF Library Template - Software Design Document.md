@@ -186,6 +186,7 @@ okf-library-template/
 │   ├── validate_profile.py      # C-04 command-line entry points
 │   ├── new_concept.py
 │   ├── renumber.py
+│   ├── rename_type.py
 │   ├── build_indexes.py
 │   ├── write_revision.py
 │   ├── stale_report.py
@@ -276,7 +277,8 @@ Each script is a thin entry point over C-03, runs with `uv run scripts/<name>.py
 | Script | Purpose | Used by |
 | --- | --- | --- |
 | `validate_profile.py` | Run checks 1–6 and the publishing rules on the bundle or on files changed against a base ref; `--tooling-from <ref>` runs the tooling and profile of another ref against the working tree's content | Authors, W-04 |
-| `new_concept.py` | Create a concept of a declared type at a path: frontmatter with the next `uid`, required tags derived from the path, declared sections with placeholders; update the registry | Authors, maintainers, `author-concept` skill |
+| `new_concept.py` | Create a concept of a declared type at a path: frontmatter with the next `uid`, required tags derived from the path, declared sections with placeholders; update the registry; `--set key=value` adds another key the type's schema declares, such as a Vocabulary's `namespace` | Authors, maintainers, `author-concept` skill |
+| `rename_type.py` | Rename a concept type and its `uid` prefix in the profile, the type's schema file, the bundle, the registry and `tests/library/`, then rebuild the indexes; only before any concept of the type is released | Library owner, after instantiation (G23) |
 | `renumber.py` | Give a concept whose `uid` clashes with one already on `main` the next free number, updating its frontmatter and the registry | Maintainers, after a W-04 push failure |
 | `build_indexes.py` | Regenerate all `index.md` files, or those for given concepts; `--check` reports differences without writing | Authors, W-04 check 5, W-05 |
 | `write_revision.py` | Record every pull request merged since the last bot commit: append revision lines to each concept touched, regenerate affected indexes, optionally rewrite `verified`; `--check-since <tag>` reports merged pull requests without lines | W-05, W-07 |
@@ -680,7 +682,7 @@ Run as `uv run poe <task>`; `uv run poe` lists them. CI calls the same tasks (AD
 | --- | --- | --- |
 | 1. "Use this template" to create the repository in the organisation; for `git-local`, clone the template or unpack a release archive and `git init` | Library owner | 1 min |
 | 2. Clone; `uv sync` | Library owner | 2 min |
-| 3. `init_library.py`: questionnaire (platform (`github` or `git-local`), name, title, description, maintainer, licence holder, content licence (default CC BY 4.0), licence for the owner's code and changes (default Apache 2.0; proprietary allowed), site generator (default `mkdocs`), keep examples, keep tests); rewrites placeholders in `profile.yaml`, `pyproject.toml`, `uv.lock`, `AGENTS.md`, `CODEOWNERS`, `GOVERNANCE.md` (the maintainer and the contact for security reports), `mkdocs.yml` (site name, repository, edit and issue links; for `git-local` the repository-based keys are removed, so a local site has no dead link); generates `README.md`, `CITATION.cff` and `DECISIONS.md`; writes the licence files, with the full Creative Commons text in `LICENSE-content`, and keeps `NOTICE` (section 6); keeps the template's primary type (Item, prefix ITM), which is renamed by hand (known gap G23); resets the registry; writes `DECISIONS.md` DR-01 "Instantiated from okf-library-template vX.Y.Z" with the licence choices | Library owner | 6 min |
+| 3. `init_library.py`: questionnaire (platform (`github` or `git-local`), name, title, description, maintainer, licence holder, content licence (default CC BY 4.0), licence for the owner's code and changes (default Apache 2.0; proprietary allowed), site generator (default `mkdocs`), keep examples, keep tests); rewrites placeholders in `profile.yaml`, `pyproject.toml`, `uv.lock`, `AGENTS.md`, `CODEOWNERS`, `GOVERNANCE.md` (the maintainer and the contact for security reports), `mkdocs.yml` (site name, repository, edit and issue links; for `git-local` the repository-based keys are removed, so a local site has no dead link); generates `README.md`, `CITATION.cff` and `DECISIONS.md`; writes the licence files, with the full Creative Commons text in `LICENSE-content`, and keeps `NOTICE` (section 6); keeps the template's primary type (Item, prefix ITM), which is renamed with `rename_type.py`, following `runbook-instantiate-library.md` (known gap G23 narrowed); resets the registry; writes `DECISIONS.md` DR-01 "Instantiated from okf-library-template vX.Y.Z" with the licence choices | Library owner | 6 min |
 | 4. `github` only: `setup_repo.py` (needs `gh` authenticated): labels, squash-only merges, Actions workflow permissions read-only by default, Dependabot, `revision_token: github-token`; for a public library also ruleset, secret scanning and push protection, immutable releases where available | Library owner | 5 min |
 | 5. Public libraries only: create and install the GitHub App; `setup_repo.py --check` | Library owner | 10 min |
 | 6. First pull request with a real concept; CI green | Library owner | 5 min |
