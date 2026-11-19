@@ -1,6 +1,5 @@
-"""Check 1: the vendored okf-skills validator, its message mapping, and the datetime rule."""
+"""Check 1: the vendored OKF v0.3 validator, its code table, and the datetime rule (ADR-013)."""
 
-import ast
 import hashlib
 import re
 from pathlib import Path
@@ -10,12 +9,12 @@ import pytest
 from okfprofile.bundle import load_bundle
 from okfprofile.checks import conformance
 from okfprofile.checks.conformance import (
+    CODE_TABLE,
     VENDORED,
     check_conformance,
     datetime_findings,
     datetime_paths,
     load_vendored,
-    map_message,
 )
 from okfprofile.codes import CODES
 from okfprofile.document import parse_concept
@@ -24,27 +23,9 @@ ROOT = Path(__file__).resolve().parents[2]
 VENDOR_DIR = VENDORED.parent
 
 
-def _text(node: ast.expr) -> str:
-    """The constant text of a message expression, with every interpolation replaced by ``X``."""
-    if isinstance(node, ast.Constant):
-        return str(node.value)
-    if isinstance(node, ast.JoinedStr):
-        return "".join(
-            _text(part.value) if isinstance(part, ast.FormattedValue) else _text(part) for part in node.values
-        )
-    if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
-        return _text(node.func.value)
-    return "X"
-
-
-def vendored_messages() -> list[str]:
-    tree = ast.parse(VENDORED.read_text(encoding="utf-8"))
-    messages = []
-    for node in ast.walk(tree):
-        is_report_call = isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
-        if is_report_call and node.func.attr in {"warn", "err"} and len(node.args) == 2:  # type: ignore[attr-defined]  # narrowed by is_report_call
-            messages.append(_text(node.args[1]))  # type: ignore[attr-defined]  # narrowed by is_report_call
-    return messages
+def vendored_codes() -> set[str]:
+    """Every finding code the vendored validator's source can emit."""
+    return set(re.findall(r'"([EWI][0-9]{3})"', VENDORED.read_text(encoding="utf-8")))
 
 
 def test_the_vendored_file_is_the_recorded_one() -> None:
@@ -55,50 +36,25 @@ def test_the_vendored_file_is_the_recorded_one() -> None:
     assert recorded is not None
     content = VENDORED.read_bytes().replace(b"\r\n", b"\n")
     assert hashlib.sha256(content).hexdigest() == recorded.group(1)
-    assert (VENDOR_DIR / "LICENSE").read_text(encoding="utf-8").startswith("MIT License")
-    assert "Apache License" in (VENDOR_DIR / "NOTICE").read_text(encoding="utf-8")
+    assert "Apache License" in (VENDOR_DIR / "LICENSE.md").read_text(encoding="utf-8")
 
 
-def test_every_message_the_vendored_validator_can_emit_is_mapped() -> None:
-    messages = vendored_messages()
-    assert len(messages) >= 30
-    unmapped = [m for m in messages if map_message(f"f.md: {m}")[0] == "OKF119"]
-    assert unmapped == []
-    codes = {map_message(f"f.md: {m}")[0] for m in messages} - {None}
-    assert codes == {"OKF101", "OKF102", "OKF103", "OKF104", "OKF111", "OKF113", "OKF116", "OKF117", "OKF118"}
-    assert codes <= set(CODES)
-
-
-@pytest.mark.parametrize(
-    ("message", "code"),
-    [
-        ("a.md: §11.1 no parseable YAML frontmatter block (x)", "OKF101"),
-        ("a.md: cannot read file: boom", "OKF101"),
-        ("a.md: §11.1 frontmatter is not valid YAML: x", "OKF102"),
-        ("a.md: §11.1 frontmatter must be a YAML mapping", "OKF103"),
-        ("a.md: §11.2 missing or empty required `type` field", "OKF104"),
-        ("a.md: recommended field `title` is absent (§4.1)", None),
-        ("a.md: cross-link target not found: `x.md` (tolerated under §6.1)", None),
-        ("a.md: §5.2 `stale_after` `x` is not an RFC 3339 timestamp", None),
-        ("a.md: §7 `generated.by` `Human:x` is a near-miss of `human:`", "OKF113"),
-        ("a.md: §5.1 `sources[0].usage_count` has no `usage_window` framing it", "OKF116"),
-        ("a.md: §5.1 footnote `[^x]` matches no `sources[].id`", "OKF116"),
-        ("a.md: legacy v0.1 `timestamp`: x", "OKF111"),
-        ("index.md: §8 index.md should contain no frontmatter", "OKF117"),
-        ("a.md: §10.2 an Attested Computation concept requires `runtime`", "OKF118"),
-        ("a.md: a message nobody has seen", "OKF119"),
-    ],
-)
-def test_map_message(message: str, code: str | None) -> None:
-    assert map_message(message)[0] == code
-    assert map_message(message)[1] == message.partition(": ")[0]
+def test_every_code_the_vendored_validator_can_emit_is_in_the_table() -> None:
+    codes = vendored_codes()
+    assert len(codes) >= 30
+    assert sorted(codes - set(CODE_TABLE)) == []
+    assert sorted(set(CODE_TABLE) - codes) == []
+    mapped = {c for c in CODE_TABLE.values() if c is not None}
+    assert mapped <= set(CODES)
+    assert mapped == {"OKF102", "OKF104", "OKF105", "OKF113", "OKF116", "OKF117", "OKF118", "OKF121", "OKF122"}
 
 
 def test_vendored_module_loads_once_and_validates_a_directory(tmp_path: Path) -> None:
     assert load_vendored() is load_vendored()
     (tmp_path / "a.md").write_text("---\ntype: T\n---\n", encoding="utf-8")
-    report = load_vendored().validate(tmp_path)
-    assert report.errors == []
+    checker = load_vendored().Checker(tmp_path, None)
+    checker.run()
+    assert [f.level for f in checker.findings if f.level == "error"] == []
 
 
 def check_dir(bundle: Path, prefix: str = "knowledge") -> list[tuple[str, str]]:
@@ -112,7 +68,7 @@ def test_frontmatter_problem_is_reported_once_with_the_readers_line(tmp_path: Pa
     assert [(f.code, f.file, f.line) for f in findings] == [("OKF102", f"{tmp_path.name}/a.md", 2)]
 
 
-def test_okf_skills_findings_get_the_bundle_prefix(tmp_path: Path) -> None:
+def test_a_missing_type_is_okf104_with_the_bundle_prefix(tmp_path: Path) -> None:
     (tmp_path / "a.md").write_text("---\ntitle: no type\n---\n", encoding="utf-8")
     assert check_dir(tmp_path) == [("OKF104", "knowledge/a.md")]
     assert check_dir(tmp_path, prefix="") == [("OKF104", "a.md")]
@@ -120,14 +76,64 @@ def test_okf_skills_findings_get_the_bundle_prefix(tmp_path: Path) -> None:
 
 def test_attested_computation_without_runtime_is_flagged(tmp_path: Path) -> None:
     (tmp_path / "a.md").write_text("---\ntype: Attested Computation\ncomputation: missing.sql\n---\n", encoding="utf-8")
-    assert [c for c, _ in check_dir(tmp_path)] == ["OKF118", "OKF118"]
+    assert [c for c, _ in check_dir(tmp_path)] == ["OKF118"]
 
 
-def test_unmapped_message_becomes_a_warning(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    fake = SimpleNamespace(validate=lambda _bundle: SimpleNamespace(errors=[], warnings=["a.md: brand new message"]))
-    monkeypatch.setattr(conformance, "load_vendored", lambda: fake)
+def test_findings_carry_the_validators_line(tmp_path: Path) -> None:
+    (tmp_path / "a.md").write_text("---\ntype: T\n---\n\nText.[^x]\n", encoding="utf-8")
+    findings = check_conformance(tmp_path, load_bundle(tmp_path, tmp_path), "")
+    assert [(f.code, f.line) for f in findings] == [("OKF116", 5)]
+
+
+def test_dropped_codes_give_no_finding(tmp_path: Path) -> None:
+    (tmp_path / "a.md").write_text(
+        "---\ntype: T\nuid: ITM-0001\nstatus: reviewed\ntags: x\n---\n\n[gone](missing.md)\n", encoding="utf-8"
+    )
+    assert check_dir(tmp_path) == []
+
+
+def test_superseded_by_without_deprecated_is_okf122(tmp_path: Path) -> None:
+    (tmp_path / "b.md").write_text("---\ntype: T\n---\n", encoding="utf-8")
+    (tmp_path / "a.md").write_text("---\ntype: T\nstatus: draft\nsuperseded_by: b.md\n---\n", encoding="utf-8")
+    assert check_dir(tmp_path) == [("OKF122", "knowledge/a.md")]
+
+
+def test_log_md_problems(tmp_path: Path) -> None:
+    (tmp_path / "x.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
+    (tmp_path / "log.md").write_text("---\ntype: Log\n---\n## soon\n", encoding="utf-8")
+    assert {c for c, _ in check_dir(tmp_path)} == {"OKF105"}
+    (tmp_path / "log.md").write_text("## 2026-10-01\n\n## 2026-10-20\n", encoding="utf-8")
+    assert check_dir(tmp_path) == [("OKF117", "knowledge/log.md")]
+
+
+def test_root_index_metadata_is_not_a_departure(tmp_path: Path) -> None:
+    (tmp_path / "x.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
+    (tmp_path / "index.md").write_text(
+        '---\nokf_version: "0.3"\ntitle: All\ndescription: Everything.\nlicense: CC-BY-4.0\nx-acme-owner: a\n---\n',
+        encoding="utf-8",
+    )
+    assert check_dir(tmp_path) == []
+    (tmp_path / "index.md").write_text("---\nokf_version: 0.3\n---\n", encoding="utf-8")
+    assert check_dir(tmp_path) == [("OKF117", "knowledge/index.md")]
+    (tmp_path / "index.md").unlink()
+    assert check_dir(tmp_path) == []
+
+
+def test_an_unknown_code_becomes_a_warning(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    finding = SimpleNamespace(path="a.md", line=3, level="warning", code="W999", message="brand new")
+
+    class Fake:
+        def __init__(self, *_args: object) -> None:
+            self.findings = [finding]
+
+        def run(self) -> None:
+            return None
+
+    monkeypatch.setattr(conformance, "load_vendored", lambda: SimpleNamespace(Checker=Fake))
     findings = check_conformance(tmp_path, [], "knowledge")
-    assert [(f.code, f.level.value, f.message) for f in findings] == [("OKF119", "warning", "brand new message")]
+    assert [(f.code, f.level.value, f.line, f.message) for f in findings] == [
+        ("OKF119", "warning", 3, "W999: brand new")
+    ]
 
 
 @pytest.mark.parametrize(
@@ -183,27 +189,18 @@ sources:
     assert datetime_findings(parse_concept("no frontmatter", "a.md")) == []
 
 
-def test_index_scope_headers_give_one_okf121_instead_of_okf117(tmp_path: Path) -> None:
-    (tmp_path / "a").mkdir()
-    (tmp_path / "b").mkdir()
-    (tmp_path / "c").mkdir()
+def test_index_scope_headers_give_one_okf121_instead_of_e004(tmp_path: Path) -> None:
     for folder in ("a", "b", "c"):
+        (tmp_path / folder).mkdir()
         (tmp_path / folder / "x.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
     (tmp_path / "a" / "index.md").write_text('---\ndescription: "Scope a."\n---\n\n# A\n', encoding="utf-8")
     (tmp_path / "b" / "index.md").write_text('---\ndescription: "Scope b."\n---\n\n# B\n', encoding="utf-8")
     (tmp_path / "c" / "index.md").write_text("---\nowner: x\n---\n\n# C\n", encoding="utf-8")
     (tmp_path / "index.md").write_text(
-        '---\nokf_version: "0.2"\ndescription: "All."\n---\n\n# Root\n', encoding="utf-8"
+        '---\nokf_version: "0.3"\ndescription: "All."\n---\n\n# Root\n', encoding="utf-8"
     )
     findings = check_conformance(tmp_path, load_bundle(tmp_path, tmp_path), "knowledge")
     assert sorted((f.code, f.file) for f in findings) == [("OKF121", "knowledge/index.md")]
     message = findings[0].message
-    assert message.startswith("3 index header(s)")
-    assert "knowledge/a/index.md, knowledge/b/index.md, knowledge/index.md" in message
-
-
-def test_okf117_for_other_reserved_file_problems_is_kept(tmp_path: Path) -> None:
-    (tmp_path / "x.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
-    (tmp_path / "index.md").write_text('---\nokf_version: "0.2"\nupkeep: weekly\n---\n\n# Root\n', encoding="utf-8")
-    (tmp_path / "log.md").write_text("---\ntype: Log\n---\n", encoding="utf-8")
-    assert "OKF117" in [c for c, _ in check_dir(tmp_path)]
+    assert message.startswith("2 folder index header(s)")
+    assert "knowledge/a/index.md, knowledge/b/index.md." in message

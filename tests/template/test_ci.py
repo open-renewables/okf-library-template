@@ -430,3 +430,20 @@ def test_the_report_command_reports_what_it_cannot_do(tmp_path: Path, monkeypatc
         report_issue_main(["--repo", REPO, "--label", "x", "--title", "t", "--body-file", str(body)], api=Refusing())
         == 2
     )
+
+
+def test_a_profile_migration_is_judged_with_its_own_tooling(library: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """W-04 step 5: a pull request labelled profile-migration runs its own tooling on the whole bundle."""
+    seen: dict[str, Any] = {}
+
+    def fake_validate(argv: list[str]) -> int:
+        seen["argv"] = argv
+        return 0
+
+    monkeypatch.setattr(ci_cli, "validate_main", fake_validate)
+    assert validate_event(library, "pull_request", pull_event(("profile-migration",)), Reviews([]), REPO) == 0
+    argv = seen["argv"]
+    assert "--tooling-from" not in argv
+    assert argv[argv.index("--base") + 1] == "origin/main"
+    assert validate_event(library, "pull_request", pull_event(), Reviews([]), REPO) == 0
+    assert "--tooling-from" in seen["argv"]

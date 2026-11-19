@@ -10,7 +10,7 @@ Each row names its source.
 | --- | --- | --- | --- |
 | Lock file matches `pyproject.toml` | `uv lock --locked` passes | `poe check` | QA-55 |
 | Supported Python | 3.11 minimum; CI tests 3.11 and 3.14; `.python-version` pins 3.12 | CI matrix | QA-65 |
-| Validation dependency set | ruamel.yaml, markdown-it-py, mdit-py-plugins, jsonschema, plus the vendored okf-skills validator and their dependencies; nothing else in the `validate` group | Review; licence check | SDD AD-04, §12 |
+| Validation dependency set | ruamel.yaml, markdown-it-py, mdit-py-plugins, jsonschema, plus the vendored OKF validator (ADR-013) and their dependencies; nothing else in the `validate` group | Review; licence check | SDD AD-04, §12 |
 | Installs in CI | `requirements/validate.txt` installed with `--require-hashes` | `validate.yml` | SDD §10 |
 
 ## Code

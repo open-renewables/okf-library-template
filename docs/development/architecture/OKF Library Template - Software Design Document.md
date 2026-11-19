@@ -20,11 +20,11 @@ aliases:
 
 ## 1. Executive summary
 
-The template is a public GitHub repository that a domain team copies to start an OKF knowledge library. It contains an OKF v0.2 bundle skeleton, a machine-readable profile, Python tooling that enforces the profile, GitHub Actions workflows, issue forms, two agent skills and a site configuration. The design adds no server and no runtime dependency for agents: the deliverable to an agent is a tagged release of plain Markdown files with the consuming skill.
+The template is a public GitHub repository that a domain team copies to start an OKF knowledge library. It contains an OKF v0.3 bundle skeleton, a machine-readable profile, Python tooling that enforces the profile, GitHub Actions workflows, issue forms, two agent skills and a site configuration. The design adds no server and no runtime dependency for agents: the deliverable to an agent is a tagged release of plain Markdown files with the consuming skill.
 
 The design rests on seven choices, recorded as architecture decisions AD-01 to AD-21 (section 4):
 
-1. **Python 3.11+ profile tooling** in one shared module with thin command-line scripts, locked with `uv`. The pinned OKF checker (okf-skills) is also Python, so CI and local runs use one runtime and the same six checks.
+1. **Python 3.11+ profile tooling** in one shared module with thin command-line scripts, locked with `uv`. The pinned OKF checker (the OKF project's validator, ADR-013) is also Python, so CI and local runs use one runtime and the same six checks.
 2. **Declarative profile.** `profile.yaml`, JSON Schema 2020-12 frontmatter schemas built on a shared OKF base schema, and section-format files declare everything library-specific. The tooling contains no domain rules, so a library customises its profile, not code.
 3. **Validation that cannot be weakened by the change it judges.** Content is validated with the base branch's tooling and profile, and tooling and content change in separate pull requests except for labelled profile migrations. This matters because private libraries on GitHub Free have no branch protection.
 4. **Approval inferred at merge, tier derived honestly.** GitHub does not let a pull request author approve their own pull request, so a single maintainer's "self-approval" is an admin merge, which CI detects after merge and records as `self-approved`. Stale approvals are recorded as such, self-approval is shown as `human-reviewed (self)`, and a concept's tier is the lowest since its last owner-approved full review.
@@ -73,7 +73,7 @@ The RE risk library (renewable energy issues and risks for project due diligence
 | Single maintainer | SRS T2 | Automation does the checking; one shared tooling module; few moving parts |
 | Free tiers only | SRS T6, NFR3 | GitHub Free organisation; no paid security features; no access-controlled Pages |
 | Libraries may be private permanently, or proprietary | SRS T1, constraints; DDR QA-47 | CI-only controls must stand on their own: base-branch validation, push-to-`main` re-validation, CI secret scanning |
-| OKF v0.2 is pre-1.0 | SRS constraints | Spec pinned by commit (`ad30107`); profile validator is the authority on what a library accepts |
+| OKF v0.3 is pre-1.0 | SRS constraints | Spec pinned by commit (`527e81a`, RFC-002, ADR-013); profile validator is the authority on what a library accepts |
 | Technology neutrality | SRS NFR2 | Profile and formats are tool-agnostic files; tooling is replaceable without touching content |
 | Instantiate in under 30 minutes | SRS FR6.1 | Template repository plus scripted set-up |
 | Libraries may diverge | SRS FR6.4 | No update path; tooling copied into each library; a library created by clone may merge later template tags (DDR QA-52) |
@@ -89,7 +89,7 @@ Platform and tool facts the design relies on **[Doc]**, from the stack report un
 - Fork pull requests run with a read-only token and no secrets.
 - Native secret scanning and CodeQL are free on public repositories only.
 - GitHub Pages on Free serves public repositories only; access-controlled Pages needs Enterprise Cloud.
-- OKF requires every timestamp-valued key to be an ISO 8601 datetime with an explicit UTC offset (spec change of 21 August 2026).
+- OKF v0.3 §5 accepts an RFC 3339 date-time with an offset, or a date, for a timestamp-valued key; the profile keeps the stricter rule, a date-time with an explicit offset everywhere (`OKF120`, RFC-002 D4).
 - Material for MkDocs reaches end of life on 5 November 2026, with only critical and security fixes until then; Zensical's latest release is 0.0.72 of 23 October 2026 (checked 25 October 2026; DDR QA-38).
 
 One behaviour is from recollection and is verified in V-05 **[Inf]**: a GitHub Actions concurrency group holds at most one running and one pending run, and a newer queued run cancels the pending one. The revision writer is designed so that this cannot lose provenance (W-05).
@@ -107,7 +107,7 @@ Each decision adopts the stack report's recommendation unless amended. Alternati
 | AD-05 | YAML 1.2 parsing with ruamel.yaml; frontmatter split by the tooling, not by python-frontmatter or PyYAML | PyYAML (YAML 1.1 coerces `no` to false and dates to date objects **[Test]**) | FR1, FR2 | Accepted (DR-21) |
 | AD-06 | Markdown parsed with markdown-it-py and mdit-py-plugins (footnotes, front-matter, deflist off) | Regex parsing; Python-Markdown | FR2.2 check 3 | Accepted (DR-21) |
 | AD-07 | Frontmatter schemas in JSON Schema 2020-12, each type referencing a shared OKF base schema with `unevaluatedProperties: false`, validated with `jsonschema`; configuration files validated with `check-jsonschema` | Pydantic models (Python-specific, not portable); `additionalProperties: false` per type (rejects OKF optional keys and does not compose across `$ref`) | FR2.2 check 2, FR2.7 | Accepted (DR-21; amended by QA-41) |
-| AD-08 | OKF conformance by okf-skills pinned to the commit of `okf--v0.10.3` (`a8b96420de90d102c43cda1693d01ec4f925f2ab`), `bundle: knowledge`. Its validator script is vendored at that commit with its MIT licence, so `validate_profile.py` runs it locally and CI runs the same code. `okfprofile` also enforces frontmatter-first and datetime-offset rules | Floating `@v1` tag; Action-only check 1 (local and CI results differ) | FR1, FR2.8, QA-25 | Accepted (DR-21; amended by QA-44) |
+| AD-08 | OKF conformance by the OKF project's validator (`skills/okf-generate/scripts/validate.py` in `open-knowledge-format/open-knowledge-format`) at commit `527e81aff55992be21507e97004286789126f88c`, vendored with its Apache-2.0 licence in `scripts/vendor/okf/`, so `validate_profile.py` runs it locally and CI runs the same code. Its findings are mapped by code, not message text. `okfprofile` also enforces frontmatter-first and datetime-offset rules. Before ADR-013 the checker was okf-skills at `okf--v0.10.3`, mapped by message text | okf-skills, which has no v0.3 release (RFC-002 K2, K3); floating `@v1` tag; Action-only check 1 (local and CI results differ) | FR1, FR2.8, QA-25 | Accepted (DR-21; amended by QA-44, ADR-013) |
 | AD-09 | Optional second link check with lychee in offline mode, used mainly on generated site output | None (complements check 4) | FR2.2 check 4 | Accepted (DR-21) |
 | AD-10 | Instantiation by GitHub template repository plus `init_library` and `setup_repo` scripts; no template engine. The template repository is itself a working library, so every workflow runs on it unchanged; instantiation is tested in CI by a self-test (W-10). Supported instantiation routes: "Use this template", clone and push, or release archive; forking is not a supported way to instantiate a library (W-01), although fork pull requests remain a supported contribution route | Cookiecutter (with cruft for updates): the whole template must sit in a placeholder folder, so the template repository cannot run as a library. Copier: renders only `.jinja` files, so the repository could stay runnable, but it adds a second mechanism beside `init_library.py`, and its update path is not required (FR6.4). Copier 9.19.1 requires `jinja2-ansible-filters` (GPL3), which matters only if Copier is a locked dependency, not when run with `uvx`. Revisit Copier once a second library exists. Routes also include clone (keeps history, so template tags can be merged later) and release archive, so instantiation needs no hosting platform; `init_library.py` asks for the platform | FR6, QA-21 | Accepted (DR-21, DR-24; wording amended by QA-51, QA-63) |
 | AD-11 | Approval inferred at and after merge from the pull request's reviews, the commit each review was given on, and `merged_by`; recorded `self-approved` when the author merged without another approval; recorded `approved (stale)` when the approval was given on a commit other than the pull request's head at merge | Waiting for an approval event (never occurs for a single maintainer) | FR3.5, FR3.6 | Accepted (DR-21; amended by QA-34). In `git-local` mode approval is read from commit trailers instead (I-08, W-05; QA-59) |
@@ -136,7 +136,7 @@ flowchart LR
   end
   A -->|preview artifacts; Pages from v1.0.0 if public| S[Static site]
   REL --> AG[Agents: clone at tag or download archive]
-  OKF[okf-skills, pinned commit] --> A
+  OKF[OKF validator, pinned commit] --> A
 ```
 
 The template repository is the source of every library; a library takes nothing from the template automatically after instantiation, although a maintainer may merge a later template tag into a library created by clone (DDR QA-52). The diagram shows the `github` platform; in `git-local` mode the library repository, tasks and revision writer run on the maintainer's machine, and there is no issue intake, Actions or Pages (AD-19). Contributors without git act only through issue forms, which a library may switch off. Agents read a release; they need nothing from GitHub at run time beyond the files, and can work from a local copy.
@@ -182,7 +182,7 @@ okf-library-template/
 ├── scripts/
 │   ├── okfprofile/              # shared module (C-03)
 │   ├── okfprofile/platforms/    # github.py, git_local.py (AD-19)
-│   ├── vendor/okf-skills/       # okf-skills validator at the pinned commit, with its MIT licence (AD-08)
+│   ├── vendor/okf/              # the OKF project's validator at the pinned commit, with its Apache-2.0 licence (AD-08, ADR-013)
 │   ├── validate_profile.py      # C-04 command-line entry points
 │   ├── new_concept.py
 │   ├── renumber.py
@@ -244,7 +244,7 @@ Placement rules:
 
 ### C-01 Knowledge bundle
 
-The `knowledge/` folder is a conformant OKF v0.2 bundle: one concept per file, the concept ID is the path without `.md`, and folder depth is set by the library's profile. The template ships one example concept per declared type so that CI, the site and the skills have something to work on before a library adds content. **RE example:** two levels, Group then Category, with one risk per file.
+The `knowledge/` folder is a conformant OKF v0.3 bundle: one concept per file, the concept ID is the path without `.md`, and folder depth is set by the library's profile. The template ships one example concept per declared type so that CI, the site and the skills have something to work on before a library adds content. **RE example:** two levels, Group then Category, with one risk per file.
 
 ### C-02 Profile
 
@@ -259,7 +259,7 @@ A Python package in `scripts/okfprofile/` used by every script. Modules:
 | `config` | Load and validate `profile.yaml` against its meta-schema; resolve type, format and vocabulary declarations |
 | `document` | Read a concept: split frontmatter (first line must be `---`), parse YAML 1.2 with ruamel.yaml, keep values as strings, parse the body with markdown-it-py; expose headings, sections, list items with source lines, links and footnotes |
 | `vocab` | Load vocabulary concepts, values, kinds and definitions |
-| `checks` | The validation checks (W-04), each returning findings with a stable code (I-09); check 1 calls the vendored okf-skills validator |
+| `checks` | The validation checks (W-04), each returning findings with a stable code (I-09); check 1 calls the vendored OKF validator and maps its codes (ADR-013) |
 | `changes` | Classify a pull request's changed files as tooling or content; apply the mixed-change rule and the `profile-migration` exception |
 | `registry` | Read, diff and update `uid-registry.yaml`; assign the next number per prefix; renumber a clashing concept |
 | `indexes` | Generate `index.md` files (I-07), for the whole bundle or for the folders containing given concepts |
@@ -268,7 +268,7 @@ A Python package in `scripts/okfprofile/` used by every script. Modules:
 | `platforms` | One adapter per `platform` value (AD-19): `github` wraps the GitHub REST API using the token in the environment, with no third-party client library, and resolves a commit's pull request without relying on `commits/{sha}/pulls` alone, which lagged the push by about 20 s (V-05); `git_local` reads commits and trailers with `git` and resolves authors through `maintainers` (I-02) |
 | `report` | Emit findings as JSON, GitHub workflow annotations and a Markdown job summary |
 
-The module holds no domain rules. Dependencies are limited to ruamel.yaml, markdown-it-py, mdit-py-plugins and jsonschema, plus the standard library and the vendored okf-skills validator (whose only dependency is PyYAML), to keep the validation dependency set small and separate from site dependencies (NFR6).
+The module holds no domain rules. Dependencies are limited to ruamel.yaml, markdown-it-py, mdit-py-plugins and jsonschema, plus the standard library and the vendored OKF validator (whose only dependency is PyYAML), to keep the validation dependency set small and separate from site dependencies (NFR6).
 
 ### C-04 Command-line scripts
 
@@ -383,7 +383,9 @@ status: draft
 Rules enforced by C-03:
 
 - Frontmatter opens with `---` on line 1 and closes with `---`; YAML 1.2; all scalar values are read as strings unless the schema says otherwise.
-- Timestamp-valued keys (`stale_after`, `verified[].at`, any declared datetime field) are ISO 8601 datetimes with an explicit offset, for example `2027-01-01T00:00:00Z`.
+- Timestamp-valued keys (`stale_after`, `verified[].at`, any declared datetime field) are ISO 8601 datetimes with an explicit offset, for example `2027-01-01T00:00:00Z`. OKF v0.3 §5 also accepts a date; the profile does not (RFC-002 D4).
+- Path fields (`resource`, `superseded_by`, `computation`, `executor.resource`, `attester.resource`, `sources[].resource`) resolve by OKF v0.3 §6.2: from the concept's own folder, or from the bundle root when they start with `/`. Write them `/`-rooted; one that names no file in the bundle is `OKF412`. A URI or a `sources` scope descriptor is not a path.
+- A claim is attributed with a footnote whose label is the `id` of a `sources` entry (OKF v0.3 §5.1); a footnote with no matching id is the warning `OKF116`.
 - Internal links are relative (spaces as `%20` or in angle brackets); root-relative links (`/path/to/concept.md`) are rejected (ADR-005). They must resolve to a file in `knowledge/` and, where an anchor is given, to an automatic heading slug or an explicit anchor (AD-14).
 - Angle-bracket text in prose is written in a code span or escaped, because every CommonMark parser treats `<word>` as raw HTML.
 - Nested list items are indented four spaces, which every candidate parser reads the same way (V-02).
@@ -397,7 +399,7 @@ Validated against `profile/schemas/profile.schema.json`. Top-level keys:
 | Key | Content |
 | --- | --- |
 | `profile`, `profile_version` | Profile name and semver version |
-| `okf_version`, `okf_spec_commit` | `"0.2"` and the pinned specification commit |
+| `okf_version`, `okf_spec_commit` | `"0.3"` and the pinned specification commit (`527e81a`, ADR-013) |
 | `template_version` | Template release the library was instantiated from |
 | `library` | `name`, `title`, `repository`, `site_url` (empty until v1.0.0, or permanently) |
 | `platform` | `github` or `git-local` (AD-19); set by `init_library.py`, changed by W-12 |
@@ -409,7 +411,7 @@ Validated against `profile/schemas/profile.schema.json`. Top-level keys:
 | `vocabularies` | `path` (default `vocab/`), `namespaces[]` of `name`, `kinds` (true if values are grouped by kind), `values_unique_across_kinds` |
 | `tags` | `pattern` for namespaced tags; namespaces are the declared vocabularies |
 | `path_rules[]` | Declarative rules (below); each may carry an optional `types` list that limits it to the named concept types |
-| `status` | `values` (OKF values) and `extensions[]` of `value`, `trust_tier`, `publishing` (optional free text stating the publishing rule) |
+| `status` | `values` (OKF values) and `extensions[]` of `value`, `trust_tier`, `publishing` (optional free text stating the publishing rule). A generic OKF v0.3 consumer reads an extension value as not current (§5.4) |
 | `rules` | Provenance and publishing settings (below) |
 | `warnings[]` | `id`, `kind`, kind parameters, `level` (`low`, `medium`), `enabled` |
 | `reports[]` | `id`, `kind`, parameters; generated as CI artifacts, never blocking |
@@ -457,7 +459,7 @@ rules:
 
 ### I-03 Frontmatter schemas (`profile/types/<type>.schema.json`)
 
-JSON Schema draft 2020-12. `okf-base.schema.json` declares OKF's frontmatter keys (`type`, `title`, `description`, `tags`, `status`, `sources`, `generated`, `verified`, `stale_after` and the other keys of the pinned specification) and the profile's `uid`. Each type schema references it and adds the type's own fields. Conventions:
+JSON Schema draft 2020-12. `okf-base.schema.json` declares OKF's frontmatter keys (`type`, `title`, `description`, `tags`, `status`, `superseded_by`, `sources`, `generated`, `verified`, `stale_after` and the other keys of the pinned specification; a `parameters` entry requires `name` and `type`) and the profile's `uid`. Each type schema references it and adds the type's own fields. Conventions:
 
 - Each type schema uses `$ref: okf-base.schema.json` and, when `reject_unknown_fields` is true, `unevaluatedProperties: false`, which (unlike `additionalProperties`) takes account of properties declared through `$ref`. OKF's optional keys are therefore always accepted. The validator may add `unevaluatedProperties: false` when it loads a type schema instead of the schema file storing it; the effect is the same.
 - `type` is a `const` equal to the declared type name; `uid` has a pattern built from the prefix, for example `^ITM-\d{4}$`.
@@ -500,7 +502,7 @@ Two open pull requests can take the same number. A textual conflict in `uid-regi
 
 ### I-07 Generated index (`index.md`)
 
-One per folder in `knowledge/`. The root index has frontmatter `okf_version: "0.2"`; folder indexes follow OKF §8 as checked by okf-skills. Body:
+One per folder in `knowledge/`. The root index has frontmatter `okf_version: "0.3"` and may carry `title`, `description`, `license` and extension keys (OKF v0.3 §8.1), all kept on regeneration; `init_library.py` writes `title` and `license`. Folder indexes follow OKF §8, with the ADR-010 header as the recorded departure (ADR-012, ADR-013). Body:
 
 ```markdown
 <!-- Generated by build_indexes.py. Do not edit. -->
@@ -513,7 +515,7 @@ One per folder in `knowledge/`. The root index has frontmatter `okf_version: "0.
 - [Example item](example-category/example-item.md) — description · stable · human-reviewed (self)
 ```
 
-Links are relative to the folder holding the index (ADR-005). Lines are sorted by title. A folder's index may open with a YAML header holding only `description`, the folder's scope in one sentence, and the root index's header may add it beside `okf_version` (ADR-010). The generator keeps the header as written and shows the description on the parent's folder line; check 5 compares the generated body only and reports an unusable header as `OKF505` or `OKF506`; check 1 reports the departure from OKF §8 once per bundle as `OKF121` (ADR-012). The trailing status and trust tier satisfy FR4.2. A folder holding more than `max_concepts_per_directory` concepts raises a warning. Indexes are regenerated by authors before a pull request and by the revision writer after merge (W-05), because the tier changes only when the revision line is written.
+Links are relative to the folder holding the index (ADR-005). Lines are sorted by title. A folder's index may open with a YAML header holding only `description`, the folder's scope in one sentence, and the root index's header holds bundle metadata (ADR-010, ADR-013). The generator keeps the header as written, rewriting only a root `okf_version` that differs from the profile's, and shows the description on the parent's folder line; check 5 compares the generated body only and reports an unusable header as `OKF505` or `OKF506`; check 1 replaces the validator's `E004` errors for folder headers with one `OKF121` warning per bundle (ADR-012, ADR-013). The trailing status and trust tier satisfy FR4.2. A folder holding more than `max_concepts_per_directory` concepts raises a warning. Indexes are regenerated by authors before a pull request and by the revision writer after merge (W-05), because the tier changes only when the revision line is written.
 
 ### I-08 Revision-history line, trust tier and `verified`
 
@@ -557,7 +559,7 @@ Examples: an agent-drafted concept later given a one-line owner-approved fix sta
 
 | Concept tier after the revision | `verified` written |
 | --- | --- |
-| Human-reviewed (including self) | One entry per owner approval or owner self-approval in the window: `{by: human:<login>, at: <merge datetime>}` |
+| Human-reviewed (including self) | One entry per owner approval or owner self-approval in the window: `{by: human:<login>, at: <merge datetime>}`, never earlier than the concept's `generated.at` (OKF v0.3 §5.3) |
 | Machine-confirmed | One entry for the latest revision with a non-human actor, `{by: process:<bot>, at: <merge datetime>}`, and no `human:` entries |
 | Unverified | No `verified` key |
 
@@ -570,7 +572,7 @@ Each finding has a stable code, a level (`error`, `warning`), a file, a line and
 | Code range | Check |
 | --- | --- |
 | `OKF0xx` | Change rules: mixed tooling and content changes; `profile-migration` conditions |
-| `OKF1xx` | 1. OKF conformance (okf-skills findings mapped; frontmatter-first; datetime offsets) |
+| `OKF1xx` | 1. OKF conformance (OKF validator findings mapped by code, ADR-013; frontmatter-first; datetime offsets) |
 | `OKF2xx` | 2. Frontmatter schema; unknown fields; declared type |
 | `OKF3xx` | 3. Body sections, order, placeholders, formats, CI-managed sections |
 | `OKF4xx` | 4. Links, anchors (including explicit and automatic id consistency), vocabulary membership, path rules |
@@ -874,14 +876,14 @@ The "for pull requests only" bypass lets the single maintainer merge their own p
 | Testability | pytest with valid and invalid fixture bundles; golden files for indexes, revision lines, tiers and `verified`; at least 85 % coverage of `okfprofile` with branch coverage on | QA-71 |
 | Code quality | Zero ruff findings; `mypy --strict` zero errors on `okfprofile`; limits in `docs/development/constraints.md` | QA-72, QA-73 |
 | Portability | Bundle readable with `cat` and on GitHub; tooling replaceable without content changes | SRS NFR1 |
-| Supply chain | Validation dependency set limited to four packages, the vendored okf-skills validator and their dependencies | AD-04, AD-05, AD-08 |
+| Supply chain | Validation dependency set limited to four packages, the vendored OKF validator and their dependencies | AD-04, AD-05, AD-08 |
 | Recovery | A dropped revision run recovered by the next; repository settings recreated by rerunning `setup_repo.py` | SRS NFR7; W-05; C-04 |
 
 ## 13. Requirements traceability
 
 | Requirement | Components and interfaces | Workflows | Verification |
 | --- | --- | --- | --- |
-| FR1 Bundle and identifiers | C-01, C-03, I-01, I-06, AD-08 | W-04 | okf-skills, `OKF1xx` and `OKF6xx` fixtures; duplicate-uid push test with `renumber.py` |
+| FR1 Bundle and identifiers | C-01, C-03, I-01, I-06, AD-08 | W-04 | The OKF validator, `OKF1xx` and `OKF6xx` fixtures; duplicate-uid push test with `renumber.py` |
 | FR2 Profile and validation | C-02, C-03, C-04, I-02–I-05, I-09, I-16, I-17, AD-07, AD-18, AD-20 | W-04 | Fixture per finding code; base-tooling and mixed-change tests; local and CI parity (every CI step is a task) |
 | FR3 Provenance and trust | C-06, I-08, AD-11, AD-12, AD-17 | W-05, W-04, W-06 | Revision, tier and `verified` golden files; dropped-run catch-up test; pilot merges of each approval case; V-11 |
 | FR4 Indexes | I-07 | W-04 check 5, W-05 | Golden index files; check 5 green after revision commits |
@@ -941,12 +943,12 @@ Template v1.0.0 (stable) gate:
 | V-05 | Ruleset with admin "for pull requests only" bypass and App "always" bypass on a free organisation; required-check naming across `pull_request` and `pull_request_review`; how an admin bypass merge and a review's commit id appear in the API; concurrency-group cancellation of pending runs; whether a fork of a public repository can be made private | Confirm section 11 and W-05 inference | Partly confirmed: admin bypass, check naming, concurrency cancellation, fork privacy **[Doc]**; commit-to-pull-request lookup can lag the push. App bypass and approval cases carried to the start of P2. **[Test]** |
 | V-06 | Second person performs W-01 end to end, including the App | FR6.1 measured | Carried to P4 (section 14): platform steps and full timing; the run sheet is `runbook-instantiate-library.md`. |
 | V-07 | Immutable releases on GitHub Free; Cloudflare Pages access policy limits on the free plan | Confirm C-10 and alpha or beta options | Immutable releases confirmed on Free for a public repository. Private repository and Cloudflare limits carried. **[Test]** |
-| V-08 | okf-skills mapping of its findings to `OKF1xx`, its behaviour on generated `index.md` files, and running the vendored validator outside the Action | Confirm AD-08 integration | Confirmed: one script, the same one the Action runs; no finding codes, so mapping is by message text; offset-less datetimes pass. **[Test]** |
+| V-08 | okf-skills mapping of its findings to `OKF1xx`, its behaviour on generated `index.md` files, and running the vendored validator outside the Action | Confirm AD-08 integration | Confirmed: one script, the same one the Action runs; no finding codes, so mapping is by message text; offset-less datetimes pass. **[Test]** Re-answered 2026-11-19 for the OKF project's validator (ADR-013): stable codes, mapped by a code table with a coverage test; a header on a folder index is `E004`; dates without a time pass, so `OKF120` stays the profile's own rule. **[Test]** |
 | V-09 | Claude Code discovers skills through per-skill symlinks in `.claude/skills/`; symlinks survive "Use this template", the release archive and Windows checkouts (where git may write symlinks as plain files) | Confirm AD-16; otherwise `init_library.py` copies the skills | Answered: symlinks survive git, GitHub archives and Linux, macOS and hosted Windows checkouts; a symlink-less Windows checkout breaks Claude Code skill discovery. Owner decision 2026-10-30: provider-neutral core with an optional adapter instead of committed symlinks (ADR-002). **[Test]** |
 | V-10 | `CLAUDE.md` imports and Markdown links resolve to files whose names contain spaces (`%20` or angle-bracket link targets), including from `docs/development/` subfolders | Confirm the file naming in `docs/development/` (section 6). First check: open Claude Code in the template repository and ask for a summary of the SRS | `CLAUDE.md` imports with spaces do not load; the backslash-escaped form does (with hyphens, nested folders, nested imports). **[Test]** |
 | V-12 | Reproducible archive: the same tag rebuilt on Linux, macOS and Windows, on Python 3.11 and 3.14, gives the same SHA-256 (tarfile and gzip settings in I-12) | Confirm I-12 and W-12 step 5 | Tar identical across systems and Python 3.11 and 3.14; tar.gz differs under zlib-ng. **[Test]** |
 | V-13 | poethepoet tasks run unchanged on Windows, macOS and Linux; `uv run poe install` works on a fresh clone; `repo: local` pre-commit hooks run through `uv run` on all three | Confirm I-16, I-17 | Confirmed on Windows, macOS, Linux and Python 3.11 and 3.14. **[Test]** |
-| V-11 | How OKF derives a trust tier from `verified`: from the latest entry or any entry, and which non-human actor prefix denotes machine confirmation | Confirm the I-08 `verified` mapping | Confirmed: tier from any `human:` entry; `process:` is the convention for non-human actors. **[Doc]** |
+| V-11 | How OKF derives a trust tier from `verified`: from the latest entry or any entry, and which non-human actor prefix denotes machine confirmation | Confirm the I-08 `verified` mapping | Confirmed: tier from any `human:` entry; `process:` is the convention for non-human actors. **[Doc]** Re-read 2026-11-19 against OKF v0.3 §5.3: a verification older than `generated.at` is not current, so the writer never writes one (I-08, ADR-013). **[Doc]** |
 
 ## 16. Changes applied to the SRS
 
@@ -983,7 +985,8 @@ Platform and tool facts are cited in `OKF library technology stack options.md` (
 - [Zensical: MkDocs plugin compatibility](https://zensical.org/docs/compatibility/mkdocs/plugins/) (accessed 20 October 2026)
 - [zensical on PyPI](https://pypi.org/project/zensical/) (release 0.0.72; accessed 25 October 2026)
 - [mkdocs-material 9.7.7 release notes, as reproduced in a Dependabot pull request](https://github.com/cms-cat/mkdocs-material/pull/229) (end of life 5 November 2026; accessed 25 October 2026)
-- [Open Knowledge Format specification, SPEC.md](https://github.com/GoogleCloudPlatform/open-knowledge-format/blob/main/SPEC.md)
+- [Open Knowledge Format specification, SPEC.md](https://github.com/GoogleCloudPlatform/open-knowledge-format/blob/main/SPEC.md) (v0.2; repository deprecated on 18 November 2026)
+- [Open Knowledge Format v0.3, SPEC.md at `527e81a`](https://github.com/open-knowledge-format/open-knowledge-format/blob/527e81aff55992be21507e97004286789126f88c/SPEC.md) and [`skills/okf-generate/scripts/validate.py`](https://github.com/open-knowledge-format/open-knowledge-format/blob/527e81aff55992be21507e97004286789126f88c/skills/okf-generate/scripts/validate.py) (accessed 19 November 2026)
 - [Agent Skills specification](https://agentskills.io/specification)
 - [gitleaks-action README, v2.3.9](https://raw.githubusercontent.com/gitleaks/gitleaks-action/v2.3.9/README.md) (licence key required for organisations; accessed 25 October 2026)
 - [osprey-oss/cookiecutter-uv](https://github.com/osprey-oss/cookiecutter-uv) (conventions reference; tag 0.0.12, 10 April 2026; accessed 25 October 2026)

@@ -4,7 +4,7 @@
 > **Building the template itself?** Read `docs/development/AGENTS.md` first. This block and the `docs/` folder are removed by `init_library.py` when a library is instantiated.
 <!-- template-only:end -->
 
-This repository is a library of knowledge in the Open Knowledge Format (OKF) v0.2: one Markdown file per concept in `knowledge/`, a machine-readable profile in `profile/`, and tooling in `scripts/`. Read this file first. Nothing here depends on the library's subject.
+This repository is a library of knowledge in the Open Knowledge Format (OKF) v0.3: one Markdown file per concept in `knowledge/`, a machine-readable profile in `profile/`, and tooling in `scripts/`. Read this file first. Nothing here depends on the library's subject.
 
 ## Where things are
 

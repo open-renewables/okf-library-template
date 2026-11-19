@@ -17,10 +17,14 @@ from pathlib import Path
 
 import pytest
 from okfprofile.archive import build_archive, rebuild_problems
+from okfprofile.bundle import load_bundle
+from okfprofile.checks import check_indexes
 from okfprofile.cli import build_indexes_main, new_concept_main, validate_main
 from okfprofile.config import load_profile
+from okfprofile.document import parse_yaml
+from okfprofile.indexes import read_header
 from okfprofile.init_cli import init_library_main
-from okfprofile.instantiate import leftover_markers
+from okfprofile.instantiate import Answers, leftover_markers, root_index_header
 from okfprofile.release import tag_digest
 from okfprofile.release_cli import release_main
 from okfprofile.revision_cli import write_revision_main
@@ -273,3 +277,30 @@ def test_a_template_name_left_in_the_site_config_is_reported(instantiated: tuple
     config = work / "mkdocs.yml"
     config.write_text(config.read_text(encoding="utf-8") + "# see okf-library-template\n", encoding="utf-8")
     assert leftover_markers(work) == ["mkdocs.yml: okf-library-template"]
+
+
+def test_the_root_index_carries_the_bundle_metadata(instantiated: tuple[str, Path]) -> None:
+    """OKF v0.3 §8.1 (RFC-002 D5): the root index names the library and its content licence, and keeps them."""
+    platform, root = instantiated
+    header = read_header((root / "knowledge" / "index.md").read_text(encoding="utf-8"), root=True)
+    assert header.problem is None
+    assert header.values is not None
+    answers, _ = parse_yaml((ANSWERS / f"answers-{platform}.yaml").read_text(encoding="utf-8"))
+    assert header.values["okf_version"] == "0.3"
+    assert header.values["title"] == answers["title"]
+    assert header.values["license"] == answers.get("content_licence", "CC-BY-4.0")
+    profile = load_profile(root)
+    assert check_indexes(profile, load_bundle(profile.bundle_root, root)) == []
+
+
+def test_a_proprietary_content_licence_is_a_licence_ref() -> None:
+    answers = Answers(
+        platform="git-local",
+        name="x",
+        title="X library",
+        description="d",
+        login="o",
+        email="o@example.org",
+        content_licence="proprietary",
+    )
+    assert "license: LicenseRef-proprietary\n" in root_index_header(answers, "0.3")

@@ -18,6 +18,7 @@ from okfprofile.report import Finding
 APPROVED_MOVE_LABEL = "approved-move"
 REGISTRY_PATH = "profile/uid-registry.yaml"
 DECISIONS_PATH = "DECISIONS.md"
+TEMPLATE_DECISIONS = "docs/development/adr/"  # the template keeps its decisions there (DR-11, QA-68)
 TOOLING_PREFIXES = ("scripts/", "profile/", ".github/", "tests/", "docs/", "requirements/")
 TOOLING_FILES = frozenset({"pyproject.toml", "uv.lock", ".python-version", ".pre-commit-config.yaml", "mkdocs.yml"})
 
@@ -157,7 +158,8 @@ def check_change_rules(profile: Profile, change: ChangeContext, owners: CodeOwne
 
     A change proposal changes tooling or content, not both, unless it carries the migration label. A migration
     needs a maintainer's approval (on a single-maintainer library, the recorded self-approval) and a change to
-    ``DECISIONS.md``.
+    ``DECISIONS.md``; in the template, which has no ``DECISIONS.md``, a change to its decision record under
+    ``docs/development/adr/`` counts instead.
 
     Args:
         profile: The loaded profile.
@@ -182,8 +184,11 @@ def check_change_rules(profile: Profile, change: ChangeContext, owners: CodeOwne
     if not _maintainer_approved(profile, change, owners):
         message = "a profile migration needs a maintainer's approval of the current head"
         findings.append(Finding.make("OKF002", grouped.tooling[0], 0, message))
-    if DECISIONS_PATH not in change.paths:
-        findings.append(
-            Finding.make("OKF003", grouped.tooling[0], 0, f"a profile migration needs an entry in {DECISIONS_PATH}")
-        )
+    template = not (profile.root / DECISIONS_PATH).is_file()
+    recorded = DECISIONS_PATH in change.paths or (
+        template and any(p.startswith(TEMPLATE_DECISIONS) for p in change.paths)
+    )
+    if not recorded:
+        where = f"{DECISIONS_PATH} or {TEMPLATE_DECISIONS}" if template else DECISIONS_PATH
+        findings.append(Finding.make("OKF003", grouped.tooling[0], 0, f"a profile migration needs an entry in {where}"))
     return findings

@@ -156,7 +156,7 @@ def test_an_archive_is_built_from_the_tag_with_a_manifest(repo: Path, profile: P
     assert manifest["commit"] == git(repo, "rev-parse", "HEAD")
     assert manifest["commit_time"] == "2026-11-01T10:00:00Z"
     assert manifest["library"] == "okf-library-template"
-    assert manifest["okf"] == {"version": "0.2", "spec_commit": "ad30107"}
+    assert manifest["okf"] == {"version": "0.3", "spec_commit": "527e81a"}
     assert manifest["concepts"] == {
         "total": 4,
         "by_type": {"Glossary": 1, "Item": 1, "Vocabulary": 2},

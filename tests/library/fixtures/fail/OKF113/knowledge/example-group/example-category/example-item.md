@@ -5,7 +5,7 @@ title: Example item
 description: One sentence.
 tags: [group:example-group, category:example-category]
 status: draft
-generated: { by: human/dana }
+generated: { by: dana }
 ---
 
 # Example item

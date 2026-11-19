@@ -337,7 +337,7 @@ def readme_text(a: Answers) -> str:
     )
     return (
         f"# {a.title}\n\n{a.description}\n\n"
-        "This is an OKF v0.2 knowledge library built from the OKF library template. "
+        "This is an OKF v0.3 knowledge library built from the OKF library template. "
         f"{platform_note}\n\n"
         "## Working on the library\n\n"
         "```bash\nuv sync --all-groups\nuv run poe check\nuv run poe test\n```\n\n"
@@ -434,6 +434,29 @@ def _drop_examples(root: Path, result: Result) -> None:
     result.changed.append("profile/uid-registry.yaml")
 
 
+def root_index_header(a: Answers, okf_version: str) -> str:
+    """The root index header: bundle metadata under OKF v0.3 §8.1 (RFC-002 D5).
+
+    ``title`` is the library's title and ``license`` its content licence as an SPDX identifier; a proprietary
+    licence is ``LicenseRef-proprietary``, since its text sits outside the bundle in ``LICENSE-content``.
+    """
+    licence = "LicenseRef-proprietary" if a.content_licence == "proprietary" else a.content_licence
+    return f'---\nokf_version: "{okf_version}"\ntitle: {quote(a.title)}\nlicense: {licence}\n---\n'
+
+
+def _write_root_metadata(root: Path, a: Answers, result: Result) -> None:
+    """Give the root index the library's ``title`` and ``license``; the body is regenerated afterwards."""
+    profile = load_profile(root)
+    index = profile.bundle_root / "index.md"
+    old = index.read_bytes().decode("utf-8") if index.is_file() else ""
+    body = old
+    if old.startswith("---\n"):
+        close = old.find("\n---\n", 4)
+        body = old[close + 5 :] if close >= 0 else old
+    text = root_index_header(a, profile.okf_version) + "\n" + body.lstrip("\n")
+    _update(root, f"{profile.bundle_root.relative_to(root).as_posix()}/index.md", text, result)
+
+
 def _regenerate_indexes(root: Path, result: Result) -> None:
     """Rebuild every ``index.md``: the root index carries the library's title, and removed examples leave stale lines."""
     profile = load_profile(root)
@@ -511,6 +534,7 @@ def instantiate(root: Path, a: Answers) -> Result:
     if not a.keep_examples:
         _drop_examples(root, result)
     result.changed.extend(reset_history(load_profile(root), root))
+    _write_root_metadata(root, a, result)
     _regenerate_indexes(root, result)
     return result
 

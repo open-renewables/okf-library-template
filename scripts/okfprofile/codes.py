@@ -63,18 +63,33 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF102", Level.ERROR, CHECK_1, "Frontmatter is not valid YAML"),
     CodeInfo("OKF103", Level.ERROR, CHECK_1, "Frontmatter is not a mapping"),
     CodeInfo("OKF104", Level.ERROR, CHECK_1, "Required `type` key missing or empty"),
-    CodeInfo("OKF111", Level.WARNING, CHECK_1, "Legacy OKF v0.1 construct"),
+    CodeInfo(
+        "OKF105", Level.ERROR, CHECK_1, "`log.md` breaks OKF section 9: frontmatter, or a heading that is not a date"
+    ),
     CodeInfo("OKF113", Level.WARNING, CHECK_1, "Actor does not follow the OKF actor convention"),
-    CodeInfo("OKF116", Level.WARNING, CHECK_1, "`usage_count` has no window, or a footnote matches no `sources[].id`"),
-    CodeInfo("OKF117", Level.WARNING, CHECK_1, "Reserved file (`index.md`, `log.md`) breaks OKF section 8, 9 or 12"),
+    CodeInfo(
+        "OKF116",
+        Level.WARNING,
+        CHECK_1,
+        "`usage_count` has no window, a footnote matches no `sources[].id`, or an id repeats",
+    ),
+    CodeInfo(
+        "OKF117",
+        Level.WARNING,
+        CHECK_1,
+        "Root `index.md` lacks a quoted `okf_version`, or `log.md` dates are out of order",
+    ),
     CodeInfo("OKF118", Level.WARNING, CHECK_1, "Attested Computation contract field is missing or dangling"),
-    CodeInfo("OKF119", Level.WARNING, CHECK_1, "okf-skills reported a message this tool does not map"),
+    CodeInfo("OKF119", Level.WARNING, CHECK_1, "The OKF validator reported a code this tool does not map"),
     CodeInfo("OKF120", Level.ERROR, CHECK_1, "Timestamp is not an ISO 8601 datetime with an explicit UTC offset"),
     CodeInfo(
         "OKF121",
         Level.WARNING,
         CHECK_1,
-        "Index headers carry a scope description (ADR-010), which OKF v0.2 sections 8 and 12 do not allow",
+        "Folder index headers carry a scope description (ADR-010), which OKF v0.3 section 8 does not allow",
+    ),
+    CodeInfo(
+        "OKF122", Level.WARNING, CHECK_1, "`superseded_by` is set but `status` is not `deprecated` (OKF section 5.4)"
     ),
     CodeInfo("OKF201", Level.ERROR, CHECK_2, "Concept type is not declared in the profile"),
     CodeInfo("OKF202", Level.ERROR, CHECK_2, "Required frontmatter field missing"),
@@ -93,6 +108,7 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF409", Level.WARNING, CHECK_4, "Tag value restates a folder name"),
     CodeInfo("OKF410", Level.ERROR, CHECK_4, "Concept is outside the paths declared for its type"),
     CodeInfo("OKF411", Level.ERROR, CHECK_4, "Explicit anchor present in the base is gone"),
+    CodeInfo("OKF412", Level.ERROR, CHECK_4, "Frontmatter path field does not resolve to a file in the bundle"),
     CodeInfo("OKF301", Level.ERROR, CHECK_3, "Title heading missing, repeated, or different from `title`"),
     CodeInfo("OKF302", Level.ERROR, CHECK_3, "Required body section missing"),
     CodeInfo("OKF303", Level.ERROR, CHECK_3, "Body section out of the declared order"),
