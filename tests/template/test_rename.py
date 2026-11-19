@@ -110,3 +110,54 @@ def test_the_command_line(library: Path, capsys: pytest.CaptureFixture[str]) -> 
     assert rename_type_main(["--root", str(library), "Item", "Risk", "RSK"]) == 0
     assert (library / "profile" / "types" / "risk.schema.json").is_file()
     assert (library / "knowledge" / "index.md").is_file()
+
+
+def test_a_binary_file_is_skipped_and_bad_text_changes_nothing(library: Path) -> None:
+    (library / "knowledge" / "diagram.png").write_bytes(b"\x89PNG\r\n\x1a\n\xff\xfe\x00")
+    rename_type(load_profile(library), "Item", "Risk", "RSK")
+    assert (library / "profile" / "types" / "risk.schema.json").is_file()
+    profile_text = (library / "profile" / "profile.yaml").read_text(encoding="utf-8")
+    bad = library / "knowledge" / "notes.md"
+    bad.write_bytes(b"---\ntype: Risk\n---\n\xff\xfe")
+    with pytest.raises(ValueError, match="not UTF-8 text; nothing was changed"):
+        rename_type(load_profile(library), "Risk", "Hazard", "HAZ")
+    assert (library / "profile" / "profile.yaml").read_text(encoding="utf-8") == profile_text
+    assert (library / "profile" / "types" / "risk.schema.json").is_file()
+
+
+def test_another_types_schema_file_name_is_left_alone(library: Path) -> None:
+    profile_file = library / "profile" / "profile.yaml"
+    profile_file.write_text(
+        profile_file.read_text(encoding="utf-8") + "# see types/work-item.schema.json\n", encoding="utf-8"
+    )
+    rename_type(load_profile(library), "Item", "Risk", "RSK")
+    text = profile_file.read_text(encoding="utf-8")
+    assert "types/work-item.schema.json" in text
+    assert "schema: types/risk.schema.json" in text
+
+
+def test_an_existing_target_schema_refuses_before_writing(library: Path) -> None:
+    (library / "profile" / "types" / "risk.schema.json").write_text(
+        '{"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "risk.schema.json"}', encoding="utf-8"
+    )
+    before = (library / "profile" / "profile.yaml").read_text(encoding="utf-8")
+    with pytest.raises(ValueError, match="already exists; nothing was changed"):
+        rename_type(load_profile(library), "Item", "Risk", "RSK")
+    assert (library / "profile" / "profile.yaml").read_text(encoding="utf-8") == before
+
+
+def test_the_command_line_warns_when_the_registry_is_committed(
+    library: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import subprocess
+
+    def run(*args: str) -> None:
+        subprocess.run(["git", *args], cwd=library, check=True, capture_output=True)  # noqa: S603, S607
+
+    run("init", "-q")
+    assert rename_type_main(["--root", str(library), "Item", "Risk", "RSK", "--dry-run"]) == 0
+    assert "already committed" not in capsys.readouterr().err
+    run("add", "-A")
+    run("-c", "user.name=t", "-c", "user.email=t@example.org", "commit", "-q", "-m", "init")
+    assert rename_type_main(["--root", str(library), "Item", "Risk", "RSK", "--dry-run"]) == 0
+    assert "already committed" in capsys.readouterr().err

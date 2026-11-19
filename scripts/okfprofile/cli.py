@@ -21,7 +21,15 @@ from okfprofile.changes import APPROVED_MOVE_LABEL, ChangeContext
 from okfprofile.checks import BaseState, check_indexes
 from okfprofile.config import Profile, ProfileError, load_profile
 from okfprofile.document import Concept, load_concept
-from okfprofile.gitutil import TOOLING_EXPORT, GitError, changed_paths, export_paths, merge_base, uncommitted_paths
+from okfprofile.gitutil import (
+    TOOLING_EXPORT,
+    GitError,
+    changed_paths,
+    exists_at,
+    export_paths,
+    merge_base,
+    uncommitted_paths,
+)
 from okfprofile.indexes import folders_of, unexpected_indexes, write_indexes
 from okfprofile.registry import (
     Registry,
@@ -294,6 +302,12 @@ def rename_type_main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true", help="write the result as JSON to standard output")
     args = parser.parse_args(argv)
     root = Path(args.root).resolve()
+    if exists_at(root, "HEAD", REGISTRY):
+        print(
+            f"warning: {REGISTRY} is already committed; validation against that commit will report every renamed uid"
+            " as changed (OKF606) and every old registry entry as removed (OKF607). Rename before the first commit.",
+            file=sys.stderr,
+        )
     try:
         result = rename_type(load_profile(root), args.old, args.new, args.prefix, args.dry_run)
         if not args.dry_run:

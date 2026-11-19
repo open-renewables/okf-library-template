@@ -10,7 +10,9 @@ rename is textual and limited to the places a type name and prefix appear:
   frontmatter only, so prose is never changed.
 
 It runs before a library has a history worth keeping: a ``uid`` is permanent once released (FR1.3), so a library
-that has released concepts of the type must not rename its prefix.
+that has released concepts of the type must not rename its prefix. Run it before the library's first commit: once
+the registry is committed, check 6 compares with that commit and reports every renamed ``uid`` as changed
+(``OKF606``) and every old registry entry as removed (``OKF607``).
 """
 
 from __future__ import annotations
@@ -41,7 +43,7 @@ class RenameResult:
 
 
 def _replace_data(text: str, old: str, new: str, old_prefix: str, new_prefix: str, old_slug: str, new_slug: str) -> str:
-    text = re.sub(rf"\b{re.escape(old_slug)}\.schema\.json\b", f"{new_slug}.schema.json", text)
+    text = re.sub(rf"(?<![\w-]){re.escape(old_slug)}\.schema\.json\b", f"{new_slug}.schema.json", text)
     text = re.sub(rf"\b{re.escape(old)}\b", new, text)
     text = re.sub(rf"(uid_prefix:\s*){re.escape(old_prefix)}\b", rf"\g<1>{new_prefix}", text)
     return re.sub(rf"\b{re.escape(old_prefix)}-", f"{new_prefix}-", text)
@@ -89,6 +91,40 @@ def _check_names(profile: Profile, old: str, new: str, new_prefix: str) -> str:
     return declared.uid_prefix
 
 
+def _planned_writes(root: Path, bundle: Path, names: tuple[str, str, str, str, str, str]) -> list[tuple[Path, str]]:
+    """The new text of every file the rename changes; nothing is written here."""
+    old, new, old_prefix, new_prefix, old_slug, new_slug = names
+    writes: list[tuple[Path, str]] = []
+    for file in _files(root, [root / PROFILE_DIR, bundle, root / LIBRARY_TESTS]):
+        if file.suffix not in DATA_SUFFIXES and file.suffix != ".md":
+            continue
+        try:
+            text = file.read_bytes().decode("utf-8")
+        except UnicodeDecodeError as exc:
+            msg = f"{file.relative_to(root).as_posix()} is not UTF-8 text; nothing was changed"
+            raise ValueError(msg) from exc
+        if file.suffix == ".md":
+            updated = _replace_frontmatter(text, old, new, old_prefix, new_prefix)
+        else:
+            updated = _replace_data(text, old, new, old_prefix, new_prefix, old_slug, new_slug)
+        if updated != text:
+            writes.append((file, updated))
+    return writes
+
+
+def _planned_moves(root: Path, old_slug: str, new_slug: str) -> list[tuple[Path, Path]]:
+    """The schema files to rename; refuses if a target already exists."""
+    moves: list[tuple[Path, Path]] = []
+    for file in _files(root, [root / PROFILE_DIR, root / LIBRARY_TESTS]):
+        if file.name == f"{old_slug}.schema.json":
+            target = file.with_name(f"{new_slug}.schema.json")
+            if target.exists():
+                msg = f"{target.relative_to(root).as_posix()} already exists; nothing was changed"
+                raise ValueError(msg)
+            moves.append((file, target))
+    return moves
+
+
 def rename_type(profile: Profile, old: str, new: str, new_prefix: str, dry_run: bool = False) -> RenameResult:
     """Rename a declared type and its ``uid`` prefix everywhere the library uses them.
 
@@ -103,29 +139,21 @@ def rename_type(profile: Profile, old: str, new: str, new_prefix: str, dry_run: 
         The files changed and moved.
 
     Raises:
-        ValueError: If the old type is not declared, the new name or prefix is malformed, or either is already
-            used by another type.
+        ValueError: If the old type is not declared, the new name or prefix is malformed, either is already
+            used by another type, a Markdown or data file is not UTF-8, or the new schema file already exists. Every
+            change is worked out before anything is written, so a refusal leaves the repository unchanged.
     """
     old_prefix = _check_names(profile, old, new, new_prefix)
     root = profile.root
     old_slug, new_slug = old.lower(), new.lower()
     result = RenameResult()
-    for file in _files(root, [root / PROFILE_DIR, profile.bundle_root, root / LIBRARY_TESTS]):
-        text = file.read_bytes().decode("utf-8", errors="strict")
-        if file.suffix in DATA_SUFFIXES:
-            updated = _replace_data(text, old, new, old_prefix, new_prefix, old_slug, new_slug)
-        elif file.suffix == ".md":
-            updated = _replace_frontmatter(text, old, new, old_prefix, new_prefix)
-        else:
-            continue
-        if updated != text:
-            result.changed.append(file.relative_to(root).as_posix())
-            if not dry_run:
-                file.write_bytes(updated.encode("utf-8"))
-    for file in _files(root, [root / PROFILE_DIR, root / LIBRARY_TESTS]):
-        if file.name == f"{old_slug}.schema.json":
-            target = file.with_name(f"{new_slug}.schema.json")
-            result.moved.append((file.relative_to(root).as_posix(), target.relative_to(root).as_posix()))
-            if not dry_run:
-                file.rename(target)
+    writes = _planned_writes(root, profile.bundle_root, (old, new, old_prefix, new_prefix, old_slug, new_slug))
+    moves = _planned_moves(root, old_slug, new_slug)
+    result.changed = [file.relative_to(root).as_posix() for file, _ in writes]
+    result.moved = [(f.relative_to(root).as_posix(), t.relative_to(root).as_posix()) for f, t in moves]
+    if not dry_run:
+        for file, updated in writes:
+            file.write_bytes(updated.encode("utf-8"))
+        for file, target in moves:
+            file.rename(target)
     return result
