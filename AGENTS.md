@@ -41,7 +41,7 @@ Never present Unverified or Machine-confirmed content, or a `draft` or `deprecat
 Use the `author-concept` skill from a clone. The rules that matter:
 
 - Create concepts with `uv run scripts/new_concept.py`; never copy a file and edit its `uid`.
-- Never edit by hand: any `index.md` (run `uv run scripts/build_indexes.py`), `profile/uid-registry.yaml`, or a concept's *Revision history* section. CI writes them, and validation rejects hand edits.
+- Never edit by hand: any `index.md` (run `uv run scripts/build_indexes.py`), `profile/uid-registry.yaml`, or a concept's *Revision history* section. CI writes them, and validation rejects hand edits. The one exception is a folder index's header, a one-sentence `description` of the folder's scope, which the generator keeps and shows on the parent's line.
 - Never delete a concept; deprecate it by `status: deprecated`.
 - Leave new concepts `status: draft`; a human owner makes one `stable`. A `stable` concept cites a source.
 - Tag values must exist in the vocabulary concepts. Adding one is a reviewed change.

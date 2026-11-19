@@ -181,3 +181,29 @@ sources:
     bare = parse_concept("---\ntype: T\nverified: { by: human:a, at: 2026 }\n---\n", "a.md")
     assert [f.code for f in datetime_findings(bare)] == ["OKF120"]
     assert datetime_findings(parse_concept("no frontmatter", "a.md")) == []
+
+
+def test_index_scope_headers_give_one_okf121_instead_of_okf117(tmp_path: Path) -> None:
+    (tmp_path / "a").mkdir()
+    (tmp_path / "b").mkdir()
+    (tmp_path / "c").mkdir()
+    for folder in ("a", "b", "c"):
+        (tmp_path / folder / "x.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
+    (tmp_path / "a" / "index.md").write_text('---\ndescription: "Scope a."\n---\n\n# A\n', encoding="utf-8")
+    (tmp_path / "b" / "index.md").write_text('---\ndescription: "Scope b."\n---\n\n# B\n', encoding="utf-8")
+    (tmp_path / "c" / "index.md").write_text("---\nowner: x\n---\n\n# C\n", encoding="utf-8")
+    (tmp_path / "index.md").write_text(
+        '---\nokf_version: "0.2"\ndescription: "All."\n---\n\n# Root\n', encoding="utf-8"
+    )
+    findings = check_conformance(tmp_path, load_bundle(tmp_path, tmp_path), "knowledge")
+    assert sorted((f.code, f.file) for f in findings) == [("OKF121", "knowledge/index.md")]
+    message = findings[0].message
+    assert message.startswith("3 index header(s)")
+    assert "knowledge/a/index.md, knowledge/b/index.md, knowledge/index.md" in message
+
+
+def test_okf117_for_other_reserved_file_problems_is_kept(tmp_path: Path) -> None:
+    (tmp_path / "x.md").write_text("---\ntype: Note\n---\n", encoding="utf-8")
+    (tmp_path / "index.md").write_text('---\nokf_version: "0.2"\nupkeep: weekly\n---\n\n# Root\n', encoding="utf-8")
+    (tmp_path / "log.md").write_text("---\ntype: Log\n---\n", encoding="utf-8")
+    assert "OKF117" in [c for c, _ in check_dir(tmp_path)]

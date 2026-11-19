@@ -163,7 +163,7 @@ Requirements are grouped FR1 to FR8 and numbered within each group. Each has an 
 | --- | --- | --- |
 | FR4.1 | Every folder in the bundle has a generated `index.md` with one line per subfolder and per concept, so agents can navigate one level at a time | Golden index files match the generator's output |
 | FR4.2 | Each concept line shows the concept's status and trust tier, including the self-approval qualifier | Golden files show each tier |
-| FR4.3 | Index files are never edited by hand; validation checks that committed indexes match the generator's output | A stale or hand-edited index fails check 5 |
+| FR4.3 | Index files are generated and never edited by hand, except an optional one-line `description` header on a folder's index (ADR-010, ADR-012); validation checks that committed indexes match the generator's output | A stale or hand-edited index fails check 5 |
 
 #### FR5 Contribution workflow
 

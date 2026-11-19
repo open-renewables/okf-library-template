@@ -1,6 +1,6 @@
 # Master Test Plan
 
-Status: **Draft for owner review (2026-11-07).** Template-only: nothing here ships to libraries and `tests/library/` and SDD §6 are unchanged. The plan is run at build phase P4 against scratch libraries and the pilot library, after the template build is complete. After P4 it may optionally be run again during beta testing against real libraries built from the template, using the read-only subset only (section 6).
+Status: **Draft (2026-11-07); used for the P4 acceptance run under the P4 plan approved on 2026-11-19, which settles its open decisions (section 11) and carries its proposed entries (section 12).** Template-only: nothing here ships to libraries and `tests/library/` and SDD §6 are unchanged. The plan is run at build phase P4 against scratch libraries and the pilot library, after the template build is complete. After P4 it may optionally be run again during beta testing against real libraries built from the template, using the read-only subset only (section 6).
 
 Provider-neutral (ADR-002): cases are commands and expected results that a person or any agent can run. Terms: AT = acceptance test (an `AT-<requirement>-nn` case); LUT = library under test; the abbreviations of the SRS and SDD apply.
 
@@ -56,7 +56,7 @@ The acceptance level does not re-implement lower levels. Where a requirement alr
 | 600-concept bundle | Generated as in [performance.md](performance.md), Method, but without calling `create_concept` 600 times (the generator writes files and registry entries directly) |
 | Known-good and known-bad sets | `tests/library/fixtures/pass/` and `fail/<code>/` ([fixtures.md](fixtures.md)); cases copy a fixture into a scratch library rather than restating it |
 | Approval-case history | Sandbox PRs made by the owner and the App (plan step 15); recorded API responses under `tests/template/fixtures/` for the cases one owner cannot produce (plan OD-2) |
-| Second account | Open (OD-AT1) |
+| Second account | None by default (OD-AT1 decided): the cases that need one run on their fallback and are `partial` |
 | Planted secrets and markers | Built at run time from the patterns in `profile/scan.yaml`; never a real secret and never committed |
 
 ## 6. Run phases
@@ -127,15 +127,19 @@ Until it exists, a person or an agent runs the cases by hand from the case file.
 
 ## 11. Open decisions
 
-| ID | Question | Default stated (not decided) |
+Decided by the P4 plan (`../plan/plan.md`, OD-10 and OD-11), approved by the owner on 2026-11-19.
+
+| ID | Question | Decision |
 | --- | --- | --- |
-| OD-AT1 | Who runs the live (platform) tests, and does a second GitHub account exist? | The owner runs phase 3 in the sandbox; the agent runs phases 1, 2 and 4 and prepares phase 3. No second account: cases needing one (FR2.6-02, FR3.5-01) run on their stated fallback (sandbox App-submitted reviews, recorded fixtures) and the result is `partial`. The second person for FR6.1 is someone other than the owner who has not built the template |
-| OD-AT2 | Where does the harness live and when is it built? | `tests/template/acceptance/` with a poe task, after P2 PR 6 (template-only, so removed with `tests/template/`) |
-| OD-AT3 | Are raw logs committed? | No: committed sheet, report and findings summaries only; raw logs recorded by location |
-| OD-AT4 | Which real library gets the read-only subset? | The pilot library, after phase 5 |
-| OD-AT5 | Are macOS and Linux human runs needed, or is CI matrix evidence enough? | CI matrix evidence is enough for FR2.11 and V-13; human cases run on one system |
+| OD-AT1 | Who runs the live (platform) tests, and does a second GitHub account exist? | The owner runs phase 3 in the sandbox with the agent preparing each case; the agent runs phases 1, 2 and 4. No second account: AT-FR2.6-02 and AT-FR3.5-01 run on their fallbacks and are `partial` unless one is added. The second-person timing of FR6.1 is optional; by default the owner times a build against a real-life scenario (P4 step 8) |
+| OD-AT2 | Where does the harness live and when is it built? | Not built for template `v1.0.0`; cases are run by hand from the case file. A harness under `tests/template/acceptance/` is a post-`v1.0.0` item |
+| OD-AT3 | Are raw logs committed? | No: the run sheet, report and findings summaries are committed; raw logs are recorded by location |
+| OD-AT4 | Which real library gets the read-only subset? | The pilot library, after it is promoted (P4 step 9) |
+| OD-AT5 | Are macOS and Linux human runs needed, or is CI matrix evidence enough? | CI matrix evidence is enough for FR2.11 and V-13; human cases run on one system (Windows) |
 
 ## 12. Proposed entries
+
+Carried into the P4 plan: PE-AT-1 is P4 PP-6, PE-AT-2 is PP-3, PE-AT-3 is PP-4, PE-AT-5 is PP-5; PE-AT-4 is done in P4 step 11, when the run confirms the gaps.
 
 Nothing below is written until the owner approves its text. Documents named are not edited by this plan.
 

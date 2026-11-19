@@ -13,16 +13,16 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 ## PR D: Dependabot #24 to #28
 
 - [x] 1. Each pull request's diff read: they change only `requirements/*.txt`, not `uv.lock`, and no CI ran on them, so OD-12's replacement applies (G41)
-- [ ] **NEEDS YOU (person):** `@dependabot rebase` on each, or approve the `tooling/p4-deps` replacement (OD-12); merge; close superseded ones
-- [ ] 1. Check: `poe licences` and `poe audit` zero findings; `poe export --check` passes; `validate` export unchanged; CI green on three systems; none of #24 to #28 left open
-- [ ] PR D closed: agent __ h, owner __ h
+- [x] **NEEDS YOU (person):** `@dependabot rebase` on each, or approve the `tooling/p4-deps` replacement (OD-12); merge; close superseded ones (replacement #48 merged 2026-11-19; #24 to #28 closed)
+- [x] 1. Check: `poe licences` and `poe audit` zero findings; `poe export --check` passes; `validate` export unchanged; CI green on three systems; none of #24 to #28 left open
+- [x] PR D closed: agent about 1 h, owner about 0.25 h (merged as #48)
 
 ## PR 1: folder-scope header (`tooling/p4-index-header`)
 
-- [ ] **NEEDS YOU (decision):** FR4.3 wording (yours) and the SDD I-07 text shown for PP-1
-- [ ] 2. `indexes.py` keeps a `description` header, writes it on the parent folder line; check 5 compares the body only; header findings coded; fixtures and golden files; `author-concept` and `AGENTS.md` lines; template folders given headers
-- [ ] 2. Check: fixtures and goldens pass; body edit under a valid header fails `OKF5xx`, header edit does not; `poe check` clean; `check-skills` passes; self-test keeps headers; coverage holds
-- [ ] PP-1 applied (SRS FR4.3 by the owner; SDD I-07; DDR row)
+- [x] **NEEDS YOU (decision):** FR4.3 wording (yours) and the SDD I-07 text shown for PP-1 (approved 2026-11-19 with ADR-012)
+- [x] 2. `indexes.py` keeps a `description` header, writes it on the parent folder line; check 5 compares the body only; header findings coded (`OKF505`, `OKF506`; `OKF121` in check 1, ADR-012); fixtures; `author-concept` and `AGENTS.md` lines. Template folders carry **no** header (a header gives every library an `OKF121` warning), so golden files are unchanged
+- [x] 2. Check: fixtures and goldens pass; body edit under a valid header fails `OKF502`, header edit does not; `poe check` clean; `check-skills` passes; coverage 98.13 %. Not tested: a header kept across instantiation (the code reads headers from the tree)
+- [x] PP-1 applied (SRS FR4.3, owner's wording approved 2026-11-19; SDD I-07; DDR row)
 - [ ] PR 1 closed: agent __ h, owner __ h
 
 ## PR 2: authoring aids (`tooling/p4-authoring`)
@@ -140,7 +140,8 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 
 | Step | Outcome | Label | Entry |
 | --- | --- | --- | --- |
-| | | | |
+| 1 | PR D merged as #48. Dependabot #24 to #28 changed only `requirements/*.txt` and no CI ran on them (G41); replaced by `uv lock --upgrade-package` for five dev packages and `poe export`. `nodeenv` 1.12.0 licence re-read, unchanged; its `constraints.md` row moved to 1.12.0 with the owner's approval. `poe licences` 0 findings, `poe audit` clean, 820 passed before the version test fix | [Test] | |
+| 2 | PR 1. Folder-scope header built (ADR-010). Found: OKF v0.2 §8 and §12 allow no frontmatter on a folder index, and §11 makes that conformance; OKF v0.3 (2026-11-18, new repository; the pinned one deprecated) allows root `title`, `description`, `license` but still no folder frontmatter. Owner kept the YAML header for Obsidian and site generators (Option A); ADR-012 replaces okf-skills' per-index `OKF117` with one `OKF121` per bundle; `OKF505`, `OKF506` for unusable headers; G42. 829 passed, coverage 98.13 %. OKF v0.3 assessment handed to the parent session | [Test] | PP-1, ADR-012 |
 
 ### MTP §7 entry criteria
 
@@ -167,7 +168,7 @@ One line per step when closed: result, label (**[Test]**, **[Doc]**, **[Inf]**),
 
 | # | Status | Evidence |
 | --- | --- | --- |
-| PP-1 | P3 PP-13 approved 2026-11-14; to apply in PR 1 | |
+| PP-1 | P3 PP-13 approved 2026-11-14; text approved 2026-11-19 and applied in PR 1 | SRS FR4.3; SDD I-07; DDR change-log row 2026-11-19; ADR-012 |
 | PP-2 | Proposed | |
 | PP-3 | Proposed | |
 | PP-4 | Owner's wording | |

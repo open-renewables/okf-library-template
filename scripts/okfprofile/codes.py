@@ -70,6 +70,12 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF118", Level.WARNING, CHECK_1, "Attested Computation contract field is missing or dangling"),
     CodeInfo("OKF119", Level.WARNING, CHECK_1, "okf-skills reported a message this tool does not map"),
     CodeInfo("OKF120", Level.ERROR, CHECK_1, "Timestamp is not an ISO 8601 datetime with an explicit UTC offset"),
+    CodeInfo(
+        "OKF121",
+        Level.WARNING,
+        CHECK_1,
+        "Index headers carry a scope description (ADR-010), which OKF v0.2 sections 8 and 12 do not allow",
+    ),
     CodeInfo("OKF201", Level.ERROR, CHECK_2, "Concept type is not declared in the profile"),
     CodeInfo("OKF202", Level.ERROR, CHECK_2, "Required frontmatter field missing"),
     CodeInfo("OKF203", Level.ERROR, CHECK_2, "Unknown frontmatter field (the profile rejects them)"),
@@ -105,6 +111,14 @@ CODES: dict[str, CodeInfo] = _define(
     CodeInfo("OKF502", Level.ERROR, CHECK_5, "A generated index.md is out of date or was edited by hand"),
     CodeInfo("OKF503", Level.ERROR, CHECK_5, "An index.md sits in a folder that holds no concepts"),
     CodeInfo("OKF504", Level.WARNING, CHECK_5, "A folder holds more concepts than the profile suggests"),
+    CodeInfo("OKF505", Level.ERROR, CHECK_5, "An index.md header is not closed, not valid YAML or not a mapping"),
+    CodeInfo(
+        "OKF506",
+        Level.ERROR,
+        CHECK_5,
+        "An index.md header has a key other than description (and okf_version on the root) or a description "
+        "that is not one line of text",
+    ),
     CodeInfo("OKF601", Level.ERROR, CHECK_6, "Concept has no `uid`"),
     CodeInfo("OKF602", Level.ERROR, CHECK_6, "`uid` is malformed or its prefix does not match the type"),
     CodeInfo("OKF603", Level.ERROR, CHECK_6, "`uid` is used by more than one concept"),

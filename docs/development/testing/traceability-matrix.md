@@ -39,7 +39,7 @@ Maps every acceptance criterion of the SRS, the verification items of SDD §13 a
 | FR3.11 | Fixture past each limit is reported | AT-FR3.11-01, AT-FR3.11-02 | — |
 | FR4.1 | Golden index files match the generator | AT-FR4.1-01 | Golden shapes are unit-level (strategy.md); acceptance checks the library |
 | FR4.2 | Golden files show each tier | AT-FR4.2-01 | — |
-| FR4.3 | Stale or hand-edited index fails check 5 | AT-FR4.3-01 | — |
+| FR4.3 | Stale or hand-edited index fails check 5; a folder header is kept (ADR-010, ADR-012) | AT-FR4.3-01, AT-FR4.3-02 | — |
 | FR5.1 | PR template lists each label | AT-FR5.1-01 | `R` |
 | FR5.2 | Agent trailer without label raises warning | AT-FR5.2-01 | — |
 | FR5.3 | Pilot contribution from issue form to merged concept | AT-FR5.3-01, AT-FR5.3-02 | Needs a person who does not use git; not a GitHub account question |
@@ -55,7 +55,7 @@ Maps every acceptance criterion of the SRS, the verification items of SDD §13 a
 | FR7.2 | Reviewer traces outputs to uids and a tag | AT-FR7.2-01, AT-FR7.2-02 | `R`: "traces" is judged by a reviewer; the cases set 100 % of citations resolving as the pass line |
 | FR7.3 | Archive readable without tooling; checksum verifies | AT-FR7.3-01, AT-FR7.3-02, AT-FR7.3-03 | — |
 | FR7.4 | Release with a missing line fails | AT-FR7.4-01 | — |
-| FR8.1 | Site build reads the bundle in place | AT-FR8.1-01 | — |
+| FR8.1 | Site build reads the bundle in place; the generator is the library's choice (ADR-011) | AT-FR8.1-01, AT-FR8.1-02 | — |
 | FR8.2 | Test build passes each of six checks | AT-FR8.2-01, AT-FR8.2-02, AT-FR8.2-03, AT-FR8.2-04 | Check 2 wording follows the owner's rewording of 2026-10-30 (DDR change log) |
 | FR8.3 | Site manifest matches latest tag | AT-FR8.3-01 | — |
 | FR8.4 | Both links work on a preview build | AT-FR8.4-01 | — |

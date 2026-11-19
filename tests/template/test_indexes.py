@@ -9,7 +9,15 @@ import pytest
 from okfprofile.bundle import load_bundle
 from okfprofile.checks import check_indexes
 from okfprofile.history import history_lines
-from okfprofile.indexes import expected_indexes, folders_of, humanise, unexpected_indexes, write_indexes
+from okfprofile.indexes import (
+    IndexHeader,
+    expected_indexes,
+    folders_of,
+    humanise,
+    read_header,
+    unexpected_indexes,
+    write_indexes,
+)
 from okfprofile.registry import RegistryEntry
 from okfprofile.revision import Tier, concept_tier, parse_revision_line
 from support import MakeRepo, item_text
@@ -143,3 +151,62 @@ def test_tier_follows_the_require_non_author_setting(make_repo: MakeRepo) -> Non
     text = expected_indexes(strict, concepts)[key]
     assert "human-reviewed (self)" not in text
     assert "[Beta](beta.md) — D · draft · machine-confirmed" in text
+
+
+def test_read_header_cases() -> None:
+    assert read_header("# Title\n", root=False) == IndexHeader()
+    good = read_header('---\ndescription: "Scope."\n---\n\nbody\n', root=False)
+    assert good.raw == '---\ndescription: "Scope."\n---\n'
+    assert good.description == "Scope."
+    assert good.problem is None
+    assert read_header("---\ndescription: x\n", root=False).problem == (
+        "OKF505",
+        1,
+        "the index header is not closed with '---'",
+    )
+    assert read_header("---\n[a\n---\n", root=False).problem[0] == "OKF505"  # type: ignore[index]
+    assert read_header("---\n- a\n---\n", root=False).problem[0] == "OKF505"  # type: ignore[index]
+    unknown = read_header("---\ndescription: a\nowner: b\n---\n", root=False)
+    assert unknown.problem is not None
+    assert unknown.problem[:2] == ("OKF506", 3)
+    assert unknown.description is None
+    assert read_header('---\nokf_version: "0.2"\n---\n', root=False).problem[0] == "OKF506"  # type: ignore[index]
+    assert read_header('---\nokf_version: "0.2"\ndescription: a\n---\n', root=True).problem is None
+    for bad in ('""', "[a]", "|\n  first line\n  second line"):
+        assert read_header(f"---\ndescription: {bad}\n---\n", root=False).problem[0] == "OKF506"  # type: ignore[index]
+
+
+def test_a_folder_header_is_kept_and_shown_on_the_parent_line(make_repo: MakeRepo) -> None:
+    profile = sample(make_repo)
+    concepts = load_bundle(profile.bundle_root, profile.root)
+    write_indexes(profile, concepts)
+    group = profile.bundle_root / "example-group" / "index.md"
+    group.write_text(
+        "---\ndescription: 'Things  grouped.'\n---\n\n" + group.read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    assert [f.code for f in check_indexes(profile, concepts)] == ["OKF502"]
+    write_indexes(profile, concepts)
+    assert group.read_text(encoding="utf-8").startswith("---\ndescription: 'Things  grouped.'\n---\n\n<!-- Generated")
+    root = (profile.bundle_root / "index.md").read_text(encoding="utf-8")
+    assert "- [Example group](example-group/index.md) — Things grouped.\n" in root
+    assert check_indexes(profile, concepts) == []
+    group.write_text(group.read_text(encoding="utf-8").replace("Things", "Items"), encoding="utf-8")
+    assert [f.file for f in check_indexes(profile, concepts)] == [f"{profile.bundle_root.name}/index.md"]
+    write_indexes(profile, concepts)
+    group.write_text(group.read_text(encoding="utf-8") + "- hand edit\n", encoding="utf-8")
+    assert [f.code for f in check_indexes(profile, concepts)] == ["OKF502"]
+
+
+def test_the_root_header_keeps_a_description_and_follows_the_profile_version(make_repo: MakeRepo) -> None:
+    profile = sample(make_repo)
+    concepts = load_bundle(profile.bundle_root, profile.root)
+    root = profile.bundle_root / "index.md"
+    root.write_text('---\nokf_version: "0.1"\ndescription: "The whole bundle."\n---\n\nold\n', encoding="utf-8")
+    write_indexes(profile, concepts)
+    text = root.read_text(encoding="utf-8")
+    assert text.startswith(f'---\nokf_version: "{profile.okf_version}"\ndescription: "The whole bundle."\n---\n\n')
+    assert check_indexes(profile, concepts) == []
+    root.write_text("---\n[a\n---\n\nold\n", encoding="utf-8")
+    write_indexes(profile, concepts)
+    assert root.read_text(encoding="utf-8").startswith("---\n[a\n---\n\n<!-- Generated")
+    assert {f.code for f in check_indexes(profile, concepts)} == {"OKF505"}
