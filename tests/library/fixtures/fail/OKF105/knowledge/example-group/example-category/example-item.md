@@ -13,10 +13,6 @@ status: draft
 
 Some text.
 
-### Citations
-
-- [Source](https://example.org)
-
 ## Revision history
 
 <!-- Maintained by CI. Do not edit. -->

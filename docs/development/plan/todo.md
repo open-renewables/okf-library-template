@@ -55,12 +55,12 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] **NEEDS YOU (decision):** D1 to D7 (decided 2026-11-19, RFC-002 "Decision"; OD-26)
 - [x] **NEEDS YOU (decision):** owner reviews this plan amendment before step 4b starts (approved 2026-11-19)
 - [ ] **NEEDS YOU (decision):** ADR-013 and the PP-15 SDD text approved when shown; PP-16 SRS wording (yours); `profile-migration` label or the split (OD-25)
-- [ ] 4b.1 OKF project validator vendored at `527e81a` with its licence; check 1 mapped by code; `I203`, `W115` and check-2-owned `W120` dropped; `OKF120` kept; `test_conformance.py` rebuilt with a code-coverage test
-- [ ] 4b.2 `profile.yaml` pin (`okf_version: "0.3"`, `okf_spec_commit: 527e81a`); `okf-base.schema.json` (`superseded_by`; `parameters` require `name` and `type`)
-- [ ] 4b.3 Root header keeps every key; `OKF506` allows `title`, `license`, extension keys on the root; `OKF121` from `E004`, root no longer counted; `init_library` writes `title` and `license`; W-10 assertion
-- [ ] 4b.4 Check 4 path fields by v0.3 §6.2 (own folder; leading `/` the bundle root), with fixtures
-- [ ] 4b.5 I-08: written `verified[].at` never earlier than `generated.at`; golden case
-- [ ] 4b.6 ADR-013; SDD (PP-15) and DDR row; `AGENTS.md`, `README.md`, both skills, `VENDORED.md`, licence and `NOTICE`, finding-code catalogue, `constraints.md` pins, G42
+- [x] 4b.1 OKF project validator vendored at `527e81a` with its licence; check 1 mapped by code; `I203`, `W115` and check-2-owned `W120` dropped; `OKF120` kept; `test_conformance.py` rebuilt with a code-coverage test
+- [x] 4b.2 `profile.yaml` pin (`okf_version: "0.3"`, `okf_spec_commit: 527e81a`); `okf-base.schema.json` (`superseded_by`; `parameters` require `name` and `type`)
+- [x] 4b.3 Root header keeps every key; `OKF506` allows `title`, `license`, extension keys on the root; `OKF121` from `E004`, root no longer counted; `init_library` writes `title` and `license`; W-10 assertion
+- [x] 4b.4 Check 4 path fields by v0.3 §6.2 (own folder; leading `/` the bundle root), with fixtures (`OKF412`)
+- [x] 4b.5 I-08: written `verified[].at` never earlier than `generated.at`; golden case
+- [x] 4b.6 ADR-013; SDD (PP-15) and DDR row; `AGENTS.md`, `README.md`, both skills, `VENDORED.md`, licence and `NOTICE`, finding-code catalogue, `constraints.md` pins, G42 (SDD edits applied with PP-15, awaiting approval)
 - [ ] 4b. Check: vendored hash tested; every emitted code in the table; `OKF1xx`, `E004`, root-metadata, §6.2 and I-08 fixtures pass; self-test finds `title` and `license`; template bundle has no finding; `poe check` and `poe test` on 3.11 and 3.14 and CI on three systems; no current "v0.2" in `AGENTS.md`, `README.md` or the skills
 - [ ] PP-15 applied; PP-16 applied by the owner or recorded as declined
 - [ ] PR V closed: agent __ h, owner __ h

@@ -44,7 +44,7 @@ Each `fail/<code>/` is the smallest bundle that breaks one rule. The catalogue g
 | Codes | Check | Notes |
 | --- | --- | --- |
 | `OKF001` to `OKF003` | Change rules | `change.json` lists tooling and content paths (`OKF001`), or a migration lacking the maintainer approval (`OKF002`) or the `DECISIONS.md` change (`OKF003`, which also holds `CODEOWNERS`) |
-| `OKF101` to `OKF104`, `OKF111` to `OKF117`, `OKF120` | 1 OKF conformance | Frontmatter faults, or text the vendored okf-skills validator reports and the mapper turns into a code. `OKF120` is `okfprofile`'s own offset rule |
+| `OKF101` to `OKF105`, `OKF113` to `OKF117`, `OKF120` to `OKF122` | 1 OKF conformance | Frontmatter faults, or a finding code of the vendored OKF v0.3 validator that `CODE_TABLE` maps (ADR-013). `OKF120` is `okfprofile`'s own offset rule; `OKF121` replaces the validator's `E004` for usable folder-index headers |
 | `OKF118`, `OKF119` | 1 | No fixture; unit tests only (see [known-gaps.md](known-gaps.md)) |
 | `OKF201` to `OKF205` | 2 Frontmatter schema | Undeclared type, missing field, unknown field, schema violation, undeclared `status` |
 | `OKF301` to `OKF314` | 3 Body structure | Title heading, section presence, order, repeats, undeclared sections, placeholders, format items and children, nesting, raw HTML, revision-section grammar |

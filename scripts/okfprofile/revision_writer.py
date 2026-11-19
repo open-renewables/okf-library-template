@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import posixpath
 from dataclasses import dataclass, field
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 from okfprofile.bundle import RESERVED_NAMES, load_bundle
@@ -163,23 +164,44 @@ def insert_line(text: str, heading: str, line: str) -> str:
     return "\n".join([*rows[:at], *new, *rows[at:]])
 
 
-def verified_entries(profile: Profile, lines: list[RevisionLine]) -> list[tuple[str, str]]:
+def _not_before(day: date, generated_at: str | None) -> str:
+    """``day`` at 00:00 UTC, or the concept's ``generated.at`` when that is later (OKF v0.3 §5.3).
+
+    A consumer treats a verification older than ``generated.at`` as not current, so a written time never falls
+    before it. ``generated.at`` is kept as written when used; one that does not parse is ignored.
+    """
+    written = f"{day.isoformat()}T00:00:00Z"
+    if not generated_at:
+        return written
+    try:
+        generated = datetime.fromisoformat(generated_at.replace("Z", "+00:00"))
+    except ValueError:
+        return written
+    if generated.tzinfo is None:
+        return written
+    return generated_at if generated > datetime(day.year, day.month, day.day, tzinfo=UTC) else written
+
+
+def verified_entries(
+    profile: Profile, lines: list[RevisionLine], generated_at: str | None = None
+) -> list[tuple[str, str]]:
     """The OKF ``verified`` entries that make a generic tool derive the same tier as the library (I-08).
 
     Human-reviewed: one ``human:<login>`` entry per owner approval or owner self-approval since the latest
     owner-approved full review. Machine-confirmed: one ``process:revision-bot`` entry at the latest revision.
-    Unverified: none. The time of an entry is its revision date at 00:00 UTC, because a line records the date only.
+    Unverified: none. The time of an entry is its revision date at 00:00 UTC, because a line records the date only,
+    and never earlier than the concept's ``generated.at`` (OKF v0.3 §5.3; RFC-002 item 5).
     """
     tier = concept_tier(lines, profile.rules.require_non_author_approver).tier
     if tier is Tier.UNVERIFIED:
         return []
     if tier is Tier.MACHINE_CONFIRMED:
-        return [(BOT_ACTOR, f"{lines[-1].date.isoformat()}T00:00:00Z")]
+        return [(BOT_ACTOR, _not_before(lines[-1].date, generated_at))]
     entries = []
     for line in lines[window_start(lines) :]:
         if owner_approved(line):
             actor = f"human:{line.approver or line.author}"
-            entries.append((actor, f"{line.date.isoformat()}T00:00:00Z"))
+            entries.append((actor, _not_before(line.date, generated_at)))
     return list(dict.fromkeys(entries))
 
 
@@ -269,7 +291,10 @@ def _flush(profile: Profile, texts: dict[str, str], result: WriteResult, dry_run
     for relative, text in texts.items():
         if profile.rules.write_okf_verified:
             concept = parse_concept(text, relative)
-            text = set_verified(text, verified_entries(profile, history_lines(profile, concept)))
+            generated = (concept.frontmatter or {}).get("generated")
+            generated_at = generated.get("at") if isinstance(generated, dict) else None
+            entries = verified_entries(profile, history_lines(profile, concept), generated_at)
+            text = set_verified(text, entries)
         if text != (root / relative).read_bytes().decode("utf-8"):
             written.append(relative)
             if not dry_run:

@@ -1,13 +1,13 @@
-"""Check 1: OKF conformance (SDD W-04, AD-08, I-09 ``OKF1xx``).
+"""Check 1: OKF conformance (SDD W-04, AD-08 as amended by ADR-013, I-09 ``OKF1xx``).
 
-Three parts: frontmatter problems found by the reader (``OKF101`` to ``OKF103``); the vendored okf-skills
-validator, run unmodified and its messages mapped to codes; and the datetime rule that the vendored
-validator tolerates breaking, enforced here (``OKF120``).
+Three parts: frontmatter problems found by the reader (``OKF101`` to ``OKF103``); the OKF project's validator for
+OKF v0.3, vendored unmodified and its findings mapped **by code** (``CODE_TABLE``); and the datetime rule, which the
+profile keeps stricter than v0.3 (``OKF120``, RFC-002 D4).
 
-A folder index may carry a scope header (ADR-010), which OKF v0.2 §8 and §12 do not allow. okf-skills warns on
-each such index; those warnings are replaced by one bundle-level ``OKF121`` warning that names the files, so the
-departure from OKF stays visible without repeating on every index. A header that is not usable is reported by
-check 5 (``OKF505``, ``OKF506``) instead.
+A folder index may carry a scope header (ADR-010), which OKF v0.3 §8 does not allow: the validator reports each as
+an error, ``E004``. A usable header is the template's recorded departure (ADR-012, RFC-002 D3), so those errors are
+replaced by one bundle-level ``OKF121`` warning naming the files; a header that is not usable is reported by check 5
+(``OKF505``, ``OKF506``) instead. The root index may carry bundle metadata under v0.3 §8.1, so it is not counted.
 """
 
 from __future__ import annotations
@@ -15,6 +15,7 @@ from __future__ import annotations
 import importlib.util
 import re
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from types import ModuleType
 from typing import Any
@@ -23,129 +24,138 @@ from okfprofile.document import Concept, KeyPath
 from okfprofile.indexes import INDEX, read_header
 from okfprofile.report import Finding
 
-VENDORED = Path(__file__).resolve().parents[2] / "vendor" / "okf-skills" / "okf_validate.py"
+VENDORED = Path(__file__).resolve().parents[2] / "vendor" / "okf" / "validate.py"
+MODULE_NAME = "okf_validate_v0_3"
 
 DATETIME_WITH_OFFSET = re.compile(
     r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$"
 )
 
-# okf-skills emits strings without codes (V-08). Each rule is (text that identifies the message, code);
-# a code of None drops the message because another check owns it: the profile schema (check 2) covers
-# recommended fields, the shape of `generated`, `verified` and `sources`, status and timestamps, and
-# check 4 covers links. The first matching rule wins.
-_DROPPED = None
-MESSAGE_RULES: tuple[tuple[str, str | None], ...] = (
-    ("§11.1 no parseable YAML frontmatter", "OKF101"),
-    ("cannot read file", "OKF101"),
-    ("§11.1 frontmatter is not valid YAML", "OKF102"),
-    ("§11.1 frontmatter must be a YAML mapping", "OKF103"),
-    ("§11.2 missing or empty required `type`", "OKF104"),
-    ("recommended field `", _DROPPED),
-    ("cross-link target not found", _DROPPED),
-    ("is not an RFC 3339 timestamp", _DROPPED),
-    ("is not an ISO 8601 datetime", _DROPPED),
-    ("§5.4 unknown `status`", _DROPPED),
-    ("§5.2 `generated` must be a mapping", _DROPPED),
-    ("§5.2 `generated.by` is required", _DROPPED),
-    ("§5.2 `verified` must be", _DROPPED),
-    ("§5.2 every `verified` entry", _DROPPED),
-    ("§5.1 `sources` must be a list", _DROPPED),
-    ("must be a mapping", _DROPPED),
-    ("must be a `{from, to}` mapping", _DROPPED),
-    ("is missing the required `resource`", _DROPPED),
-    ("`usage_window` is missing", _DROPPED),
-    ("legacy v0.1", "OKF111"),
-    ("§7 ", "OKF113"),
-    ("has no `usage_window` framing", "OKF116"),
-    ("matches no `sources[].id`", "OKF116"),
-    ("§8 ", "OKF117"),
-    ("§9 ", "OKF117"),
-    ("§12 ", "OKF117"),
-    ("§10.2 ", "OKF118"),
-    ("§6.2 ", "OKF118"),
-)
+# Every code the vendored validator can emit, mapped to this tool's code. None drops a finding because another
+# check owns it: check 2 (the type's schema) owns the shape of frontmatter values, `OKF120` owns timestamps, check 4
+# owns body links and frontmatter path fields, and the stale report owns staleness. Three codes need the file as
+# well as the code and are handled in `_map`: `E004` (folder index headers, ADR-012), `W117` (kept only for an
+# index), `W120` (reported only when the reader found no frontmatter problem in the file) and `W125` (dropped when
+# the root index is missing, which check 5 reports as OKF501).
+CODE_TABLE: dict[str, str | None] = {
+    "E002": "OKF102",  # frontmatter not a YAML mapping; the reader reports it first, with its line
+    "E004": "OKF121",  # header on a folder index; see `_map`
+    "E005": "OKF105",  # log.md date heading
+    "E006": "OKF105",  # log.md with frontmatter
+    "E007": "OKF102",  # duplicate frontmatter key; the reader reports it first
+    "W101": None,  # timestamp or window shape: check 2 and OKF120
+    "W102": None,  # generated shape: check 2
+    "W103": "OKF113",  # actor convention
+    "W104": None,  # verified shape: check 2
+    "W105": None,  # status value: check 2 (profile status values, FR3.9)
+    "W106": None,  # sources entry shape: check 2
+    "W107": "OKF116",  # sources[].id not unique
+    "W108": "OKF116",  # footnote label matches no sources[].id
+    "W109": "OKF116",  # usage_count without a usage_window
+    "W110": None,  # tags shape: check 2
+    "W111": "OKF118",  # Attested Computation: runtime
+    "W112": "OKF118",  # Attested Computation: computation
+    "W113": "OKF118",  # Attested Computation: parameters
+    "W114": "OKF118",  # Attested Computation: executor, attester
+    "W115": None,  # body link target: check 4
+    "W116": None,  # path field target: check 4 (OKF412)
+    "W117": "OKF117",  # an unquoted okf_version on the root index; elsewhere check 2 owns value types
+    "W118": "OKF117",  # log.md date order
+    "W119": None,  # v0.2 root fallback for a path field: check 4 (OKF412)
+    "W120": "OKF104",  # not a concept: no frontmatter (the reader's OKF101) or no type
+    "W122": None,  # date-only generated.at or verified.at: OKF120
+    "W123": "OKF122",  # superseded_by without status: deprecated
+    "W125": "OKF117",  # root index without okf_version
+    "W126": "OKF118",  # Attested Computation: more than one fenced block
+    "I201": None,  # stale: the stale report (W-06)
+    "I203": None,  # extension keys without x-: uid and namespace stay unprefixed (RFC-002 D6)
+    "I204": None,  # no current verification: derived by the trust tier from revision history (I-08)
+    "I205": None,  # Attested Computation without an attester: information only
+}
 FRONTMATTER_CODES = frozenset({"OKF101", "OKF102", "OKF103"})
-INDEX_HEADER_MESSAGES = ("§8 index.md should contain no frontmatter", "§12 root index.md frontmatter may only carry")
 
 
 def load_vendored() -> ModuleType:
-    """Load the vendored okf-skills validator by path.
+    """Load the vendored OKF validator by path.
 
     Returns:
-        The module, registered in ``sys.modules`` as ``okf_validate``.
+        The module, registered in ``sys.modules`` under ``MODULE_NAME``.
     """
-    existing = sys.modules.get("okf_validate")
+    existing = sys.modules.get(MODULE_NAME)
     if existing is not None:
         return existing
-    spec = importlib.util.spec_from_file_location("okf_validate", VENDORED)
+    spec = importlib.util.spec_from_file_location(MODULE_NAME, VENDORED)
     if spec is None or spec.loader is None:  # pragma: no cover - the file ships with the repository
         msg = f"cannot load {VENDORED}"
         raise ImportError(msg)
     module = importlib.util.module_from_spec(spec)
-    sys.modules["okf_validate"] = module
+    sys.modules[MODULE_NAME] = module
     spec.loader.exec_module(module)
     return module
 
 
-def map_message(message: str) -> tuple[str | None, str, str]:
-    """Map one okf-skills message to a finding code.
+def _is_folder_index(rel: str) -> bool:
+    return rel.endswith(f"/{INDEX}")
+
+
+def _usable_header(bundle: Path, rel: str) -> bool:
+    file = bundle / rel
+    return (
+        file.is_file() and read_header(file.read_bytes().decode("utf-8", errors="replace"), root=False).problem is None
+    )
+
+
+def _map(bundle: Path, code: str, rel: str, frontmatter_files: set[str]) -> str | None:
+    """This tool's code for one validator finding, or None to drop it. Unknown codes map to ``OKF119``."""
+    if code not in CODE_TABLE:
+        return "OKF119"
+    if code == "E004":
+        return "OKF121" if _is_folder_index(rel) and _usable_header(bundle, rel) else None
+    if code == "W117":
+        return "OKF117" if rel == INDEX else None
+    if code == "W120" and rel in frontmatter_files:
+        return None
+    if code == "W125" and not (bundle / INDEX).is_file():
+        return None  # a missing root index is check 5's OKF501
+    return CODE_TABLE[code]
+
+
+def okf_findings(bundle: Path, prefix: str, frontmatter_files: set[str] | None = None) -> list[Finding]:
+    """Run the vendored validator on a bundle and map its findings.
 
     Args:
-        message: A string from the validator's report, ``<path>: <text>``.
+        bundle: The bundle folder.
+        prefix: Folder shown before each path (the bundle's path under the repository).
+        frontmatter_files: Bundle-relative files for which the reader already reported a frontmatter problem.
 
     Returns:
-        The code (None if the message is dropped), the path it names and the text after the path. A message
-        that no rule matches maps to ``OKF119``.
+        The mapped findings, with the validator's line numbers; usable folder-index headers give one ``OKF121``.
     """
-    path, _, text = message.partition(": ")
-    for needle, code in MESSAGE_RULES:
-        if needle in text:
-            return code, path, text
-    return "OKF119", path, text
-
-
-def _okf_skills_findings(bundle: Path, prefix: str) -> list[Finding]:
-    report = load_vendored().validate(bundle)
-    findings = []
-    for message in [*report.errors, *report.warnings]:
-        code, rel, text = map_message(message)
-        if code is not None:
-            file = f"{prefix}/{rel}" if prefix else rel
-            findings.append(Finding.make(code, file, 0, text))
-    return findings
-
-
-def _header_of(bundle: Path, rel: str) -> tuple[bool, bool] | None:
-    """``(has a header, header is usable)`` for an index named by okf-skills, or None if it is not an index."""
-    if rel != INDEX and not rel.endswith(f"/{INDEX}"):
-        return None
-    file = bundle / rel
-    if not file.is_file():
-        return None
-    header = read_header(file.read_bytes().decode("utf-8", errors="replace"), rel == INDEX)
-    return header.raw is not None, header.problem is None
-
-
-def _index_header_findings(bundle: Path, prefix: str, findings: list[Finding]) -> list[Finding]:
-    """Replace okf-skills' per-index frontmatter warnings for ADR-010 headers with one ``OKF121`` warning."""
-    kept: list[Finding] = []
-    with_scope: list[str] = []
-    for finding in findings:
-        rel = finding.file[len(prefix) + 1 :] if prefix and finding.file.startswith(f"{prefix}/") else finding.file
-        state = _header_of(bundle, rel) if finding.code == "OKF117" else None
-        if state is None or not finding.message.startswith(INDEX_HEADER_MESSAGES) or not state[0]:
-            kept.append(finding)
-        elif state[1]:
-            with_scope.append(finding.file)
-    if with_scope:
-        files = ", ".join(sorted(set(with_scope)))
+    module = load_vendored()
+    checker = module.Checker(bundle.resolve(), datetime.now(UTC))
+    checker.run()
+    done = frontmatter_files or set()
+    findings: list[Finding] = []
+    headers: list[str] = []
+    for raw in checker.findings:
+        code = _map(bundle, raw.code, raw.path, done)
+        if code is None or (code in FRONTMATTER_CODES and raw.path in done):
+            continue
+        file = f"{prefix}/{raw.path}" if prefix else raw.path
+        if code == "OKF121":
+            headers.append(file)
+            continue
+        message = f"{raw.code}: {raw.message}" if code == "OKF119" else raw.message
+        findings.append(Finding.make(code, file, raw.line or 0, message))
+    if headers:
+        files = ", ".join(sorted(set(headers)))
         message = (
-            f"{len(set(with_scope))} index header(s) carry a scope `description` (ADR-010), which OKF v0.2 allows "
-            f"only as `okf_version` on the root index (§8, §12): {files}. Consumers must still read the bundle (§11)"
+            f"{len(set(headers))} folder index header(s) carry a scope `description` (ADR-010); in OKF v0.3 a "
+            f"subdirectory index has no frontmatter (§8, §11.1): {files}. Consumers must still read the bundle (§11)"
         )
         root = f"{prefix}/{INDEX}" if prefix else INDEX
-        kept.append(Finding.make("OKF121", root, 0, message))
-    return kept
+        findings.append(Finding.make("OKF121", root, 0, message))
+    return findings
 
 
 def datetime_paths(frontmatter: dict[str, Any]) -> list[KeyPath]:
@@ -205,18 +215,17 @@ def check_conformance(bundle: Path, concepts: list[Concept], prefix: str = "") -
     Args:
         bundle: The bundle folder.
         concepts: The bundle's concepts, as read by ``load_bundle``.
-        prefix: Folder shown before the path in okf-skills findings (the bundle's path under the repository).
+        prefix: Folder shown before the path in validator findings (the bundle's path under the repository).
 
     Returns:
-        All findings of check 1. A frontmatter problem that both the reader and okf-skills report is
+        All findings of check 1. A frontmatter problem that both the reader and the validator report is
         reported once, with the reader's line number; index scope headers give one ``OKF121`` warning.
     """
     findings: list[Finding] = []
     for concept in concepts:
         findings.extend(concept.findings)
         findings.extend(datetime_findings(concept))
-    seen = {(f.code, f.file) for f in findings if f.code in FRONTMATTER_CODES}
-    for finding in _index_header_findings(bundle, prefix, _okf_skills_findings(bundle, prefix)):
-        if (finding.code, finding.file) not in seen:
-            findings.append(finding)
+    shown = f"{prefix}/" if prefix else ""
+    done = {f.file[len(shown) :] for f in findings if f.code in FRONTMATTER_CODES and f.file.startswith(shown)}
+    findings.extend(okf_findings(bundle, prefix, done))
     return findings

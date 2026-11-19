@@ -2,8 +2,8 @@
 # a library changes behaviour by editing this file, the schemas in types/ and the formats in formats/.
 profile: okf-library-template-example
 profile_version: 0.1.0
-okf_version: "0.2"
-okf_spec_commit: ad30107
+okf_version: "0.3"
+okf_spec_commit: 527e81a
 template_version: 0.1.0
 library:
   name: okf-library-template

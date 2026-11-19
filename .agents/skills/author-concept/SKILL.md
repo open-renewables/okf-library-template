@@ -28,7 +28,7 @@ You write drafts. A person reviews and publishes them. Everything the library re
    The script also adds the new `uid` to `profile/uid-registry.yaml`. Commit that file with the concept: it is the one `profile/` file that belongs in a concept change.
 
 2. Fill each declared section in the declared order and format, in your own words. Where a section has nothing yet, leave the profile's placeholder rather than inventing content; this holds for an optional section too (keep the placeholder, do not invent items to fill a format).
-3. Start every list after a blank line and put no list inside a footnote definition; the site renders those two cases differently from the validator. Cite sources as footnotes (or external links) for every claim of substance. Never cite a source you have not read. A concept without a source cannot become `stable`.
+3. Start every list after a blank line and put no list inside a footnote definition; the site renders those two cases differently from the validator. Cite each source as a `sources` entry in the frontmatter with an `id`, and attribute each claim of substance with a footnote whose label is that id, such as `[^okf-spec]` (OKF v0.3 section 5.1; a footnote with no matching id is warning `OKF116`); an external link also counts as a citation. Never cite a source you have not read. A concept without a source cannot become `stable`.
 4. Leave `status: draft`. Only a human owner makes a concept `stable`. Do not add `verified`, `generated` or other fields the schema does not ask for.
 5. Do not edit by hand: the *Revision history* section, the body of any `index.md`, `profile/uid-registry.yaml`. When you create a folder and the library uses scope headers, give its `index.md` a header with a one-sentence scope, `description: "..."` between `---` lines; that header is the one part of an index you may write, and the generator keeps it. Then rebuild the indexes and validate:
 
@@ -37,7 +37,7 @@ You write drafts. A person reviews and publishes them. Everything the library re
    uv run scripts/validate_profile.py
    ```
 
-   Fix every error. A warning needs a reason or a fix; `OKF121` (scope headers, which OKF v0.2 does not allow on folder indexes) is expected where folders have them. Run `uv run poe check` before you hand over.
+   Fix every error. A warning needs a reason or a fix; `OKF121` (scope headers, which OKF v0.3 does not allow on folder indexes) is expected where folders have them. Run `uv run poe check` before you hand over.
 6. Mark the change as agent-drafted so the review records it:
    - `platform: github`: apply the label named by `rules.agent_label` in the profile to the pull request.
    - `platform: git-local`: add the trailer `Agent-Drafted: yes` to the commit message.

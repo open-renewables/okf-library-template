@@ -1,20 +1,27 @@
-"""Check 4, links and anchors (SDD I-01, AD-14, ADR-005; I-09 ``OKF401`` to ``OKF404``, ``OKF411``).
+"""Check 4, links, anchors and path fields (SDD I-01, AD-14, ADR-005; I-09 ``OKF401`` to ``OKF404``, ``OKF411``,
+``OKF412``).
 
 Internal links are relative. A target must exist in the bundle and a fragment must match a heading's automatic
 slug or an explicit ``<a id>`` anchor, compared without regard to case because GitHub lower-cases explicit ids.
+Frontmatter path fields resolve by OKF v0.3 §6.2: from the concept's own folder, or from the bundle root when
+they start with ``/`` (body links stay relative, ADR-005).
 """
 
 from __future__ import annotations
 
 import posixpath
+import re
 from collections import Counter
 from pathlib import Path
+from typing import Any
 from urllib.parse import unquote, urlsplit
 
 from okfprofile.bundle import BaseIndex
 from okfprofile.config import Profile
-from okfprofile.document import Concept, parse_concept
+from okfprofile.document import Concept, KeyPath, parse_concept
 from okfprofile.report import Finding
+
+URI_SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 
 
 class _Targets:
@@ -76,6 +83,52 @@ def _link_findings(concept: Concept, targets: _Targets) -> list[Finding]:
     return findings
 
 
+def path_fields(frontmatter: dict[str, Any]) -> list[tuple[KeyPath, str]]:
+    """The path-valued frontmatter fields of a concept and their values (OKF v0.3 §6.2).
+
+    ``resource``, ``superseded_by``, ``computation``, ``executor.resource``, ``attester.resource`` and each
+    ``sources[].resource``. A value that is not a string, is a URI (it has a scheme or starts with ``//``) or holds
+    whitespace (a ``sources`` scope descriptor, §5.1) is not a path and is left out.
+    """
+    found: list[tuple[KeyPath, str]] = [
+        ((key,), frontmatter[key]) for key in ("resource", "superseded_by", "computation") if key in frontmatter
+    ]
+    for key in ("executor", "attester"):
+        value = frontmatter.get(key)
+        if isinstance(value, dict) and "resource" in value:
+            found.append(((key, "resource"), value["resource"]))
+    sources = frontmatter.get("sources")
+    for index, source in enumerate(sources if isinstance(sources, list) else []):
+        if isinstance(source, dict) and "resource" in source:
+            found.append((("sources", index, "resource"), source["resource"]))
+    return [
+        (key, value)
+        for key, value in found
+        if isinstance(value, str)
+        and value
+        and not URI_SCHEME.match(value)
+        and not value.startswith("//")
+        and not any(c.isspace() for c in value)
+    ]
+
+
+def _path_field_findings(concept: Concept, targets: _Targets) -> list[Finding]:
+    """``OKF412`` for a path field that names no file in the bundle (OKF v0.3 §6.2; a leading ``/`` is the root)."""
+    findings = []
+    own = f"{concept.concept_id}.md"
+    for key, value in path_fields(concept.frontmatter or {}):
+        path = unquote(value.split("#", 1)[0].split("?", 1)[0])
+        if not path:
+            continue
+        joined = path.lstrip("/") if path.startswith("/") else posixpath.join(posixpath.dirname(own), path)
+        relative = posixpath.normpath(joined)
+        name = ".".join(str(part) for part in key)
+        if relative.startswith("..") or targets.resolve(relative) is None:
+            message = f"`{name}` '{value}' does not resolve to a file in the bundle (OKF v0.3 section 6.2)"
+            findings.append(Finding.make("OKF412", concept.path, concept.line_of(*key), message))
+    return findings
+
+
 def _anchor_findings(concept: Concept) -> list[Finding]:
     findings = [
         Finding.make("OKF404", concept.path, a.line, f"anchor id '{a.id}' must be lower case; GitHub lower-cases it")
@@ -121,13 +174,15 @@ def check_links(profile: Profile, concepts: list[Concept], base: list[Concept] |
         base: The same bundle at the base commit, if known; explicit anchors present there must remain.
 
     Returns:
-        Findings for root-relative links, missing targets, unmatched fragments, anchor misuse and removed anchors.
+        Findings for root-relative links, missing targets, unmatched fragments, anchor misuse, removed anchors
+        and path fields that resolve to nothing.
     """
     targets = _Targets(profile.bundle_root, concepts)
     earlier = BaseIndex(base or [])
     findings: list[Finding] = []
     for concept in concepts:
         findings.extend(_link_findings(concept, targets))
+        findings.extend(_path_field_findings(concept, targets))
         findings.extend(_anchor_findings(concept))
         findings.extend(_base_findings(concept, earlier))
     return findings

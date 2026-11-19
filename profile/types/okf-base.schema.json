@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "okf-base.schema.json",
-  "$comment": "Frontmatter keys of OKF v0.2 at specification commit ad30107 (sections 4, 5, 10), plus the profile's uid. Type schemas reference this file. Unknown keys are rejected by the validator, which adds unevaluatedProperties: false to the type schema when rules.reject_unknown_fields is true (SDD I-03), so OKF's optional keys are always accepted.",
+  "$comment": "Frontmatter keys of OKF v0.3 at specification commit 527e81a (sections 4, 5, 10), plus the profile's uid. Type schemas reference this file. Unknown keys are rejected by the validator, which adds unevaluatedProperties: false to the type schema when rules.reject_unknown_fields is true (SDD I-03), so OKF's optional keys are always accepted.",
   "title": "OKF base frontmatter",
   "type": "object",
   "required": ["type"],
@@ -17,6 +17,7 @@
       "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*:[a-z0-9][a-z0-9-]*$" }
     },
     "status": { "type": "string", "minLength": 1 },
+    "superseded_by": { "type": "string", "minLength": 1 },
     "stale_after": { "$ref": "#/$defs/datetime" },
     "generated": {
       "type": "object",
@@ -36,7 +37,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name", "type", "required"],
+        "required": ["name", "type"],
         "properties": {
           "name": { "type": "string", "minLength": 1 },
           "type": { "type": "string", "minLength": 1 },

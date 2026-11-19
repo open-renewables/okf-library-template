@@ -455,3 +455,28 @@ def test_resetting_a_library_clears_every_concept_and_reports_the_files(library:
     assert reset_history(profile, library) == ["knowledge/example-group/example-category/example-item.md"]
     assert history_lines(profile, parse_concept(concept_file.read_text(encoding="utf-8"))) == []
     assert reset_history(profile, library) == []
+
+
+@pytest.mark.parametrize(
+    ("generated_at", "written"),
+    [
+        (None, "2026-11-02T00:00:00Z"),
+        ("2026-11-02T14:30:00Z", "2026-11-02T14:30:00Z"),
+        ("2026-11-02T09:00:00+01:00", "2026-11-02T09:00:00+01:00"),
+        ("2026-11-01T23:00:00Z", "2026-11-02T00:00:00Z"),
+        ("2026-11-02T14:30:00", "2026-11-02T00:00:00Z"),
+        ("soon", "2026-11-02T00:00:00Z"),
+    ],
+)
+def test_a_written_verified_time_is_never_before_generated_at(
+    tmp_path: Path, generated_at: str | None, written: str
+) -> None:
+    """OKF v0.3 section 5.3: a verification older than generated.at is not current (RFC-002 item 5)."""
+    profile = profile_for(tmp_path)
+    for raw, actor in (
+        ("2026-11-02 · author @bob · approved @alice (owner) · PR #2 · full-review", "human:alice"),
+        ("2026-11-02 · author @bob · approved @alice (owner) · PR #2 · agent-drafted", "process:revision-bot"),
+    ):
+        line = parse_revision_line(raw)
+        assert line is not None
+        assert verified_entries(profile, [line], generated_at) == [(actor, written)]  # type: ignore[arg-type]

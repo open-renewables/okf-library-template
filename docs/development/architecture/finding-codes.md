@@ -5,7 +5,7 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | Range | Check |
 | --- | --- |
 | `OKF0xx` | Change rules: mixed tooling and content changes; `profile-migration` conditions |
-| `OKF1xx` | 1. OKF conformance (okf-skills findings mapped; frontmatter-first; datetime offsets) |
+| `OKF1xx` | 1. OKF conformance (the OKF v0.3 validator's findings mapped by code, ADR-013; frontmatter-first; datetime offsets) |
 | `OKF2xx` | 2. Frontmatter schema; unknown fields; declared type |
 | `OKF3xx` | 3. Body sections, order, placeholders, formats, CI-managed sections |
 | `OKF4xx` | 4. Links, anchors, vocabulary membership, path rules |
@@ -26,14 +26,15 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF102 | error | 1 | Frontmatter is not valid YAML | `tests/library/fixtures/fail/OKF102/` |
 | OKF103 | error | 1 | Frontmatter is not a mapping | `tests/library/fixtures/fail/OKF103/` |
 | OKF104 | error | 1 | Required `type` key missing or empty | `tests/library/fixtures/fail/OKF104/` |
-| OKF111 | warning | 1 | Legacy OKF v0.1 construct | `tests/library/fixtures/fail/OKF111/` |
+| OKF105 | error | 1 | `log.md` breaks OKF section 9: frontmatter, or a heading that is not a date (validator `E005`, `E006`) | `tests/library/fixtures/fail/OKF105/` |
 | OKF113 | warning | 1 | Actor does not follow the OKF actor convention | `tests/library/fixtures/fail/OKF113/` |
-| OKF116 | warning | 1 | `usage_count` has no window, or a footnote matches no `sources[].id` | `tests/library/fixtures/fail/OKF116/` |
-| OKF117 | warning | 1 | Reserved file (`index.md`, `log.md`) breaks OKF section 8, 9 or 12 | `tests/library/fixtures/fail/OKF117/` |
+| OKF116 | warning | 1 | `usage_count` has no window, a footnote matches no `sources[].id`, or an id repeats (validator `W107` to `W109`) | `tests/library/fixtures/fail/OKF116/` |
+| OKF117 | warning | 1 | Root `index.md` lacks a quoted `okf_version`, or `log.md` dates are out of order (validator `W117`, `W118`, `W125`) | `tests/library/fixtures/fail/OKF117/` |
 | OKF118 | warning | 1 | Attested Computation contract field is missing or dangling | unit test, `tests/template/test_conformance.py` (see known gaps) |
-| OKF119 | warning | 1 | okf-skills reported a message this tool does not map | unit test, `tests/template/test_conformance.py` (see known gaps) |
+| OKF119 | warning | 1 | The OKF validator reported a code this tool does not map | unit test, `tests/template/test_conformance.py` |
 | OKF120 | error | 1 | Timestamp is not an ISO 8601 datetime with an explicit UTC offset | `tests/library/fixtures/fail/OKF120/` |
-| OKF121 | warning | 1 | Index headers carry a scope description (ADR-010), which OKF v0.2 sections 8 and 12 do not allow; one warning per bundle naming the files, in place of okf-skills' per-index OKF117 | `tests/library/fixtures/fail/OKF121/` |
+| OKF121 | warning | 1 | Folder index headers carry a scope description (ADR-010), which OKF v0.3 section 8 does not allow; one warning per bundle naming the files, in place of the validator's per-index `E004` errors (ADR-012, ADR-013) | `tests/library/fixtures/fail/OKF121/` |
+| OKF122 | warning | 1 | `superseded_by` is set but `status` is not `deprecated` (OKF section 5.4; validator `W123`) | `tests/library/fixtures/fail/OKF122/` |
 | OKF201 | error | 2 | Concept type is not declared in the profile | `tests/library/fixtures/fail/OKF201/` |
 | OKF202 | error | 2 | Required frontmatter field missing | `tests/library/fixtures/fail/OKF202/` |
 | OKF203 | error | 2 | Unknown frontmatter field (the profile rejects them) | `tests/library/fixtures/fail/OKF203/` |
@@ -51,6 +52,7 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF409 | warning | 4 | Tag value restates a folder name | `tests/library/fixtures/fail/OKF409/` |
 | OKF410 | error | 4 | Concept is outside the paths declared for its type | `tests/library/fixtures/fail/OKF410/` |
 | OKF411 | error | 4 | Explicit anchor present in the base is gone | `tests/library/fixtures/fail/OKF411/` |
+| OKF412 | error | 4 | Frontmatter path field does not resolve to a file in the bundle (OKF v0.3 section 6.2: from the concept's folder, or from the bundle root with a leading `/`) | `tests/library/fixtures/fail/OKF412/` |
 | OKF301 | error | 3 | Title heading missing, repeated, or different from `title` | `tests/library/fixtures/fail/OKF301/` |
 | OKF302 | error | 3 | Required body section missing | `tests/library/fixtures/fail/OKF302/` |
 | OKF303 | error | 3 | Body section out of the declared order | `tests/library/fixtures/fail/OKF303/` |
@@ -88,7 +90,7 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF804 | warning | Profile warnings | Folder holds more concepts than the profile's limit | `tests/library/fixtures/fail/OKF804/` |
 | OKF901 | error | Revision completeness | A merged change has no revision line in a concept it touched | unit test, `tests/template/test_revision_writer.py` (raised by `write_revision.py --check-since`, which reads git history, so no bundle fixture can show it) |
 
-Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered). `OKF9xx` (revision completeness) is raised by `write_revision.py --check-since`, not by `validate_profile.py`. The check column holds the I-09 check number, or the name of a group of rules that has no number there.
+Codes not listed above are unassigned; a retired number is never reused (`OKF110` and `OKF112` were dropped before the first release because the profile schema owns what they covered; `OKF111`, legacy OKF v0.1 constructs, was retired by ADR-013 because the OKF v0.3 validator does not check them). `OKF9xx` (revision completeness) is raised by `write_revision.py --check-since`, not by `validate_profile.py`. The check column holds the I-09 check number, or the name of a group of rules that has no number there.
 
 ## Reading rules
 

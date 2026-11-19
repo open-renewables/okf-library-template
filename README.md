@@ -2,11 +2,11 @@
 
 [![Licence](https://img.shields.io/github/license/open-renewables/okf-library-template)](LICENSE)
 
-A template for building validated, agent-ready knowledge libraries on the Open Knowledge Format (OKF) v0.2.
+A template for building validated, agent-ready knowledge libraries on the Open Knowledge Format (OKF) v0.3.
 
 Status: beta. The tooling, set-up scripts, CI, agent skills and site build are in place; the template is not yet released as v1.0.0 (see `GOVERNANCE.md` for how releases are made).
 
-okf-library-template is a thin "profile" layer on Google's Open Knowledge Format (OKF) v0.2, not a new format. It is independent of the OKF project and of LF Energy, and is not affiliated with either.
+okf-library-template is a thin "profile" layer on the Open Knowledge Format (OKF) v0.3, not a new format. It is independent of the OKF project and of LF Energy, and is not affiliated with either.
 
 ---
 - [Features](#features)
