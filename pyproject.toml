@@ -48,7 +48,7 @@ sequence = [
     "ruff check scripts tests",
     "ruff format --check scripts tests",
     "mypy --strict scripts/okfprofile",
-    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py scripts/check_skills.py scripts/link_skills.py scripts/build_site.py scripts/check_site.py scripts/site_switch.py tests",
+    "mypy scripts/validate_profile.py scripts/new_concept.py scripts/renumber.py scripts/rename_type.py scripts/build_indexes.py scripts/scan.py scripts/check_licences.py scripts/audit.py scripts/export_requirements.py scripts/write_revision.py scripts/stale_report.py scripts/check_config.py scripts/build_bundle.py scripts/release.py scripts/init_library.py scripts/setup_repo.py scripts/ci_validate.py scripts/report_issue.py scripts/check_skills.py scripts/link_skills.py scripts/build_site.py scripts/check_site.py scripts/site_switch.py tests",
     "python scripts/validate_profile.py",
     "python scripts/build_indexes.py --check",
     "python scripts/export_requirements.py --check",
@@ -179,6 +179,10 @@ env = { OKF_PERF = "1" }
 [tool.poe.tasks.hooks]
 help = "Run every pre-commit hook on every file"
 cmd = "pre-commit run --all-files"
+
+[tool.poe.tasks.rename-type]
+help = "Rename a concept type and its uid prefix, before any release (rename-type <Old> <New> <PREFIX>)"
+cmd = "python scripts/rename_type.py"
 
 [tool.poe.tasks.renumber]
 help = "Give a concept whose uid clashes with another the next free number (renumber <concept-id>)"

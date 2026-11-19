@@ -32,8 +32,9 @@ from okfprofile.registry import (
     save_registry,
     uid_of_concept,
 )
+from okfprofile.rename import rename_type
 from okfprofile.report import Report
-from okfprofile.scaffold import create_concept, renumber_concept
+from okfprofile.scaffold import create_concept, parse_settings, renumber_concept
 from okfprofile.validate import validate_bundle
 
 EXIT_OK = 0
@@ -256,18 +257,56 @@ def new_concept_main(argv: list[str] | None = None) -> int:
     parser.add_argument("path", help="concept ID: path under the bundle root without .md")
     parser.add_argument("--title")
     parser.add_argument("--description")
+    parser.add_argument(
+        "--set",
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help="another frontmatter key the type's schema declares, such as namespace=hazard; repeatable",
+    )
     parser.add_argument("--json", action="store_true", help="write the result as JSON to standard output")
     args = parser.parse_args(argv)
     root = Path(args.root).resolve()
     try:
         profile = load_profile(root)
-        file = create_concept(profile, args.type, args.path, args.title, args.description)
+        extra = parse_settings(profile, args.type, args.set)
+        file = create_concept(profile, args.type, args.path, args.title, args.description, extra)
     except RECOVERABLE as exc:
         return _fail(str(exc))
     uid = uid_of_concept(load_concept(file)) or ""
     print(f"created {display_path(file, root)} ({uid})", file=sys.stderr)
     if args.json:
-        print(json.dumps({"path": display_path(file, root), "uid": uid}))
+        print(json.dumps({"path": display_path(file, root), "uid": uid, "set": sorted(extra)}))
+    return EXIT_OK
+
+
+def rename_type_main(argv: list[str] | None = None) -> int:
+    """``rename_type.py``: rename a concept type and its ``uid`` prefix, then rebuild the indexes (G23)."""
+    parser = argparse.ArgumentParser(
+        prog="rename_type.py",
+        description="Rename a concept type and its uid prefix in the profile, the bundle and tests/library.",
+    )
+    _root_argument(parser)
+    parser.add_argument("old", help="declared type name, such as Item")
+    parser.add_argument("new", help="new type name, such as Risk")
+    parser.add_argument("prefix", help="new uid prefix, such as RSK")
+    parser.add_argument("--dry-run", action="store_true", help="list what would change without writing")
+    parser.add_argument("--json", action="store_true", help="write the result as JSON to standard output")
+    args = parser.parse_args(argv)
+    root = Path(args.root).resolve()
+    try:
+        result = rename_type(load_profile(root), args.old, args.new, args.prefix, args.dry_run)
+        if not args.dry_run:
+            profile = load_profile(root)
+            write_indexes(profile, load_bundle(profile.bundle_root, root))
+    except RECOVERABLE as exc:
+        return _fail(str(exc))
+    verb = "would change" if args.dry_run else "changed"
+    print(f"{verb} {len(result.changed)} file(s), renamed {len(result.moved)}", file=sys.stderr)
+    if args.json:
+        print(
+            json.dumps({"changed": result.changed, "moved": [list(m) for m in result.moved], "dry_run": args.dry_run})
+        )
     return EXIT_OK
 
 
