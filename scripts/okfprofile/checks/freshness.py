@@ -8,7 +8,7 @@ from collections import Counter
 from okfprofile.bundle import display_path
 from okfprofile.config import Profile
 from okfprofile.document import Concept
-from okfprofile.indexes import INDEX, expected_indexes, unexpected_indexes
+from okfprofile.indexes import INDEX, expected_indexes, folders_of, index_headers, unexpected_indexes
 from okfprofile.report import Finding
 
 
@@ -20,10 +20,16 @@ def check_indexes(profile: Profile, concepts: list[Concept]) -> list[Finding]:
         concepts: Every concept of the bundle.
 
     Returns:
-        ``OKF501`` for a missing index, ``OKF502`` for one that differs (stale or edited by hand), ``OKF503`` for an
-        index in a folder without concepts, and ``OKF504`` (warning) for a folder over the profile's size limit.
+        ``OKF501`` for a missing index, ``OKF502`` for one whose generated part differs (stale or edited by hand; the
+        header is input, ADR-010), ``OKF503`` for an index in a folder without concepts, ``OKF504`` (warning) for a
+        folder over the profile's size limit, and ``OKF505`` or ``OKF506`` for an unusable index header.
     """
     findings = []
+    for folder, header in sorted(index_headers(profile, folders_of(concepts)).items()):
+        if header.problem is not None:
+            code, line, message = header.problem
+            shown = display_path(profile.bundle_root / posixpath.join(folder, INDEX), profile.root)
+            findings.append(Finding.make(code, shown, line, message))
     for relative, text in expected_indexes(profile, concepts).items():
         file = profile.bundle_root / relative
         shown = display_path(file, profile.root)

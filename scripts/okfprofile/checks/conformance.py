@@ -3,6 +3,11 @@
 Three parts: frontmatter problems found by the reader (``OKF101`` to ``OKF103``); the vendored okf-skills
 validator, run unmodified and its messages mapped to codes; and the datetime rule that the vendored
 validator tolerates breaking, enforced here (``OKF120``).
+
+A folder index may carry a scope header (ADR-010), which OKF v0.2 §8 and §12 do not allow. okf-skills warns on
+each such index; those warnings are replaced by one bundle-level ``OKF121`` warning that names the files, so the
+departure from OKF stays visible without repeating on every index. A header that is not usable is reported by
+check 5 (``OKF505``, ``OKF506``) instead.
 """
 
 from __future__ import annotations
@@ -15,6 +20,7 @@ from types import ModuleType
 from typing import Any
 
 from okfprofile.document import Concept, KeyPath
+from okfprofile.indexes import INDEX, read_header
 from okfprofile.report import Finding
 
 VENDORED = Path(__file__).resolve().parents[2] / "vendor" / "okf-skills" / "okf_validate.py"
@@ -59,6 +65,7 @@ MESSAGE_RULES: tuple[tuple[str, str | None], ...] = (
     ("§6.2 ", "OKF118"),
 )
 FRONTMATTER_CODES = frozenset({"OKF101", "OKF102", "OKF103"})
+INDEX_HEADER_MESSAGES = ("§8 index.md should contain no frontmatter", "§12 root index.md frontmatter may only carry")
 
 
 def load_vendored() -> ModuleType:
@@ -106,6 +113,39 @@ def _okf_skills_findings(bundle: Path, prefix: str) -> list[Finding]:
             file = f"{prefix}/{rel}" if prefix else rel
             findings.append(Finding.make(code, file, 0, text))
     return findings
+
+
+def _header_of(bundle: Path, rel: str) -> tuple[bool, bool] | None:
+    """``(has a header, header is usable)`` for an index named by okf-skills, or None if it is not an index."""
+    if rel != INDEX and not rel.endswith(f"/{INDEX}"):
+        return None
+    file = bundle / rel
+    if not file.is_file():
+        return None
+    header = read_header(file.read_bytes().decode("utf-8", errors="replace"), rel == INDEX)
+    return header.raw is not None, header.problem is None
+
+
+def _index_header_findings(bundle: Path, prefix: str, findings: list[Finding]) -> list[Finding]:
+    """Replace okf-skills' per-index frontmatter warnings for ADR-010 headers with one ``OKF121`` warning."""
+    kept: list[Finding] = []
+    with_scope: list[str] = []
+    for finding in findings:
+        rel = finding.file[len(prefix) + 1 :] if prefix and finding.file.startswith(f"{prefix}/") else finding.file
+        state = _header_of(bundle, rel) if finding.code == "OKF117" else None
+        if state is None or not finding.message.startswith(INDEX_HEADER_MESSAGES) or not state[0]:
+            kept.append(finding)
+        elif state[1]:
+            with_scope.append(finding.file)
+    if with_scope:
+        files = ", ".join(sorted(set(with_scope)))
+        message = (
+            f"{len(set(with_scope))} index header(s) carry a scope `description` (ADR-010), which OKF v0.2 allows "
+            f"only as `okf_version` on the root index (§8, §12): {files}. Consumers must still read the bundle (§11)"
+        )
+        root = f"{prefix}/{INDEX}" if prefix else INDEX
+        kept.append(Finding.make("OKF121", root, 0, message))
+    return kept
 
 
 def datetime_paths(frontmatter: dict[str, Any]) -> list[KeyPath]:
@@ -169,14 +209,14 @@ def check_conformance(bundle: Path, concepts: list[Concept], prefix: str = "") -
 
     Returns:
         All findings of check 1. A frontmatter problem that both the reader and okf-skills report is
-        reported once, with the reader's line number.
+        reported once, with the reader's line number; index scope headers give one ``OKF121`` warning.
     """
     findings: list[Finding] = []
     for concept in concepts:
         findings.extend(concept.findings)
         findings.extend(datetime_findings(concept))
     seen = {(f.code, f.file) for f in findings if f.code in FRONTMATTER_CODES}
-    for finding in _okf_skills_findings(bundle, prefix):
+    for finding in _index_header_findings(bundle, prefix, _okf_skills_findings(bundle, prefix)):
         if (finding.code, finding.file) not in seen:
             findings.append(finding)
     return findings
