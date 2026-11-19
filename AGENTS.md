@@ -18,6 +18,7 @@ This repository is a library of knowledge in the Open Knowledge Format (OKF) v0.
 | `profile/uid-registry.yaml` | Which `uid` is at which path. Maintained by tools |
 | `GOVERNANCE.md` | Who approves what, what makes a concept `stable`, how releases work |
 | `.agents/skills/` | Agent skills: `use-bundle` and `author-concept` |
+| `docs/guide/` | The user guide for the people who maintain, author and customise the library |
 
 ## Reading the bundle
 

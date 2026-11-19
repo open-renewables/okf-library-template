@@ -49,7 +49,7 @@ uv sync --all-groups
 uv run poe init
 ```
 
-`poe init` asks for the platform (`github` or `git-local`), the library's name and maintainer, and its licences, rewrites the template's names and removes the template-only files. With `platform: github`, run `uv run poe setup-repo` to configure labels, merge methods, permissions and, for a public library, the ruleset. Finish with `uv run poe check`, create a first concept with `uv run python scripts/new_concept.py <Type> <path>` and merge it. The step-by-step run sheet, with timings, is `docs/development/operations/runbook-instantiate-library.md`.
+`poe init` asks for the platform (`github` or `git-local`), the library's name and maintainer, and its licences, rewrites the template's names and removes the template-only files. With `platform: github`, run `uv run poe setup-repo` to configure labels, merge methods, permissions and, for a public library, the ruleset. Finish with `uv run poe check`, create a first concept with `uv run python scripts/new_concept.py <Type> <path>` and merge it. The step-by-step run sheet, with timings, is `docs/guide/runbook-instantiate-library.md`.
 
 ## Commands
 

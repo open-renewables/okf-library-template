@@ -1,4 +1,8 @@
-"""The runbooks name only commands, tasks, flags and files that exist (P2 plan step 15)."""
+"""The runbooks and the user guide name only commands, tasks, flags and files that exist (P2 plan step 15).
+
+The template's own runbooks are in ``docs/development/operations/``; the ones a library keeps, and the rest of
+the user guide, are in ``docs/guide/`` (P4 PR U).
+"""
 
 import re
 import subprocess
@@ -10,7 +14,9 @@ from pathlib import Path
 import pytest
 from support import ROOT
 
-RUNBOOKS = sorted((ROOT / "docs" / "development" / "operations").glob("runbook-*.md"))
+OPERATIONS = ROOT / "docs" / "development" / "operations"
+GUIDE = ROOT / "docs" / "guide"
+RUNBOOKS = sorted([*OPERATIONS.glob("runbook-*.md"), *GUIDE.glob("*.md")])
 CODE = re.compile(r"```[a-z]*\n(.*?)```|`([^`\n]+)`", re.DOTALL)
 SCRIPT = re.compile(r"scripts/([a-z_]+)\.py")
 TASK = re.compile(r"uv run poe ([a-z][a-z-]*)")
@@ -77,4 +83,4 @@ def test_every_script_and_flag_a_runbook_names_exists(path: Path) -> None:
 @pytest.mark.parametrize("path", RUNBOOKS, ids=lambda p: p.name)
 def test_every_runbook_a_runbook_names_exists(path: Path) -> None:
     named = set(re.findall(r"runbook-[a-z0-9-]+\.md", path.read_text(encoding="utf-8")))
-    assert {name for name in named if not (path.parent / name).is_file()} == set()
+    assert {name for name in named if not (OPERATIONS / name).is_file() and not (GUIDE / name).is_file()} == set()

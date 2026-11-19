@@ -1,6 +1,6 @@
 # Runbook: move a git-local library to GitHub (W-12)
 
-For a library that has run with `platform: git-local` and now moves to GitHub. It applies SDD W-12 and was rehearsed on 2026-11-09 with `open-renewables-sandbox/p2-scratch-local` moved to `p2-w12-target` (known gap G32 lists what the rehearsal did not cover). The rule throughout: history, tags and revision lines are never rewritten, so every commit identifier, every `commit <sha7>` line and every release archive stays valid.
+For a library that has run with `platform: git-local` and now moves to GitHub. It applies the template's workflow W-12, which was rehearsed with a scratch library before the template's release. The rule throughout: history, tags and revision lines are never rewritten, so every commit identifier, every `commit <sha7>` line and every release archive stays valid.
 
 ## 1. Before you start
 

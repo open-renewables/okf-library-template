@@ -18,7 +18,7 @@ Start a timer. Note the clock time at the end of each step in the timing table.
 2. **Clone and install.** `git clone <your repository>`, then `uv sync` (about 2 minutes).
 3. **Write the answers.** Copy `tests/template/instantiation/answers-github.yaml` (or `answers-git-local.yaml`) outside the repository and edit it: `platform`, `name`, `title`, `description`, `repository`, `maintainer` (login, name, email), `licence_holder`, `content_licence` (`CC-BY-4.0`, `CC-BY-SA-4.0`, `CC0-1.0` or `proprietary`), `code_licence` (`Apache-2.0`, `MIT` or `proprietary`), `keep_examples`, `keep_tests`. Or leave `--answers` out and answer the questions.
 4. **Instantiate.** `uv run python scripts/init_library.py --answers <file>`. It rewrites the names, writes the licence files (the full Creative Commons text goes into `LICENSE-content`), clears the example concepts' revision history, removes the template-only files and rebuilds the indexes. About 6 minutes with the questions.
-   - A `template name left in …` warning is expected when your login or organisation name contains the template's (for example `open-renewables-sandbox`). Check that each listed file names you on purpose.
+   - A `template name left in …` warning is expected when your login or organisation name contains the template's (for example an organisation named after the template). Check that each listed file names you on purpose.
 5. **Check.** `uv run poe check`. It should end with `0 error(s)`.
 6. **Commit and push.** `git add -A && git commit -m "Instantiate the library" && git push origin main`.
 7. **`github` only: apply the repository settings.** `uv run python scripts/setup_repo.py --dry-run`, then `uv run python scripts/setup_repo.py` (add `--app-slug <slug>` when the App exists). About 5 minutes. For a public library also step 5 of `runbook-promote-to-public.md`.
@@ -27,18 +27,9 @@ Start a timer. Note the clock time at the end of each step in the timing table.
 
 Stop the timer when the first concept is on `main` and `uv run poe check` passes.
 
-## Rename the primary type (optional, before the first release)
+## Rename the primary type (optional, before the first commit)
 
-The template's primary type is `Item` with the `uid` prefix `ITM` (known gap G23). To give it the library's own name, run this after step 4 and before step 6, the first commit. Once `profile/uid-registry.yaml` is committed, validation against that commit reports every renamed `uid` as changed (`OKF606`) and every old registry entry as removed (`OKF607`), so the rename cannot pass CI in a later pull request; the script warns when the registry is already committed. A `uid` is permanent once released (FR1.3), so a released prefix is never renamed.
-
-1. Preview: `uv run python scripts/rename_type.py Item <NewType> <PREFIX> --dry-run`. The type name starts with a capital letter; the prefix is two to five capital letters and not used by another type.
-2. Rename: `uv run python scripts/rename_type.py Item <NewType> <PREFIX>`. It rewrites the type name and prefix in `profile/` (not its meta-schemas), renames the type's schema file, rewrites the `type:` and `uid:` lines of the concepts and the registry, applies the same to `tests/library/`, and rebuilds the indexes. Prose in concept bodies is not changed.
-3. Check: `uv run poe check` and `uv run poe test`, then continue with step 5.
-4. Edit the type's body sections, formats and paths in `profile/profile.yaml` if the library needs others, and record the rename in `DECISIONS.md`.
-
-Tests under `tests/template/` (kept only with `--keep-tests`) still name `Item`; they are the template's, not the library's.
-
-A new concept of another type that needs an extra frontmatter key gets it with `--set`, for example a vocabulary: `uv run python scripts/new_concept.py Vocabulary vocab/<namespace> --set namespace=<namespace>`.
+To give the primary type (`Item`, prefix `ITM`) the library's own name, run `uv run python scripts/rename_type.py Item <NewType> <PREFIX>` after step 4 and before step 6, the first commit. The procedure and why it must come first are in [Customising the profile](customising.md#rename-the-primary-type).
 
 ## Timing table (V-06)
 

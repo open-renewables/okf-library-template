@@ -44,10 +44,10 @@ Checklist for `plan.md`; scope and done-when in `SPEC.md`. Tick an item when its
 - [x] **NEEDS YOU (decision):** option A, B or C (OD-22) and location (OD-23) (decided 2026-11-17: option B in `docs/guide/`)
 - [x] OD-24 decided 2026-11-17: morph, copy or remove is the user's choice during `init_library` (answers key `guide: morph | copy | remove`)
 - [ ] **NEEDS YOU (decision):** PP-14 approved when its text is shown
-- [ ] 4a. Guide written (option B: getting started, maintaining, customising the profile, reference); five runbooks and `finding-codes.md` moved with `git mv`, links re-pointed; `init_library` keeps the guide and removes only `docs/development/`; generated README and `AGENTS.md` link to it; drafted as a library guide with `template-only` and platform markers and placeholders; `init_library` asks morph, copy or remove (`guide: morph | copy | remove`), morphs it and adds the conventions stub on `morph`, removes it and its links on `remove`, records the choice in DR-01
-- [ ] 4a. Check: guide present in both instantiated trees; every link resolves, none into `docs/development/`; every command exists; `morph`: no template-only or wrong-platform block, unresolved placeholder or stray "the template" wording left, conventions stub present; `copy`: guide equals the template's apart from the markers; `remove`: no `docs/` left, no link to the guide, warning printed; `poe check`, `poe test`, `poe selftest` pass
+- [x] 4a. Guide written (option B: getting started, maintaining, customising the profile, reference); five runbooks and `finding-codes.md` moved with `git mv`, links re-pointed; `init_library` keeps the guide and removes only `docs/development/`; generated README and `AGENTS.md` link to it; drafted as a library guide with `template-only` and platform markers and placeholders; `init_library` asks morph, copy or remove (`guide: morph | copy | remove`), morphs it and adds the conventions stub on `morph`, removes it and its links on `remove`, records the choice in DR-01
+- [x] 4a. Check: guide present in both instantiated trees; every link resolves, none into `docs/development/`; every command exists; `morph`: no template-only or wrong-platform block, unresolved placeholder or stray "the template" wording left, conventions stub present; `copy`: guide equals the template's apart from the markers; `remove`: no `docs/` left, no link to the guide, warning printed; `poe check`, `poe test`, `poe selftest` pass
 - [ ] **NEEDS YOU (person):** close reading of the guide
-- [ ] PP-14 applied (SDD §6; DDR row)
+- [ ] PP-14 applied (SDD §6; DDR row) (applied 2026-11-20, awaiting approval)
 - [ ] PR U closed: agent __ h, owner __ h
 
 ## PR V: OKF v0.3 (`tooling/p4-okf-v03`, RFC-002)

@@ -42,7 +42,7 @@ CONTENT_URLS = {
     "CC0-1.0": "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
 }
 LICENCE_FOLDER = "licences"
-TEMPLATE_ONLY = ("CLAUDE.md", "docs", LICENCE_FOLDER)
+TEMPLATE_ONLY = ("CLAUDE.md", "docs/development", LICENCE_FOLDER)
 TEMPLATE_TESTS = ("tests/template", ".github/workflows/template-tests.yml")
 PLATFORM_ONLY = (
     ".github/ISSUE_TEMPLATE",
@@ -102,6 +102,8 @@ class Answers:
         keep_examples: Keep the example concept.
         keep_tests: Keep ``tests/template`` and the template's own workflow.
         site_generator: ``mkdocs`` (default) or ``zensical``: the blocking site builder.
+        guide: ``morph`` (default) turns ``docs/guide`` into the library's own guide, ``copy`` keeps it as the
+            template wrote it, ``remove`` deletes it (OD-24).
         year: Copyright year.
     """
 
@@ -119,6 +121,7 @@ class Answers:
     keep_examples: bool = True
     keep_tests: bool = False
     site_generator: str = "mkdocs"
+    guide: str = "morph"
     year: int = field(default_factory=lambda: date.today().year)
 
     @property
@@ -169,6 +172,7 @@ def parse_answers(data: Any) -> Answers:
             str(data.get("site_generator", "mkdocs")) in SITE_GENERATORS,
             f"site_generator must be one of {', '.join(SITE_GENERATORS)}",
         ),
+        (str(data.get("guide", "morph")) in GUIDE_CHOICES, f"guide must be one of {', '.join(GUIDE_CHOICES)}"),
         (isinstance(data.get("year", 2000), int), "year must be a number"),
     ]
     problems += [message for ok, message in checks if not ok]
@@ -189,6 +193,7 @@ def parse_answers(data: Any) -> Answers:
         keep_examples=bool(data.get("keep_examples", True)),
         keep_tests=bool(data.get("keep_tests", False)),
         site_generator=str(data.get("site_generator", "mkdocs")),
+        guide=str(data.get("guide", "morph")),
         year=int(data.get("year", date.today().year)),
     )
 
@@ -335,6 +340,7 @@ def readme_text(a: Answers) -> str:
         if a.platform == "github"
         else "It runs on git and Python alone: run `uv run poe check` before each commit and `uv run poe revision` after each merge."
     )
+    guide_note = "" if a.guide == "remove" else "The user guide is in `docs/guide/index.md`.\n\n"
     return (
         f"# {a.title}\n\n{a.description}\n\n"
         "This is an OKF v0.3 knowledge library built from the OKF library template. "
@@ -345,6 +351,7 @@ def readme_text(a: Answers) -> str:
         f"The site is built with {a.site_generator.title()} (`site.generator` in `profile/profile.yaml`): "
         f"`uv sync --group site-{a.site_generator}`, then `uv run poe docs-build`, or `uv run poe docs` to serve it. "
         "The other generator builds alongside it in CI as a non-blocking comparison.\n\n"
+        f"{guide_note}"
         "## Licences\n\n"
         "| Path | Licence |\n| --- | --- |\n"
         f"| `knowledge/` | {a.content_licence}: see `LICENSE-content` |\n"
@@ -381,7 +388,8 @@ def decisions_text(a: Answers, template_version: str) -> str:
     entry = (
         f"Instantiated from okf-library-template v{template_version} on platform {a.platform}. "
         f"Content licence {a.content_licence}; code licence {a.code_licence}; copyright holder {a.holder}. "
-        f"Examples {'kept' if a.keep_examples else 'removed'}; template tests {'kept' if a.keep_tests else 'removed'}."
+        f"Examples {'kept' if a.keep_examples else 'removed'}; template tests {'kept' if a.keep_tests else 'removed'}. "
+        f"User guide: {GUIDE_OUTCOME[a.guide]}."
     )
     return (
         f"# {a.title}: decision record\n\n"
@@ -390,6 +398,92 @@ def decisions_text(a: Answers, template_version: str) -> str:
         "| ID | Date | Decision | Status |\n| --- | --- | --- | --- |\n"
         f"| DR-01 | {date.today().isoformat()} | {entry} | Accepted |\n"
     )
+
+
+GUIDE = "docs/guide"
+GUIDE_CHOICES = ("morph", "copy", "remove")
+GUIDE_OUTCOME = {
+    "morph": "made the library's own",
+    "copy": "copied as the template wrote it",
+    "remove": "removed",
+}
+GUIDE_TEMPLATE_ONLY = ("runbook-instantiate-library.md",)
+MARKER_LINE = re.compile(r"^<!-- (template-only|platform:[a-z-]+):(start|end) -->\n", re.MULTILINE)
+
+
+def _drop_block(text: str, name: str) -> str:
+    return re.sub(rf"<!-- {re.escape(name)}:start -->\n.*?<!-- {re.escape(name)}:end -->\n", "", text, flags=re.DOTALL)
+
+
+def morph_guide_text(text: str, platform: str) -> str:
+    """A guide page made the library's own: template-only and other-platform blocks dropped, markers removed."""
+    text = _drop_block(text, "template-only")
+    for other in ("github", "git-local"):
+        if other != platform:
+            text = _drop_block(text, f"platform:{other}")
+    return MARKER_LINE.sub("", text)
+
+
+def copy_guide_text(text: str) -> str:
+    """A guide page kept as the template wrote it, with only the block markers removed."""
+    return MARKER_LINE.sub("", text)
+
+
+def created_text(a: Answers, template_version: str, working: str) -> str:
+    """The morphed ``getting-started.md``: how this library was created, then how to work on a clone."""
+    code = "proprietary" if a.code_licence == "proprietary" else a.code_licence
+    return (
+        "# Getting started\n\n"
+        "## How this library was created\n\n"
+        f"{a.title} was created from the OKF library template, release v{template_version}, on {date.today().isoformat()}, "
+        f"with `platform: {a.platform}`. Its content licence is {a.content_licence} and its code licence {code}; "
+        f"its site is built with {a.site_generator.title()}. The choices are recorded as DR-01 in `DECISIONS.md`, "
+        "where later changes to the profile and structure are recorded too.\n\n"
+        f"{working}"
+    )
+
+
+def conventions_text(a: Answers) -> str:
+    """A stub for the library's own conventions, written by its owners."""
+    sections = ("Scope", "Folders", "Sources", "Review practice")
+    body = "".join(f"## {name}\n\n_To be written._\n\n" for name in sections)
+    return (
+        f"# {a.title}: conventions\n\n"
+        "What this library covers and how its owners work, beyond the rules in `GOVERNANCE.md` and the profile. "
+        "The owners write and keep this page.\n\n"
+        f"{body}"
+    ).rstrip("\n") + "\n"
+
+
+def _prepare_guide(root: Path, a: Answers, template_version: str, result: Result) -> None:
+    """Keep, copy or remove the user guide as the answers say (OD-24)."""
+    guide = root / GUIDE
+    if not guide.is_dir():
+        return
+    if a.guide == "remove":
+        _remove(root, GUIDE, result)
+        agents = _read(root / "AGENTS.md")
+        _update(root, "AGENTS.md", "".join(row for row in agents.splitlines(True) if f"`{GUIDE}/`" not in row), result)
+        return
+    if a.guide == "morph":
+        for name in GUIDE_TEMPLATE_ONLY:
+            _remove(root, f"{GUIDE}/{name}", result)
+    for page in sorted(guide.glob("*.md")):
+        relative = page.relative_to(root).as_posix()
+        text = _read(page)
+        new = morph_guide_text(text, a.platform) if a.guide == "morph" else copy_guide_text(text)
+        if a.guide == "morph" and page.name == "getting-started.md":
+            working = new[new.index("## Working on a clone") :] if "## Working on a clone" in new else ""
+            new = created_text(a, template_version, working)
+        if a.guide == "morph" and page.name == "index.md" and "(conventions.md)" not in new:
+            new = new.replace(
+                "| [Finding codes](finding-codes.md) |",
+                "| [This library's conventions](conventions.md) | What this library covers and how its owners work |\n"
+                "| [Finding codes](finding-codes.md) |",
+            )
+        _update(root, relative, new, result)
+    if a.guide == "morph":
+        _update(root, f"{GUIDE}/conventions.md", conventions_text(a), result)
 
 
 def strip_template_block(text: str) -> str:
@@ -528,6 +622,9 @@ def instantiate(root: Path, a: Answers) -> Result:
     _rewrite_files(root, a, result, profile_text, template_version)
     for relative in TEMPLATE_ONLY + (() if a.keep_tests else TEMPLATE_TESTS):
         _remove(root, relative, result)
+    _prepare_guide(root, a, template_version, result)
+    if (root / "docs").is_dir() and not any((root / "docs").iterdir()):
+        _remove(root, "docs", result)
     if a.platform == "git-local":
         for relative in PLATFORM_ONLY:
             _remove(root, relative, result)

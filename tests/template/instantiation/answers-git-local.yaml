@@ -13,3 +13,4 @@ keep_examples: true
 keep_tests: false
 year: 2026
 site_generator: zensical
+guide: copy

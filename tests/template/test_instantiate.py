@@ -152,7 +152,7 @@ def test_a_github_library_is_personalised_and_still_validates(template: Path) ->
 
 def test_template_only_files_are_removed_and_library_files_kept(template: Path) -> None:
     run(template)
-    for gone in ("CLAUDE.md", "docs", "tests/template"):
+    for gone in ("CLAUDE.md", "docs/development", "tests/template"):
         assert not (template / gone).exists(), gone
     assert (template / "tests" / "library").is_dir()
     assert (template / ".github" / "labels.yml").is_file()
@@ -297,6 +297,7 @@ def test_the_questionnaire_asks_for_each_answer() -> None:
             "zensical",
             "no",
             "yes",
+            "copy",
         ]
     )
     prompts: list[str] = []
@@ -313,14 +314,30 @@ def test_the_questionnaire_asks_for_each_answer() -> None:
         False,
         True,
     )
-    assert answers.repository == "" and answers.site_generator == "zensical"
+    assert answers.repository == "" and answers.site_generator == "zensical" and answers.guide == "copy"
     assert any("Site generator" in p for p in prompts)
     assert any("Platform" in p for p in prompts) and not any("Repository URL" in p for p in prompts)
 
 
 def test_the_questionnaire_asks_for_the_repository_on_github() -> None:
     replies = iter(
-        ["", "my-lib", "", "", "owner", "", "owner@example.org", "", "", "", "https://github.com/o/my-lib", "", "", ""]
+        [
+            "",
+            "my-lib",
+            "",
+            "",
+            "owner",
+            "",
+            "owner@example.org",
+            "",
+            "",
+            "",
+            "https://github.com/o/my-lib",
+            "",
+            "",
+            "",
+            "",
+        ]
     )
     answers = questionnaire(lambda _prompt: next(replies))
     assert (answers.platform, answers.repository, answers.keep_examples, answers.keep_tests) == (
@@ -330,6 +347,7 @@ def test_the_questionnaire_asks_for_the_repository_on_github() -> None:
         False,
     )
     assert answers.site_generator == "mkdocs"  # the default
+    assert answers.guide == "morph"  # the default
 
 
 def test_the_command_line_can_ask(template: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -346,6 +364,7 @@ def test_the_command_line_can_ask(template: Path, monkeypatch: pytest.MonkeyPatc
             "",
             "",
             "https://github.com/o/ask-lib",
+            "",
             "",
             "",
             "",

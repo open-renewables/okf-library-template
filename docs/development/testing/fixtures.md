@@ -1,6 +1,6 @@
 # Fixture catalogue
 
-What each fixture folder under `tests/library/fixtures/` proves. [finding-codes.md](../architecture/finding-codes.md) gives the meaning of each code; this file explains how a fixture is built. The runner is `tests/library/test_fixtures.py`.
+What each fixture folder under `tests/library/fixtures/` proves. [finding-codes.md](../../guide/finding-codes.md) gives the meaning of each code; this file explains how a fixture is built. The runner is `tests/library/test_fixtures.py`.
 
 ## Layout
 
