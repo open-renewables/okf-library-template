@@ -136,6 +136,12 @@ def test_a_migration_needs_approval_and_a_decision_entry(make_repo: MakeRepo) ->
     solo = ChangeContext(paths=[*MIXED, "DECISIONS.md"], labels={"profile-migration"}, author="bob", head_sha="h1")
     assert check_change_rules(profile, solo, owners) == []
     assert maintainer_logins(profile, owners) == {"bob"}
+    adr = ChangeContext(
+        paths=[*MIXED, "docs/development/adr/ADR-099-x.md"], labels={"profile-migration"}, author="bob", head_sha="h1"
+    )
+    assert check_change_rules(profile, adr, owners) == []
+    (profile.root / "DECISIONS.md").write_text("# Decisions\n", encoding="utf-8")
+    assert codes(check_change_rules(profile, adr, owners)) == ["OKF003"]
 
 
 def test_self_approval_of_a_migration_can_be_switched_off(make_repo: MakeRepo) -> None:

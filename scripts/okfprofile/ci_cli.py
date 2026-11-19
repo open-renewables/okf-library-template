@@ -23,6 +23,7 @@ from okfprofile.ci import (
     pull_request_number,
 )
 from okfprofile.cli import validate_main
+from okfprofile.config import load_profile
 from okfprofile.ghsetup import GhCli, GhError, GitHubApi
 from okfprofile.gitutil import GitError, git
 from okfprofile.issues import close_issues, upsert_issue
@@ -56,7 +57,8 @@ def validate_event(
     """Validate the working tree as the event that started this run calls for.
 
     A pull request is judged with the base branch's tooling and profile (AD-18), with its labels, reviews and agent
-    markers. A push to the main branch is validated whole and compared with the commit before it, with the change
+    markers. A pull request labelled as a profile migration is judged with its own tooling and profile instead,
+    on the whole bundle (W-04 step 5); the change rules then require a maintainer's approval and a decision entry. A push to the main branch is validated whole and compared with the commit before it, with the change
     rules off (the merge already passed them); it catches duplicate ``uid`` values and hand-edited history.
     Anything else (a manual run) is a plain validation.
 
@@ -82,7 +84,9 @@ def validate_event(
             reviews = paginate(transport, f"repos/{repo}/pulls/{pull_request_number(event)}/reviews?per_page=100")
             change = change_from_pull_request(event, reviews, commit_messages(root, base))
             change_file.write_text(json.dumps(change.to_dict()), encoding="utf-8")
-            arguments = ["--tooling-from", base, "--base", base, "--change", str(change_file)]
+            own = load_profile(root).rules.migration_label in change.labels
+            tooling = [] if own else ["--tooling-from", base]
+            arguments = [*tooling, "--base", base, "--change", str(change_file)]
         elif event_name == "push" and before_sha(event):
             change_file.write_text(json.dumps(change_from_push(event).to_dict()), encoding="utf-8")
             arguments = ["--base", str(before_sha(event)), "--change", str(change_file), "--merged"]
