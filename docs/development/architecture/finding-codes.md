@@ -33,6 +33,7 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF118 | warning | 1 | Attested Computation contract field is missing or dangling | unit test, `tests/template/test_conformance.py` (see known gaps) |
 | OKF119 | warning | 1 | okf-skills reported a message this tool does not map | unit test, `tests/template/test_conformance.py` (see known gaps) |
 | OKF120 | error | 1 | Timestamp is not an ISO 8601 datetime with an explicit UTC offset | `tests/library/fixtures/fail/OKF120/` |
+| OKF121 | warning | 1 | Index headers carry a scope description (ADR-010), which OKF v0.2 sections 8 and 12 do not allow; one warning per bundle naming the files, in place of okf-skills' per-index OKF117 | `tests/library/fixtures/fail/OKF121/` |
 | OKF201 | error | 2 | Concept type is not declared in the profile | `tests/library/fixtures/fail/OKF201/` |
 | OKF202 | error | 2 | Required frontmatter field missing | `tests/library/fixtures/fail/OKF202/` |
 | OKF203 | error | 2 | Unknown frontmatter field (the profile rejects them) | `tests/library/fixtures/fail/OKF203/` |
@@ -68,6 +69,8 @@ Catalogue of the validation finding codes of SDD I-09. The registry in `scripts/
 | OKF502 | error | 5 | A generated index.md is out of date or was edited by hand | `tests/library/fixtures/fail/OKF502/` |
 | OKF503 | error | 5 | An index.md sits in a folder that holds no concepts | `tests/library/fixtures/fail/OKF503/` |
 | OKF504 | warning | 5 | A folder holds more concepts than the profile suggests | `tests/library/fixtures/fail/OKF504/` |
+| OKF505 | error | 5 | An index.md header is not closed, not valid YAML or not a mapping | `tests/library/fixtures/fail/OKF505/` |
+| OKF506 | error | 5 | An index.md header has a key other than description (and okf_version on the root) or a description that is not one line of text | `tests/library/fixtures/fail/OKF506/` |
 | OKF601 | error | 6 | Concept has no `uid` | `tests/library/fixtures/fail/OKF601/` |
 | OKF602 | error | 6 | `uid` is malformed or its prefix does not match the type | `tests/library/fixtures/fail/OKF602/` |
 | OKF603 | error | 6 | `uid` is used by more than one concept | `tests/library/fixtures/fail/OKF603/` |
