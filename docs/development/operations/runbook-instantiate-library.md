@@ -27,6 +27,19 @@ Start a timer. Note the clock time at the end of each step in the timing table.
 
 Stop the timer when the first concept is on `main` and `uv run poe check` passes.
 
+## Rename the primary type (optional, before the first release)
+
+The template's primary type is `Item` with the `uid` prefix `ITM` (known gap G23). To give it the library's own name, run this after step 4 and before step 6, the first commit. Once `profile/uid-registry.yaml` is committed, validation against that commit reports every renamed `uid` as changed (`OKF606`) and every old registry entry as removed (`OKF607`), so the rename cannot pass CI in a later pull request; the script warns when the registry is already committed. A `uid` is permanent once released (FR1.3), so a released prefix is never renamed.
+
+1. Preview: `uv run python scripts/rename_type.py Item <NewType> <PREFIX> --dry-run`. The type name starts with a capital letter; the prefix is two to five capital letters and not used by another type.
+2. Rename: `uv run python scripts/rename_type.py Item <NewType> <PREFIX>`. It rewrites the type name and prefix in `profile/` (not its meta-schemas), renames the type's schema file, rewrites the `type:` and `uid:` lines of the concepts and the registry, applies the same to `tests/library/`, and rebuilds the indexes. Prose in concept bodies is not changed.
+3. Check: `uv run poe check` and `uv run poe test`, then continue with step 5.
+4. Edit the type's body sections, formats and paths in `profile/profile.yaml` if the library needs others, and record the rename in `DECISIONS.md`.
+
+Tests under `tests/template/` (kept only with `--keep-tests`) still name `Item`; they are the template's, not the library's.
+
+A new concept of another type that needs an extra frontmatter key gets it with `--set`, for example a vocabulary: `uv run python scripts/new_concept.py Vocabulary vocab/<namespace> --set namespace=<namespace>`.
+
 ## Timing table (V-06)
 
 Fill one row per person. The platform steps (1, 4, 7) are measured first, then the whole sheet. The gate is 30 minutes in total (FR6.1).

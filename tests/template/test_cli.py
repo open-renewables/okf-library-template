@@ -212,7 +212,15 @@ def test_new_concept_and_renumber(repo: Path, cli: Cli) -> None:
         new_concept_main, repo, "Item", "example-group/example-category/second", "--title", "Second", "--json"
     )
     assert code == 0
-    assert json.loads(out) == {"path": "knowledge/example-group/example-category/second.md", "uid": "ITM-0002"}
+    assert json.loads(out) == {
+        "path": "knowledge/example-group/example-category/second.md",
+        "uid": "ITM-0002",
+        "set": [],
+    }
+    code, out, _ = cli(new_concept_main, repo, "Vocabulary", "vocab/hazard", "--set", "namespace=hazard", "--json")
+    assert code == 0
+    assert json.loads(out)["set"] == ["namespace"]
+    assert cli(new_concept_main, repo, "Vocabulary", "vocab/other", "--set", "colour=red")[0] == 2
     assert cli(new_concept_main, repo, "Widget", "a/b/c")[0] == 2
     second = repo / "knowledge" / "example-group" / "example-category" / "second.md"
     second.write_text(second.read_text(encoding="utf-8").replace("ITM-0002", "ITM-0001"), encoding="utf-8")

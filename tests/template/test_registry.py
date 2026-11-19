@@ -21,7 +21,7 @@ from okfprofile.registry import (
     save_registry,
     uid_of_concept,
 )
-from okfprofile.scaffold import create_concept, renumber_concept
+from okfprofile.scaffold import create_concept, parse_settings, renumber_concept
 from okfprofile.validate import validate_bundle
 from support import ROOT, MakeRepo, item_text
 
@@ -275,3 +275,48 @@ def test_renumber_refuses_a_uid_line_it_cannot_find(make_repo: MakeRepo) -> None
     )
     with pytest.raises(ValueError, match="cannot find the uid line"):
         renumber_concept(profile, "example-group/example-category/b")
+
+
+def test_a_vocabulary_created_with_its_namespace_validates(make_repo: MakeRepo) -> None:
+    profile = make_repo({})
+    extra = parse_settings(profile, "Vocabulary", ["namespace=hazard"])
+    file = create_concept(profile, "Vocabulary", "vocab/hazard", description="Kinds of hazard.", extra=extra)
+    assert "status: draft\nnamespace: hazard\n---" in file.read_text(encoding="utf-8")
+    refreshed = load_profile(profile.root)
+    write_indexes(refreshed, load_bundle(refreshed.bundle_root, refreshed.root))
+    assert [f.code for f in validate_bundle(refreshed).errors] == []
+
+
+def test_settings_accept_scalars_and_lists(make_repo: MakeRepo) -> None:
+    profile = make_repo({})
+    values = parse_settings(profile, "Item", ["stale_after=2027-01-01T00:00:00Z", "sources=[a, b]"])
+    assert values == {"stale_after": "2027-01-01T00:00:00Z", "sources": ["a", "b"]}
+    file = create_concept(profile, "Item", "example-group/example-category/dated", extra=values)
+    text = file.read_text(encoding="utf-8")
+    assert 'stale_after: "2027-01-01T00:00:00Z"' in text
+    assert 'sources: ["a", "b"]' in text
+
+
+@pytest.mark.parametrize(
+    ("type_name", "setting", "message"),
+    [
+        ("Widget", "a=b", "not declared"),
+        ("Item", "novalue", "must be key=value"),
+        ("Item", "=x", "must be key=value"),
+        ("Item", "status=stable", "written by new_concept.py"),
+        ("Item", "colour=red", "not declared by the Item schema"),
+        ("Item", "stale_after=[a", "not valid YAML"),
+        ("Item", "stale_after={a: b}", "scalar or a list of scalars"),
+        ("Item", "stale_after=", "scalar or a list of scalars"),
+    ],
+)
+def test_settings_are_refused(make_repo: MakeRepo, type_name: str, setting: str, message: str) -> None:
+    profile = make_repo({})
+    with pytest.raises(ValueError, match=message):
+        parse_settings(profile, type_name, [setting])
+
+
+def test_a_setting_cannot_repeat(make_repo: MakeRepo) -> None:
+    profile = make_repo({})
+    with pytest.raises(ValueError, match="set twice"):
+        parse_settings(profile, "Vocabulary", ["namespace=a", "namespace=b"])
